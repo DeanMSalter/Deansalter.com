@@ -2,16 +2,14 @@
 //Creating canvas
 let canvas = document.getElementById('ballCanvas')
 let ctx = canvas.getContext("2d");
-
 ctx.canvas.width = 850;
 ctx.canvas.height = 600;
 ctx.font = "20px Georgia";
-let midPoint = ctx.canvas.width / 2;
 
+let midPoint = ctx.canvas.width / 2;
 
 //Game States
 let lastTime;
-let gameTime = 0;
 let requestAnimFrame = (function() {
   return window.requestAnimationFrame ||
     window.webkitRequestAnimationFrame ||
@@ -22,17 +20,15 @@ let requestAnimFrame = (function() {
       window.setTimeout(callback, 1000 / 60);
     };
 })(); //Function to request a new frame of animation
+
 let gameOver = false;
 let nextBullet = 0;
 let fireNext = true;
 //create Ball.
 
 let player = new Ball(0, 0, 20, 1 , 1, 0,"blue","Player1");
-
-let wallDY = 0.1;
-
-
 let sprites = [player];
+
 let bullets = [];
 let bulletStart = 0;
 
@@ -75,6 +71,16 @@ function Ball(x, y, r, side, dy ,dx, colour,type) {
       if (this.respawning) {
         Timer(1, this);
       }
+    }
+    function Timer(time, circle) {
+      var i = time;
+      var timer = setInterval(function() {
+        i--;
+        if (i <= 0) {
+          circle.respawning = false;
+          clearInterval(timer);
+        }
+      }, 1000);
     }
   }
   this.wallCheck = function(ctx){
@@ -123,8 +129,7 @@ function Ball(x, y, r, side, dy ,dx, colour,type) {
       } else {
         this.y = 0 + this.r;
       }
-  }
-}
+  }}
   this.collisions = function(ctx){
 
     for(let z = 0;z<bullets.length;z++){
@@ -150,6 +155,8 @@ function Ball(x, y, r, side, dy ,dx, colour,type) {
     }
   }
 }
+
+
 function Bullet (x,y,r,side,dy,dx,color,type){
   this.Side = side
   this.colour = (color == null) ? "red" : color;
@@ -193,15 +200,13 @@ function Bullet (x,y,r,side,dy,dx,color,type){
     }
     if (this.y - this.r < 0 - this.r*2) { //Top
       this.removeBullet()
-  }
-}
+  }}
   this.collisions = function(ctx){
     for(let i = 0;i<bullets.length;i++){
       if(ballCollision(this,bullets[i])){
         if(this.type !=  bullets[i].type){
-        console.log("Collide")
-        this.removeBullet()
-        bullets[i].removeBullet()
+          this.removeBullet()
+          bullets[i].removeBullet()
         }
       }
     }
@@ -210,9 +215,7 @@ function Bullet (x,y,r,side,dy,dx,color,type){
         this.removeBullet();
         sprites[o].respawning = true;
         sprites[o].respawn(ctx)
-      }
-//      console.log(ballCollision(this,sprites[o]))
-    }
+      }}
   }
 }
 function createBullet(){
@@ -223,6 +226,7 @@ function createBullet(){
     dx: 0,
     dy:0
   };
+
   let dx = player.x - newBullet.x; //Difference between x cords
   let dy = player.y - newBullet.y; //Difference between y cords
 
@@ -243,19 +247,25 @@ function createBullet(){
     newBullet.dy = -1
   }
 
+  //If bullet has no direction , move it
   if(newBullet.dy == 0 && newBullet.dx == 0){
     newBullet.dx = 1;
   }
 
 
-  bullets[nextBullet] = new Bullet(newBullet.x, newBullet.y, newBullet.r , 3, newBullet.dy,newBullet.dx, "red","enemy");
+  bullets[nextBullet] =
+  new Bullet(newBullet.x, newBullet.y, newBullet.r , 3, newBullet.dy,newBullet.dx, "red","enemy");
+
   nextBullet +=1;
+
+  //Creates another enemy in 250 ms
   setTimeout(function(){ //Timer will fire after 250ms
     createBullet()
   }, 250)
 }
 function userInput(dt) {
 
+  //Player shoots to the right but can move in any direction , including diagonal
   if (!player.respawning) {
     if(input.isDown('W') && input.isDown("D") || input.isDown('D') && input.isDown('W')){
       player.dx = player.speed;
@@ -280,30 +290,10 @@ function userInput(dt) {
 
     if(input.isDown('SPACE')){
       if(player.fireNext){
-        //  x, y, r, side, dy ,dx, colour,type
-        // if(player.direction == 1){//W
-        //   bullets[nextBullet] = new Bullet(player.x, player.y-player.r*2, 5 , 3, -3 ,0, "red");
-        // }else if(player.direction == 2){//D
-        //   bullets[nextBullet] = new Bullet(player.x+player.r*2, player.y, 5 , 3, 0 ,3, "red");
-        // }else if(player.direction == 3){//S
-        //   bullets[nextBullet] = new Bullet(player.x, player.y+player.r*2, 5 , 3, 3 ,0, "red");
-        // }else if(player.direction == 4){//D
-        //   bullets[nextBullet] = new Bullet(player.x-player.r*2, player.y, 5 ,3, 0 ,-3, "red");
-        // }else if(player.direction == 5){//WD
-        //   bullets[nextBullet] = new Bullet(player.x+player.r*2, player.y-player.r*2, 5 ,3, -3 ,3, "red");
-        // }else if(player.direction == 6){//DS
-        //   bullets[nextBullet] = new Bullet(player.x+player.r*2, player.y+player.r*2, 5 ,3, 3 ,3, "red");
-        // }else if(player.direction == 7){//AS
-        //   bullets[nextBullet] = new Bullet(player.x-player.r*2, player.y+player.r*2, 5 ,3, 3 ,-3, "red");
-        // }else if(player.direction == 8){//AW
-        //   bullets[nextBullet] = new Bullet(player.x-player.r*2, player.y-player.r*2, 5 ,3, -3 ,-3, "red");
-        // }
         bullets[nextBullet] = new Bullet(player.x+player.r*2, player.y, 5 , 3, 0 ,3, "red","bullet");
-
         nextBullet += 1;
         player.fireNext = false;
-
-        setTimeout(function(){ //Timer will fire after 250ms
+        setTimeout(function(){ //Timer will fire after 250ms,Will allow the user to fire again after 250 ms
           player.fireNext = true;
         }, 250)
       }
@@ -314,59 +304,31 @@ function userInput(dt) {
 
 window.onkeydown = function(e) {
    var key = e.keyCode ? e.keyCode : e.which;
-
-
-
    if(key == 80){
      createBullet()
    }
    if (key == 87) { //W
        player.direction = 1;
+       player.dx = 0;
+       player.dy = -player.speed;
    }else if (key == 68) {//D
        player.direction = 2;
+       player.dx = player.speed;
+       player.dy = 0;
    }else if (key == 83) {//S
        player.direction = 3
+       player.dx = 0;
+       player.dy = player.speed;
    }else if (key == 65) {//A
        player.direction = 4;
-   }
-   if(player.direction == 1){ //W
-     player.dx = 0;
-     player.dy = -player.speed;
-   }else if(player.direction == 2){ //D
-     player.dx = player.speed;
-     player.dy = 0;
-   }else if(player.direction == 3){ //S
-     player.dx = 0;
-     player.dy = player.speed;
-   }else if(player.direction == 4){//A
-     player.dx = -player.speed;
-     player.dy = 0;
+       player.dx = -player.speed;
+       player.dy = 0;
    }
 }
-function Timer(time, circle) {
-  var i = time;
-  var timer = setInterval(function() {
-    i--;
-    if (i <= 0) {
-      circle.respawning = false;
-      clearInterval(timer);
-    }
-  }, 1000);
-}
-function Delay(time) {
 
-  var i = time;
-  var timer = setInterval(function() {
-    i -= 1;
-    if (i <= 0) {
-      fireNext = true;
-      clearInterval(timer);
-    }
-  }, 1000);
-}
+
 //Updates gametime.
 function update(dt) {
-  gameTime += dt;
   userInput(dt);
 }
 //Main game loop
@@ -376,6 +338,8 @@ function main() {
   let dt = (now - lastTime) / 1000.0;
 
   update(dt);
+
+  //Calculates location of stuff
   for(let i = 0;i<sprites.length;i++){
     sprites[i].wallCheck(ctx)
     sprites[i].collisions(ctx)
@@ -394,6 +358,7 @@ function main() {
         nextBullet -=1
     }
   }
+
   render();
   lastTime = now;
   requestAnimFrame(main);
@@ -401,7 +366,6 @@ function main() {
     player.Score = 0;
     player.respawn(ctx)
     let lastTime;
-    let gameTime = 0;
     gameOver = false;
   }
 };
@@ -412,14 +376,10 @@ function render() {
   ctx.fillText("Score: " + player.Score, 0, 20);
   ctx.fillText("Games: " + player.Games, 0, 40);
 
-
-
-  ctx.fillStyle = "black"
   for(let i = 0;i<sprites.length;i++){
       sprites[i].fill(ctx);
   }
-  let bLength = bullets.length
-  for(let i = 0;i<bLength;i++){
+  for(let i = 0;i<bullets.length;i++){
       bullets[i].fill(ctx);
   }
 
