@@ -22,6 +22,7 @@ let requestAnimFrame = (function() {
 })(); //Function to request a new frame of animation
 
 let gameOver = false;
+let health = 5
 let nextBullet = 0;
 let fireNext = true;
 //create Ball.
@@ -160,6 +161,10 @@ function Bullet (x,y,r,side,dy,dx,color,type){
       this.removeBullet()
     }
     if (this.x - this.r < 0 - this.r*2) { //Left
+      health -= 1;
+      if(health <= -5){
+        gameOver = true;
+      }
       this.removeBullet()
     }
     if (this.y + this.r > canvas.height) { //Bottom
@@ -336,6 +341,7 @@ function main() {
     player.Score = 0;
     player.Lives = 5;
     bullets.length = 0
+    health =5 ;
     nextBullet =0;
     player.respawning = false;
     player.respawn(ctx)
@@ -349,7 +355,7 @@ function render() {
   ctx.fillStyle = "purple"
   ctx.fillText("Score: " + player.Score, 0, 20);
   ctx.fillText("Lives: " + player.Lives, 0, 40);
-
+  ctx.fillText("Health: " + health, 0, 60);
   for(let i = 0;i<sprites.length;i++){
       sprites[i].fill(ctx);
   }
