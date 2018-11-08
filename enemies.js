@@ -38,7 +38,7 @@ function Ball(x, y, r, side, dy ,dx, colour,type) {
   this.yDefault = y
   this.Side = side
   this.Score = 0
-  this.Games = 0
+  this.Lives = 5;
   this.respawning = false;
   this.colour = colour;
   this.type = type;
@@ -69,15 +69,19 @@ function Ball(x, y, r, side, dy ,dx, colour,type) {
       this.x=this.xDefault
       this.y=this.yDefault
       if (this.respawning) {
+        this.Lives -= 1
+
         Timer(1, this);
       }
     }
     function Timer(time, circle) {
-      var i = time;
-      var timer = setInterval(function() {
+
+      let i = time;
+      let timer = setInterval(function() {
         i--;
         if (i <= 0) {
           circle.respawning = false;
+
           clearInterval(timer);
         }
       }, 1000);
@@ -85,51 +89,18 @@ function Ball(x, y, r, side, dy ,dx, colour,type) {
   }
   this.wallCheck = function(ctx){
     if (this.x + this.r > canvas.width) { //Right
-      if (this.Side == 1) {
-        this.Score += 1;
-        this.respawning = false
-        this.respawn();
-        if (this.Score >= 10) {
-          gameOver = true;
-          this.Games += 1;
-        }
-      } else {
         this.x = canvas.width - this.r;
-      }
-      if(this.Side ==3 ){
-        this.Side == 0;
-
-      }
-
     }
     if (this.x - this.r < 0) { //Left
-      if (this.Side == 2) {
-        this.Score += 1;
-        if (this.Score >= 10) {
-          gameOver = true;
-          this.Games += 1;
-        }
-        this.respawning = false
-        this.respawn(ctx)
-      } else {
         this.x = 0 + this.r;
-      }
     }
     if (this.y + this.r > canvas.height) { //Bottom
-      if (this.Side == 3) {
-        this.dy = -wallDY;
-      } else {
         this.y = canvas.height - this.r;
-      }
-
     }
     if (this.y - this.r < 0) { //Top
-      if (this.Side == 3) {
-        this.dy = wallDY;
-      } else {
         this.y = 0 + this.r;
-      }
-  }}
+    }
+  }
   this.collisions = function(ctx){
 
     for(let z = 0;z<bullets.length;z++){
@@ -210,12 +181,6 @@ function Bullet (x,y,r,side,dy,dx,color,type){
         }
       }
     }
-    for(let o = 0;o<sprites.length;o++){
-      if(ballCollision(this,sprites[o])){
-        this.removeBullet();
-        sprites[o].respawning = true;
-        sprites[o].respawn(ctx)
-      }}
   }
 }
 function createBullet(){
@@ -364,8 +329,15 @@ function main() {
   render();
   lastTime = now;
   requestAnimFrame(main);
+  if(player.Lives <= -5){
+    gameOver = true;
+  }
   if (gameOver) {
     player.Score = 0;
+    player.Lives = 5;
+    bullets.length = 0
+    nextBullet =0;
+    player.respawning = false;
     player.respawn(ctx)
     let lastTime;
     gameOver = false;
@@ -376,14 +348,17 @@ function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "purple"
   ctx.fillText("Score: " + player.Score, 0, 20);
-  ctx.fillText("Games: " + player.Games, 0, 40);
+  ctx.fillText("Lives: " + player.Lives, 0, 40);
 
   for(let i = 0;i<sprites.length;i++){
       sprites[i].fill(ctx);
   }
+  console.log(bullets.length)
   for(let i = 0;i<bullets.length;i++){
       bullets[i].fill(ctx);
   }
+
+
 
 };
 
