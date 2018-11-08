@@ -2,8 +2,8 @@
 //Creating canvas
 let canvas = document.getElementById('ballCanvas')
 let ctx = canvas.getContext("2d");
-ctx.canvas.width = 850;
-ctx.canvas.height = 600;
+ctx.canvas.width = 900;
+ctx.canvas.height = 350;
 ctx.font = "20px Georgia";
 
 let midPoint = ctx.canvas.width / 2;
@@ -46,7 +46,7 @@ function Ball(x, y, r, side, dy ,dx, colour,type) {
   this.dy = (dy == null) ? 0 : dy;
   this.dx = (dx == null) ? 0 : dx;
   this.direction =0;
-  this.speed = 3;
+  this.speed = 4;
   this.x = (x === null) ? 0 : x;
   this.y = (y === null) ? 0 : y;
   this.r = (r === null) ? 0 : r;
@@ -155,13 +155,10 @@ function Ball(x, y, r, side, dy ,dx, colour,type) {
     }
   }
 }
-
-
 function Bullet (x,y,r,side,dy,dx,color,type){
   this.Side = side
   this.colour = (color == null) ? "red" : color;
   this.type = type;
-  this.fireNext = true;
   this.dy = (dy == null) ? 0 : dy;
   this.dx = (dx == null) ? 0 : dx;
   this.x = (x === null) ? 0 : x;
@@ -189,17 +186,19 @@ function Bullet (x,y,r,side,dy,dx,color,type){
   }
   this.wallCheck = function(ctx){
     if (this.x + this.r > canvas.width+this.r*2) { //Right
-
       this.removeBullet()
     }
     if (this.x - this.r < 0 - this.r*2) { //Left
       this.removeBullet()
     }
-    if (this.y + this.r > canvas.height + this.r*2) { //Bottom
-      this.removeBullet()
+    if (this.y + this.r > canvas.height) { //Bottom
+      this.dy = -1;
+      //this.removeBullet()
     }
-    if (this.y - this.r < 0 - this.r*2) { //Top
-      this.removeBullet()
+    if (this.y - this.r < this.r ) { //Top
+      this.dy = 1;
+
+
   }}
   this.collisions = function(ctx){
     for(let i = 0;i<bullets.length;i++){
@@ -207,6 +206,7 @@ function Bullet (x,y,r,side,dy,dx,color,type){
         if(this.type !=  bullets[i].type){
           this.removeBullet()
           bullets[i].removeBullet()
+          player.Score += 1
         }
       }
     }
@@ -220,7 +220,7 @@ function Bullet (x,y,r,side,dy,dx,color,type){
 }
 function createBullet(){
   let newBullet = {
-  	x: Math.floor(Math.random() * 500) + 450,
+  	x: ctx.canvas.width+15,
   	y: Math.floor(Math.random() * 500) + 50,
     r:15,
     dx: 0,
@@ -290,7 +290,7 @@ function userInput(dt) {
 
     if(input.isDown('SPACE')){
       if(player.fireNext){
-        bullets[nextBullet] = new Bullet(player.x+player.r*2, player.y, 5 , 3, 0 ,3, "red","bullet");
+        bullets[nextBullet] = new Bullet(player.x+player.r*3, player.y, 5 , 3, 0 ,3, "green","bullet");
         nextBullet += 1;
         player.fireNext = false;
         setTimeout(function(){ //Timer will fire after 250ms,Will allow the user to fire again after 250 ms
@@ -306,6 +306,8 @@ window.onkeydown = function(e) {
    var key = e.keyCode ? e.keyCode : e.which;
    if(key == 80){
      createBullet()
+     // ctx.canvas.height = 600;
+     // ctx.font = "20px Georgia";
    }
    if (key == 87) { //W
        player.direction = 1;
