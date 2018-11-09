@@ -26,6 +26,7 @@ let requestAnimFrame = (function() {
 
 let gameOver = false;
 let health = 5
+let Score = 0
 let nextBullet = 0;
 let fireNext = true;
 //create Ball.
@@ -33,15 +34,18 @@ let fireNext = true;
 let player = new Ball(0, 0, 20, 1 , 1, 0,"blue","Player1");
 let sprites = [player];
 let buttons = [];
+let turrets = [];
+
 let bullets = [];
 let bulletStart = 0;
-
+let turretSelected = false
+let turret1 = new Turret(100,100,25,25,60)
 //Define the Ball
 function Ball(x, y, r, side, dy ,dx, colour,type) {
   this.xDefault = x
   this.yDefault = y
   this.Side = side
-  this.Score = 0
+  this.Points = 0
   this.Lives = 5;
   this.respawning = false;
   this.colour = colour;
@@ -130,46 +134,6 @@ function Ball(x, y, r, side, dy ,dx, colour,type) {
     }
   }
 }
-function newButton(id,name,x,y,width,height,colour,textColour){
-      this.id = id;
-      this.name=name
-      this.x=x
-      this.y=y
-      this.width=width
-      this.height=height
-      this.colour=colour
-      this.textColour = textColour
-      this.fill = function(ctx) {
-      let oldStyle;
-      if(this.colour){
-        oldStyle = ctx.fillStyle
-        ctx.fillStyle = this.colour
-      }
-      ctx.fillRect(this.x,this.y,this.width,this.height);
-      ctx.fillStyle = oldStyle
-
-      }
-      this.drawName = function(ctx){
-        let oldStyle;
-        if(this.textColour){
-          oldStyle = ctx.fillStyle
-          ctx.fillStyle = this.textColour
-        }
-        ctx.textAlign = "center"
-        ctx.fillText(this.name,this.x+this.width/2,this.y+this.height/2 + this.height/5)
-
-        ctx.fillStyle = oldStyle
-        ctx.textAlign = "start"
-      }
-
-
-      this.contains = function(mouseX,mouseY){
-        return this.x <=mouseX && mouseX <= this.x + this.width &&
-              this.y <= mouseY && mouseY <= this.y + this.height;
-      }
-    //displayButton(newButton.x,newButton.y,newButton.width,newButton.height,newButton.colour)
-              // Append <button> to <body>
-  }
 function Bullet (x,y,r,side,dy,dx,color,type){
   this.Side = side
   this.colour = (color == null) ? "red" : color;
@@ -225,13 +189,84 @@ function Bullet (x,y,r,side,dy,dx,color,type){
         if(this.type !=  bullets[i].type){
           this.removeBullet()
           bullets[i].removeBullet()
-          player.Score += 1
+          player.Points += 1
+          Score +=1
         }
       }
     }
   }
 }
-function createBullet(){
+function Turret(x,y,width,height,fireRate){
+  this.x = x
+  this.y = y
+  this.width = width
+  this.height = height
+  this.fireRate = fireRate
+  this.continueFiring = true
+  this.fireCounter = fireRate
+  this.fill = function(ctx){
+    let oldStyle;
+    if(this.colour){
+      oldStyle = ctx.fillStyle
+      ctx.fillStyle = this.colour
+    }
+    ctx.fillRect(this.x,this.y,this.width,this.height,this.fireRate);
+    ctx.fillStyle = oldStyle
+
+  }
+  this.fire = function(ctx){
+    if(!this.continueFiring){ return}
+      this.fireCounter -= 1
+      if(this.fireCounter <= 0){
+        this.fireCounter = this.fireRate
+        console.log("test")
+        bullets[nextBullet] = new Bullet(this.x+this.width, this.y+this.height/2, 5 , 3, 0 ,3, "green","bullet");
+        nextBullet += 1;
+      }
+    }
+}
+
+function newButton(id,name,x,y,width,height,colour,textColour){
+      this.id = id;
+      this.name=name
+      this.x=x
+      this.y=y
+      this.width=width
+      this.height=height
+      this.colour=colour
+      this.textColour = textColour
+      this.fill = function(ctx) {
+      let oldStyle;
+      if(this.colour){
+        oldStyle = ctx.fillStyle
+        ctx.fillStyle = this.colour
+      }
+      ctx.fillRect(this.x,this.y,this.width,this.height);
+      ctx.fillStyle = oldStyle
+
+      }
+      this.drawName = function(ctx){
+        let oldStyle;
+        if(this.textColour){
+          oldStyle = ctx.fillStyle
+          ctx.fillStyle = this.textColour
+        }
+        ctx.textAlign = "center"
+        ctx.fillText(this.name,this.x+this.width/2,this.y+this.height/2 + this.height/5)
+
+        ctx.fillStyle = oldStyle
+        ctx.textAlign = "start"
+      }
+
+
+      this.contains = function(mouseX,mouseY){
+        return this.x <=mouseX && mouseX <= this.x + this.width &&
+              this.y <= mouseY && mouseY <= this.y + this.height;
+      }
+    //displayButton(newButton.x,newButton.y,newButton.width,newButton.height,newButton.colour)
+              // Append <button> to <body>
+  }
+function createEnemies(){
   let newBullet = {
   	x: ctx.canvas.width+15,
   	y: Math.floor(Math.random() * 500) + 50,
@@ -273,7 +308,7 @@ function createBullet(){
 
   //Creates another enemy in 250 ms
   setTimeout(function(){ //Timer will fire after 250ms
-    createBullet()
+    createEnemies()
   }, 250)
 }
 function userInput(dt) {
@@ -314,19 +349,6 @@ function userInput(dt) {
 
 }
 }
-
-
-// onmousemove = function(e){
-//
-//   for(let i = 0;i<buttons.length;i++){
-//       let bound = canvas.getBoundingClientRect();
-//
-//       let x = event.clientX - bound.left - canvas.clientLeft;
-//       let y = event.clientY - bound.top - canvas.clientTop;
-//       console.log(buttons[i].contains(x,y))
-//   }
-//
-// }
 canvas.addEventListener('click', event =>
 {
   for(let i = 0;i<buttons.length;i++){
@@ -334,31 +356,49 @@ canvas.addEventListener('click', event =>
 
       let x = event.clientX - bound.left - canvas.clientLeft;
       let y = event.clientY - bound.top - canvas.clientTop;
-      if(buttons[i].contains(x,y)){
+      if(turretSelected){
+        turretSelected = false
+        turrets[turrets.length] = new Turret(x,y,25,25,60)
+        console.log("turret created")
+        buttons[2].colour = "purple"
+      }
+      else if(buttons[i].contains(x,y)){
 
         if(buttons[i].id == 0){
-          if(player.Score >= 100){
+          if(player.Points >= 100){
             player.Lives += 1
-            player.Score -= 100
+            player.Points -= 100
           }
         }
         if(buttons[i].id == 1){
-          if(player.Score >= 200){
+          if(player.Points >= 200){
             health += 1
-            player.Score -= 200
+            player.Points -= 200
+          }
+        }
+        if(buttons[i].id == 2){
+          if(player.Points >= 250){
+            player.Points -= 250
+            console.log("turret selected")
+            buttons[i].colour = "green"
+            turretSelected = true
           }
         }
 
       }
+
       console.log(buttons[i].contains(x,y))
   }
 });
 window.onkeydown = function(e) {
    var key = e.keyCode ? e.keyCode : e.which;
    if(key == 80){
-     createBullet()
-     buttons[buttons.length] = new newButton(0,"Life-100",0,ctx.canvas.height-30,100,30,"red","black")
-     buttons[buttons.length] = new newButton(1,"Health-200",100,ctx.canvas.height-30,100,30,"red","black")
+     createEnemies()
+
+     turret1.fire()
+     buttons[buttons.length] = new newButton(0,"Life-100",0,ctx.canvas.height-30,100,30,"purple","white")
+     buttons[buttons.length] = new newButton(1,"Health-200",100,ctx.canvas.height-30,100,30,"purple","white")
+     buttons[buttons.length] = new newButton(2,"Turret-250",200,ctx.canvas.height-30,100,30,"purple","white")
      console.log(buttons.length)
      // ctx.canvas.height = 600;
      // ctx.font = "20px Georgia";
@@ -414,6 +454,9 @@ function main() {
         nextBullet -=1
     }
   }
+  for(let u = 0;u<turrets.length;u++){
+    turrets[u].fire()
+  }
 
   render();
   lastTime = now;
@@ -422,7 +465,7 @@ function main() {
     gameOver = true;
   }
   if (gameOver) {
-    player.Score = 0;
+    player.Points = 0;
     player.Lives = 5;
     bullets.length = 0
     health =5 ;
@@ -437,9 +480,10 @@ function render() {
   ballCollision();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "purple"
-  ctx.fillText("Score: " + player.Score, 0, 20);
-  ctx.fillText("Lives: " + player.Lives, 0, 40);
-  ctx.fillText("Health: " + health, 0, 60);
+  ctx.fillText("Score: " + Score, 0, 20);
+  ctx.fillText("Points: " + player.Points, 0, 50);
+  ctx.fillText("Lives: " + player.Lives, 0, 70);
+  ctx.fillText("Health: " + health, 0, 90);
   for(let i = 0;i<sprites.length;i++){
       sprites[i].fill(ctx);
   }
@@ -449,7 +493,9 @@ function render() {
   for(let i = 0;i<buttons.length;i++){
     buttons[i].fill(ctx)
     buttons[i].drawName(ctx)
-
+  }
+  for(let u = 0;u<turrets.length;u++){
+    turrets[u].fill(ctx)
   }
 
 
