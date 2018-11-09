@@ -25,11 +25,30 @@ let requestAnimFrame = (function() {
 })(); //Function to request a new frame of animation
 
 let gameOver = false;
+let paused = false;
 let health = 5
 let Score = 0
 let nextBullet = 0;
-let fireNext = true;
+
+
+let fireNextRate = 24
+let fireNextCounter = fireNextRate ;
+
+let enemyRate = 25
+let enemyCounter = enemyRate
 //create Ball.
+
+document.addEventListener("visibilitychange", function() {
+  //true if hidden
+console.log( document.hidden );
+  if(document.hidden){
+    paused = true;
+  }else{
+    paused = false;
+    createEnemies()
+  }
+
+});
 
 let player = new Ball(0, 0, 20, 1 , 1, 0,"blue","Player1");
 let sprites = [player];
@@ -50,7 +69,6 @@ function Ball(x, y, r, side, dy ,dx, colour,type) {
   this.respawning = false;
   this.colour = colour;
   this.type = type;
-  this.fireNext = true;
   this.dy = (dy == null) ? 0 : dy;
   this.dx = (dx == null) ? 0 : dx;
   this.direction =0;
@@ -215,7 +233,7 @@ function Turret(x,y,width,height,fireRate){
 
   }
   this.fire = function(ctx){
-    if(!this.continueFiring){ return}
+    if(!this.continueFiring || paused){ return}
       this.fireCounter -= 1
       if(this.fireCounter <= 0){
         this.fireCounter = this.fireRate
@@ -300,16 +318,12 @@ function createEnemies(){
     newBullet.dx = 1;
   }
 
-
+  if(paused){return}
   bullets[nextBullet] =
   new Bullet(newBullet.x, newBullet.y, newBullet.r , 3, newBullet.dy,newBullet.dx, "red","enemy");
 
   nextBullet +=1;
 
-  //Creates another enemy in 250 ms
-  setTimeout(function(){ //Timer will fire after 250ms
-    createEnemies()
-  }, 250)
 }
 function userInput(dt) {
 
@@ -337,13 +351,13 @@ function userInput(dt) {
     }
 
     if(input.isDown('SPACE')){
-      if(player.fireNext){
+      fireNextCounter -= 1
+      if(fireNextCounter<= 0){
+        fireNextCounter = fireNextRate
         bullets[nextBullet] = new Bullet(player.x+player.r*3, player.y, 5 , 3, 0 ,3, "green","bullet");
         nextBullet += 1;
-        player.fireNext = false;
-        setTimeout(function(){ //Timer will fire after 250ms,Will allow the user to fire again after 250 ms
-          player.fireNext = true;
-        }, 250)
+
+
       }
     }
 
@@ -377,12 +391,12 @@ canvas.addEventListener('click', event =>
           }
         }
         if(buttons[i].id == 2){
-          if(player.Points >= 250){
+          //if(player.Points >= 250){
             player.Points -= 250
             console.log("turret selected")
             buttons[i].colour = "green"
             turretSelected = true
-          }
+        //  }
         }
 
       }
@@ -425,10 +439,14 @@ window.onkeydown = function(e) {
 
 //Updates gametime.
 function update(dt) {
-  userInput(dt);
+  if(!paused){
+    userInput(dt);
+  }
+
 }
 //Main game loop
 function main() {
+  if(paused){return};
 
   let now = Date.now();
   let dt = (now - lastTime) / 1000.0;
@@ -457,7 +475,11 @@ function main() {
   for(let u = 0;u<turrets.length;u++){
     turrets[u].fire()
   }
-
+  enemyCounter -= 1;
+  if(enemyCounter <= 0){
+    enemyCounter = enemyRate
+    createEnemies()
+  }
   render();
   lastTime = now;
   requestAnimFrame(main);
@@ -477,6 +499,7 @@ function main() {
   }
 };
 function render() {
+  if(paused){return}
   ballCollision();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "purple"
