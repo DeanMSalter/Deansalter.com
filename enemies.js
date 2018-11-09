@@ -1,12 +1,15 @@
 "use strict";
 //Creating canvas
-let canvas = document.getElementById('ballCanvas')
-let ctx = canvas.getContext("2d");
+const canvas = document.getElementById('ballCanvas')
+const ctx = canvas.getContext("2d");
 ctx.canvas.width = 900;
 ctx.canvas.height = 350;
 ctx.font = "20px Georgia";
 
-let midPoint = ctx.canvas.width / 2;
+let buttonHeightH = 30
+let playableAreaH = ctx.canvas.height - buttonHeightH
+
+const midPoint = ctx.canvas.width / 2;
 
 //Game States
 let lastTime;
@@ -29,7 +32,7 @@ let fireNext = true;
 
 let player = new Ball(0, 0, 20, 1 , 1, 0,"blue","Player1");
 let sprites = [player];
-
+let buttons = [];
 let bullets = [];
 let bulletStart = 0;
 
@@ -95,8 +98,8 @@ function Ball(x, y, r, side, dy ,dx, colour,type) {
     if (this.x - this.r < 0) { //Left
         this.x = 0 + this.r;
     }
-    if (this.y + this.r > canvas.height) { //Bottom
-        this.y = canvas.height - this.r;
+    if (this.y + this.r > playableAreaH) { //Bottom
+        this.y = playableAreaH - this.r;
     }
     if (this.y - this.r < 0) { //Top
         this.y = 0 + this.r;
@@ -127,6 +130,46 @@ function Ball(x, y, r, side, dy ,dx, colour,type) {
     }
   }
 }
+function newButton(id,name,x,y,width,height,colour,textColour){
+      this.id = id;
+      this.name=name
+      this.x=x
+      this.y=y
+      this.width=width
+      this.height=height
+      this.colour=colour
+      this.textColour = textColour
+      this.fill = function(ctx) {
+      let oldStyle;
+      if(this.colour){
+        oldStyle = ctx.fillStyle
+        ctx.fillStyle = this.colour
+      }
+      ctx.fillRect(this.x,this.y,this.width,this.height);
+      ctx.fillStyle = oldStyle
+
+      }
+      this.drawName = function(ctx){
+        let oldStyle;
+        if(this.textColour){
+          oldStyle = ctx.fillStyle
+          ctx.fillStyle = this.textColour
+        }
+        ctx.textAlign = "center"
+        ctx.fillText(this.name,this.x+this.width/2,this.y+this.height/2 + this.height/5)
+
+        ctx.fillStyle = oldStyle
+        ctx.textAlign = "start"
+      }
+
+
+      this.contains = function(mouseX,mouseY){
+        return this.x <=mouseX && mouseX <= this.x + this.width &&
+              this.y <= mouseY && mouseY <= this.y + this.height;
+      }
+    //displayButton(newButton.x,newButton.y,newButton.width,newButton.height,newButton.colour)
+              // Append <button> to <body>
+  }
 function Bullet (x,y,r,side,dy,dx,color,type){
   this.Side = side
   this.colour = (color == null) ? "red" : color;
@@ -151,8 +194,8 @@ function Bullet (x,y,r,side,dy,dx,color,type){
   }
   this.removeBullet = function(ctx){
     this.Side = 0;
-    this.x =-10;
-    this.y =-10;
+  //  this.x =-10;
+    //this.y =-10;
     this.dx = 0;
     this.dy = 0;
   }
@@ -167,7 +210,7 @@ function Bullet (x,y,r,side,dy,dx,color,type){
       }
       this.removeBullet()
     }
-    if (this.y + this.r > canvas.height) { //Bottom
+    if (this.y + this.r > playableAreaH) { //Bottom
       this.dy = -1;
       //this.removeBullet()
     }
@@ -272,10 +315,51 @@ function userInput(dt) {
 }
 }
 
+
+// onmousemove = function(e){
+//
+//   for(let i = 0;i<buttons.length;i++){
+//       let bound = canvas.getBoundingClientRect();
+//
+//       let x = event.clientX - bound.left - canvas.clientLeft;
+//       let y = event.clientY - bound.top - canvas.clientTop;
+//       console.log(buttons[i].contains(x,y))
+//   }
+//
+// }
+canvas.addEventListener('click', event =>
+{
+  for(let i = 0;i<buttons.length;i++){
+      let bound = canvas.getBoundingClientRect();
+
+      let x = event.clientX - bound.left - canvas.clientLeft;
+      let y = event.clientY - bound.top - canvas.clientTop;
+      if(buttons[i].contains(x,y)){
+
+        if(buttons[i].id == 0){
+          if(player.Score >= 100){
+            player.Lives += 1
+            player.Score -= 100
+          }
+        }
+        if(buttons[i].id == 1){
+          if(player.Score >= 200){
+            health += 1
+            player.Score -= 200
+          }
+        }
+
+      }
+      console.log(buttons[i].contains(x,y))
+  }
+});
 window.onkeydown = function(e) {
    var key = e.keyCode ? e.keyCode : e.which;
    if(key == 80){
      createBullet()
+     buttons[buttons.length] = new newButton(0,"Life-100",0,ctx.canvas.height-30,100,30,"red","black")
+     buttons[buttons.length] = new newButton(1,"Health-200",100,ctx.canvas.height-30,100,30,"red","black")
+     console.log(buttons.length)
      // ctx.canvas.height = 600;
      // ctx.font = "20px Georgia";
    }
@@ -359,9 +443,13 @@ function render() {
   for(let i = 0;i<sprites.length;i++){
       sprites[i].fill(ctx);
   }
-  console.log(bullets.length)
   for(let i = 0;i<bullets.length;i++){
       bullets[i].fill(ctx);
+  }
+  for(let i = 0;i<buttons.length;i++){
+    buttons[i].fill(ctx)
+    buttons[i].drawName(ctx)
+
   }
 
 
