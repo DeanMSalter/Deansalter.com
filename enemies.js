@@ -371,6 +371,7 @@ canvas.addEventListener('click', event =>
       let x = event.clientX - bound.left - canvas.clientLeft;
       let y = event.clientY - bound.top - canvas.clientTop;
       if(turretSelected){
+        if(y >= playableAreaH){return}
         turretSelected = false
         turrets[turrets.length] = new Turret(x,y,25,25,60)
         console.log("turret created")
@@ -391,12 +392,12 @@ canvas.addEventListener('click', event =>
           }
         }
         if(buttons[i].id == 2){
-          //if(player.Points >= 250){
+          if(player.Points >= 250){
             player.Points -= 250
             console.log("turret selected")
             buttons[i].colour = "green"
             turretSelected = true
-        //  }
+          }
         }
 
       }
@@ -488,6 +489,7 @@ function main() {
   }
   if (gameOver) {
     player.Points = 0;
+    Score = 0
     player.Lives = 5;
     bullets.length = 0
     health =5 ;
