@@ -453,7 +453,7 @@ canvas.addEventListener('click', event =>{
     buttons[2].colour = "purple"
   }
   calculateButton(x,y)
-  }); //Click listener (mostly for buttons)
+}); //Click listener (mostly for buttons )
 function calculateButton(x,y){
   for(let i = 0;i<buttons.length;i++){
       if(buttons[i].contains(x,y)){
