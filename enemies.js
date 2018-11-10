@@ -68,8 +68,7 @@ function ballCollision(ball1 , ball2){
   var distance = Math.sqrt((dx * dx) + (dy * dy));
   if(distance <= ball1.r +ball2.r){
     return true;
-  }
-}//checks if ball1 and ball2 collide
+  }}//checks if ball1 and ball2 collide
 function restart(){
   ctx.canvas.width = 900;
   ctx.canvas.height = 350;
@@ -104,7 +103,8 @@ function restart(){
   bullets.length = 0
   player.respawning = false;
   player.respawn(ctx)
-  gameOver = false;} //Starts/Resets everything
+  gameOver = false;
+} //Starts/Resets everything
 
 //Create functions
 function Ball(x, y, r, side, dy ,dx, colour,type) {
@@ -368,8 +368,7 @@ function createEnemies(){
 
   if(paused){return}
   bullets[bullets.length] =
-  new Bullet(newBullet.x, newBullet.y, newBullet.r , 3, newBullet.dy,newBullet.dx, "red","enemy");
-} //Calcualtions for new enemies
+  new Bullet(newBullet.x, newBullet.y, newBullet.r , 3, newBullet.dy,newBullet.dx, "red","enemy");} //Calcualtions for new enemies
 
 //INPUT
 function userInput() {
@@ -406,9 +405,8 @@ function userInput() {
 
       }
     }
-
 }} //for when we need to detect when user is holding a key down.
-window.onkeydown = function(e) { //for key presses that are simple
+window.onkeydown = function(e) {
    var key = e.keyCode ? e.keyCode : e.which;
    if(key == 80){ //User clicks P , testing purposes
 
@@ -430,15 +428,15 @@ window.onkeydown = function(e) { //for key presses that are simple
        player.dx = -player.speed;
        player.dy = 0;
    }
-}
-canvas.onmousedown = function(event) { //Right click to unselect anything youve selected
+}//for key presses that are simple
+canvas.onmousedown = function(event) {
     if (event.which == 3) {
         if(turretSelected){
           turretSelected = false
           buttons[2].colour = "purple"
         }
     }
-}
+}//Right click to unselect anything youve selected
 canvas.addEventListener('click', event =>{
   let bound = canvas.getBoundingClientRect();
   let x = event.clientX - bound.left - canvas.clientLeft;
@@ -452,8 +450,7 @@ canvas.addEventListener('click', event =>{
     console.log("turret created")
     buttons[2].colour = "purple"
   }
-  calculateButton(x,y)
-}); //Click listener (mostly for buttons )
+  calculateButton(x,y)}); //Click listener (mostly for buttons )
 function calculateButton(x,y){
   for(let i = 0;i<buttons.length;i++){
       if(buttons[i].contains(x,y)){
