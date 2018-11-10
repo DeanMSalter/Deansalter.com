@@ -17,16 +17,13 @@ let requestAnimFrame = (function() {
     window.oRequestAnimationFrame ||
     window.msRequestAnimationFrame ||
     function(callback) {
-      window.setTimeout(callback, 1000 / 60);
-    };})(); //Function to request a new frame of animation
+      window.setTimeout(callback, 1000 / 60);};})(); //Function to request a new frame of animation
 let gameOver = false;
 let paused = false;
-
 
 //Game variables
 let health = 5
 let Score = 0
-//Button variables
 let turretSelected = false
 
 //Timer variables
@@ -35,7 +32,6 @@ let fireNextCounter = fireNextRate ;
 
 let enemyRate = 25
 let enemyCounter = enemyRate
-
 
 document.addEventListener("visibilitychange", function() {
   //true if hidden
@@ -48,61 +44,19 @@ console.log( document.hidden );
   }
 
 }); //User active checker
-canvas.addEventListener('click', event =>
-{
-  for(let i = 0;i<buttons.length;i++){
-      let bound = canvas.getBoundingClientRect();
-
-      let x = event.clientX - bound.left - canvas.clientLeft;
-      let y = event.clientY - bound.top - canvas.clientTop;
-      if(turretSelected){
-        if(y >= playableAreaH){return}
-        turretSelected = false
-        turrets[turrets.length] = new Turret(x,y,25,25,60)
-        console.log("turret created")
-        buttons[2].colour = "purple"
-      }
-      else if(buttons[i].contains(x,y)){
-
-        if(buttons[i].id == 0){
-          if(player.Points >= 100){
-            player.Lives += 1
-            player.Points -= 100
-          }
-        }
-        if(buttons[i].id == 1){
-          if(player.Points >= 200){
-            health += 1
-            player.Points -= 200
-          }
-        }
-        if(buttons[i].id == 2){
-          if(player.Points >= 250){
-            player.Points -= 250
-            console.log("turret selected")
-            buttons[i].colour = "green"
-            turretSelected = true
-          }
-        }
-
-      }
-
-      console.log(buttons[i].contains(x,y))
-  }
-}); //Click listener (mostly for buttons)
-
+canvas.oncontextmenu = function() {
+    return false;
+} //Disables right click menu within the game
 
 let player = new Ball(20,ctx.canvas.height/2, 20, 1 , 0, 0,"blue","Player1");
 let sprites = [player]; //Might add more players to the game at some point , hence the array
 let turrets = [];
 let bullets = [];
 
-
 let buttons = [];//Create buttons
 buttons[buttons.length] = new newButton(0,"Life-100",0,ctx.canvas.height-30,100,30,"purple","white")
 buttons[buttons.length] = new newButton(1,"Health-200",100,ctx.canvas.height-30,100,30,"purple","white")
 buttons[buttons.length] = new newButton(2,"Turret-250",200,ctx.canvas.height-30,100,30,"purple","white")
-
 
 
 function ballCollision(ball1 , ball2){
@@ -477,28 +431,87 @@ window.onkeydown = function(e) { //for key presses that are simple
        player.dy = 0;
    }
 }
+canvas.onmousedown = function(event) { //Right click to unselect anything youve selected
+    if (event.which == 3) {
+        if(turretSelected){
+          turretSelected = false
+          buttons[2].colour = "purple"
+        }
+    }
+}
+canvas.addEventListener('click', event =>{
+  let bound = canvas.getBoundingClientRect();
+  let x = event.clientX - bound.left - canvas.clientLeft;
+  let y = event.clientY - bound.top - canvas.clientTop;
 
+  if(turretSelected){
+    if(y >= playableAreaH){return}
+    turretSelected = false
+    player.Points -= 250
+    turrets[turrets.length] = new Turret(x,y,25,25,60)
+    console.log("turret created")
+    buttons[2].colour = "purple"
+  }
+  calculateButton(x,y)
+  }); //Click listener (mostly for buttons)
+function calculateButton(x,y){
+  for(let i = 0;i<buttons.length;i++){
+      if(buttons[i].contains(x,y)){
+        if(buttons[i].id == 0){
+          button0()
+
+        }
+        if(buttons[i].id == 1){
+          button1()
+        }
+        if(buttons[i].id == 2){
+          button2()
+        }
+
+      }
+    }
+  }
+function button0(){
+  if(player.Points >= 1){
+    player.Lives += 1
+    player.Points -= 100
+  }
+}
+function button1(){
+  if(player.Points >= 1){
+    health += 1
+    player.Points -= 200
+  }
+}
+function button2(){
+  if(player.Points >= 1){
+
+    console.log("turret selected")
+    buttons[2].colour = "green"
+    turretSelected = true
+  }
+}
 
 //Draws everything
 function render() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "purple"
-    ctx.fillText("Score: " + Score, 0, 20);
-    ctx.fillText("Points: " + player.Points, 0, 50);
-    ctx.fillText("Lives: " + player.Lives, 0, 70);
-    ctx.fillText("Health: " + health, 0, 90);
-    for(let i = 0;i<sprites.length;i++){ //Draws all players
-        sprites[i].fill(ctx);
-    }
-    for(let i = 0;i<bullets.length;i++){ // Draws all bullets (enemies included)
-        bullets[i].fill(ctx);
-    }
-    for(let i = 0;i<buttons.length;i++){ //Draws the buttons
-      buttons[i].fill(ctx)
-      buttons[i].drawName(ctx)
-    }
-    for(let u = 0;u<turrets.length;u++){//Draws turrets
-      turrets[u].fill(ctx)
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "purple"
+  ctx.fillText("Score: " + Score, 0, 20);
+  ctx.fillText("Points: " + player.Points, 0, 50);
+  ctx.fillText("Lives: " + player.Lives, 0, 70);
+  ctx.fillText("Health: " + health, 0, 90);
+  for(let i = 0;i<sprites.length;i++){ //Draws all players
+    sprites[i].fill(ctx);
+  }
+  for(let i = 0;i<bullets.length;i++){ // Draws all bullets (enemies included)
+    bullets[i].fill(ctx);
+  }
+  for(let i = 0;i<buttons.length;i++){ //Draws the buttons
+    buttons[i].fill(ctx)
+    buttons[i].drawName(ctx)
+  }
+  for(let u = 0;u<turrets.length;u++){//Draws turrets
+    turrets[u].fill(ctx)
   }
 };
 
