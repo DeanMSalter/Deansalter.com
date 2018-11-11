@@ -57,7 +57,7 @@ let buttons = [];//Create buttons
 buttons[buttons.length] = new newButton(0,"Life-100",0,ctx.canvas.height-30,100,30,"purple","white")
 buttons[buttons.length] = new newButton(1,"Health-200",100,ctx.canvas.height-30,100,30,"purple","white")
 buttons[buttons.length] = new newButton(2,"Turret-250",200,ctx.canvas.height-30,100,30,"purple","white")
-
+buttons[buttons.length] = new newButton(3,"Speed-300",300,ctx.canvas.height-30,100,30,"purple","white")
 
 function ballCollision(ball1 , ball2){
   if (ball1 == ball2){ return false; }
@@ -81,6 +81,7 @@ function restart(){
   buttons[buttons.length] = new newButton(0,"Life-100",0,ctx.canvas.height-30,100,30,"purple","white")
   buttons[buttons.length] = new newButton(1,"Health-200",100,ctx.canvas.height-30,100,30,"purple","white")
   buttons[buttons.length] = new newButton(2,"Turret-250",200,ctx.canvas.height-30,100,30,"purple","white")
+  buttons[buttons.length] = new newButton(3,"Speed-300",300,ctx.canvas.height-30,100,30,"purple","white")
   player = new Ball(20,ctx.canvas.height/2, 20, 1 , 0, 0,"blue","Player1");
   sprites = [player]; //Might add more players to the game at some point , hence the array
 
@@ -464,6 +465,9 @@ function calculateButton(x,y){
         if(buttons[i].id == 2){
           button2()
         }
+        if(buttons[i].id == 3){
+          button3()
+        }
 
       }
     }
@@ -486,6 +490,12 @@ function button2(){
     console.log("turret selected")
     buttons[2].colour = "green"
     turretSelected = true
+  }
+}
+function button3(){
+  if(player.Points >= 1){
+    player.Speed += 1
+    player.Points -= 300
   }
 }
 
@@ -511,7 +521,6 @@ function render() {
     turrets[u].fill(ctx)
   }
 };
-
 //Main game loop
 function main() {
   if(paused){return};
