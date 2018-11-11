@@ -58,7 +58,7 @@ buttons[buttons.length] = new newButton(0,"Life-100",0,ctx.canvas.height-30,100,
 buttons[buttons.length] = new newButton(1,"Health-200",100,ctx.canvas.height-30,100,30,"purple","white")
 buttons[buttons.length] = new newButton(2,"Turret-250",200,ctx.canvas.height-30,100,30,"purple","white")
 buttons[buttons.length] = new newButton(3,"Speed-300",300,ctx.canvas.height-30,100,30,"purple","white")
-
+buttons[buttons.length] = new newButton(4,"Bullets-400",400,ctx.canvas.height-30,100,30,"purple","white")
 function ballCollision(ball1 , ball2){
   if (ball1 == ball2){ return false; }
   if(typeof ball1 === "undefined"){ return false;};
@@ -468,7 +468,9 @@ function calculateButton(x,y){
         if(buttons[i].id == 3){
           button3()
         }
-
+        if(buttons[i].id == 4){
+          button4()
+        }
       }
     }
   }
@@ -496,6 +498,12 @@ function button3(){
   if(player.Points >= 1){
     player.Speed += 1
     player.Points -= 300
+  }
+}
+function button4(){
+  if(player.Points >= 1){
+    fireNextRate -= 1
+    player.Points -= 400
   }
 }
 
