@@ -5,7 +5,7 @@ const ctx = canvas.getContext("2d");
 ctx.canvas.width = 900;
 ctx.canvas.height = 350;
 ctx.font = "20px Georgia";
-const midPoint = ctx.canvas.width /2
+let midPoint = ctx.canvas.width /2
 let buttonHeightH = 30
 let playableAreaH = ctx.canvas.height - buttonHeightH
 
@@ -25,7 +25,8 @@ let paused = false;
 let health = 5
 let Score = 0
 let turretSelected = false
-
+let level = 0
+let levelup = false
 //Timer variables
 let fireNextRate = 24
 let fireNextCounter = fireNextRate ;
@@ -59,6 +60,7 @@ buttons[buttons.length] = new newButton(1,"Health-200",100,ctx.canvas.height-30,
 buttons[buttons.length] = new newButton(2,"Turret-250",200,ctx.canvas.height-30,100,30,"purple","white")
 buttons[buttons.length] = new newButton(3,"Speed-300",300,ctx.canvas.height-30,100,30,"purple","white")
 buttons[buttons.length] = new newButton(4,"Bullets-400",400,ctx.canvas.height-30,100,30,"purple","white")
+buttons[buttons.length] = new newButton(5,"Next Level-500",500,ctx.canvas.height-30,140,30,"gold","white")
 function ballCollision(ball1 , ball2){
   if (ball1 == ball2){ return false; }
   if(typeof ball1 === "undefined"){ return false;};
@@ -82,6 +84,8 @@ function restart(){
   buttons[buttons.length] = new newButton(1,"Health-200",100,ctx.canvas.height-30,100,30,"purple","white")
   buttons[buttons.length] = new newButton(2,"Turret-250",200,ctx.canvas.height-30,100,30,"purple","white")
   buttons[buttons.length] = new newButton(3,"Speed-300",300,ctx.canvas.height-30,100,30,"purple","white")
+  buttons[buttons.length] = new newButton(4,"Bullets-400",400,ctx.canvas.height-30,100,30,"purple","white")
+  buttons[buttons.length] = new newButton(5,"Next Level-500",500,ctx.canvas.height-30,140,30,"gold","white")
   player = new Ball(20,ctx.canvas.height/2, 20, 1 , 0, 0,"blue","Player1");
   sprites = [player]; //Might add more players to the game at some point , hence the array
 
@@ -90,6 +94,7 @@ function restart(){
   //Game variables
   health = 5
   Score = 0
+  level = 0
   //Button variables
   turretSelected = false
 
@@ -104,9 +109,17 @@ function restart(){
   bullets.length = 0
   player.respawning = false;
   player.respawn(ctx)
-  gameOver = false;
-} //Starts/Resets everything
-
+  gameOver = false;} //Starts/Resets everything
+function levelUp(){
+  ctx.font = "20px Georgia";
+  midPoint = ctx.canvas.width /2
+  buttonHeightH = 30
+  playableAreaH = ctx.canvas.height - buttonHeightH
+  for(let i = 0; i<buttons.length;i++){
+    buttons[i].y = ctx.canvas.height-30
+  }
+  levelup = false
+}
 //Create functions
 function Ball(x, y, r, side, dy ,dx, colour,type) {
   this.xDefault = x
@@ -471,6 +484,9 @@ function calculateButton(x,y){
         if(buttons[i].id == 4){
           button4()
         }
+        if(buttons[i].id == 5){
+          button5()
+        }
       }
     }
   }
@@ -506,15 +522,23 @@ function button4(){
     player.Points -= 400
   }
 }
-
+function button5(){
+  if(player.Points >= 1){
+    level +=1
+    levelup = true
+    //player.Points -= 500
+  }
+}
 //Draws everything
 function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = "purple"
-  ctx.fillText("Score: " + Score, 0, 20);
-  ctx.fillText("Points: " + player.Points, 0, 50);
-  ctx.fillText("Lives: " + player.Lives, 0, 70);
-  ctx.fillText("Health: " + health, 0, 90);
+  ctx.fillText("Score: " + Score, 0, 40);
+  ctx.fillText("Points: " + player.Points, 0, 70);
+  ctx.fillText("Lives: " + player.Lives, 0, 90);
+  ctx.fillText("Health: " + health, 0, 110);
+  ctx.fillText("Level: " + level, 0, 20);
+
   for(let i = 0;i<sprites.length;i++){ //Draws all players
     sprites[i].fill(ctx);
   }
@@ -568,6 +592,14 @@ function main() {
   requestAnimFrame(main);
 
   //Resets game if game is over
+  if(level == 1 && levelup){
+    ctx.canvas.width = 900;
+    ctx.canvas.height = 500;
+    levelUp()
+  }else if(level == 2 && levelup){
+    enemyRate -= 5
+    levelUp()
+  }
   if (gameOver) {
     restart()
     return
