@@ -25,6 +25,7 @@ let paused = false;
 let base = 5
 let Score = 0
 let turretSelected = false
+let turretMax = 2
 let level = 0
 let levelup = false
 //Timer variables
@@ -98,6 +99,7 @@ function restart(){
   sprites = [player]; //Might add more players to the game at some point , hence the array
 
   turrets = [];
+  turretMax = 2
   bullets = [];
   //Game variables
   base = 5
@@ -123,6 +125,7 @@ function levelUp(){
   midPoint = ctx.canvas.width /2
   buttonHeightH = 30
   playableAreaH = ctx.canvas.height - buttonHeightH
+  turretMax +=2
   for(let i = 0; i<buttons.length;i++){
     buttons[i].y = ctx.canvas.height-30
   }
@@ -249,7 +252,6 @@ function Bullet (x,y,r,side,dy,dx,color,type,health){
 
   }
   this.hit = function(){
-    //console.log(this.health + " " +  this.type)
     this.health -= 1
 
     if(this.health <= 0){
@@ -312,7 +314,7 @@ function Turret(x,y,width,height,fireRate){
       this.fireCounter -= 1
       if(this.fireCounter <= 0){
         this.fireCounter = this.fireRate
-        bullets[bullets.length] = new Bullet(this.x+this.width, this.y+this.height/2, 5 , 3, 0 ,3, "green","bullet");
+        bullets[bullets.length] = new Bullet(this.x+this.width, this.y+this.height/2, 5 , 3, 0 ,3, "green","bullet",1);
       }
     }
 }
@@ -416,8 +418,8 @@ function calculateCollisions(){
         checked[checked.length] == [o,i];
         if(checked.includes([i,o])){ continue}
         if(bullets[o].type !=  bullets[i].type && bullets[o].type != "dead" && bullets[i].type != "dead"){
-          console.log(bullets[o].x + " " + bullets[i].x)
           bullets[o].hit()
+          bullets[i].hit()
           player.Points += 1
           Score +=1
         }
@@ -544,7 +546,7 @@ function button1(){
   }
 }
 function button2(){
-  if(player.Points >= 1){
+  if(player.Points >= 1 && turrets.length < turretMax){
 
     console.log("turret selected")
     buttons[2].colour = "green"
