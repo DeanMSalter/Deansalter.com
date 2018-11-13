@@ -22,7 +22,7 @@ let gameOver = false;
 let paused = false;
 
 //Game variables
-let health = 5
+let base = 5
 let Score = 0
 let turretSelected = false
 let level = 0
@@ -36,7 +36,6 @@ let enemyCounter = enemyRate
 
 document.addEventListener("visibilitychange", function() {
   //true if hidden
-console.log( document.hidden );
   if(document.hidden){
     paused = true;
   }else{
@@ -62,15 +61,24 @@ buttons[buttons.length] = new newButton(3,"Speed-300",300,ctx.canvas.height-30,1
 buttons[buttons.length] = new newButton(4,"Bullets-400",400,ctx.canvas.height-30,100,30,"purple","white")
 buttons[buttons.length] = new newButton(5,"Next Level-500",500,ctx.canvas.height-30,140,30,"gold","white")
 function ballCollision(ball1 , ball2){
+
   if (ball1 == ball2){ return false; }
   if(typeof ball1 === "undefined"){ return false;};
   if(typeof ball2 === "undefined"){ return false;};
+  if(ball1.type == ball2.type){ return false;};
   var dx = ball1.x - ball2.x; //Difference between x cords
   var dy = ball1.y - ball2.y; //Difference between y cords
   var distance = Math.sqrt((dx * dx) + (dy * dy));
   if(distance <= ball1.r +ball2.r){
     return true;
-  }}//checks if ball1 and ball2 collide
+
+  }else{
+    return false;
+  }
+}//checks if ball1 and ball2 collide
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
 function restart(){
   ctx.canvas.width = 900;
   ctx.canvas.height = 350;
@@ -92,7 +100,7 @@ function restart(){
   turrets = [];
   bullets = [];
   //Game variables
-  health = 5
+  base = 5
   Score = 0
   level = 0
   //Button variables
@@ -120,6 +128,7 @@ function levelUp(){
   }
   levelup = false
 }
+
 //Create functions
 function Ball(x, y, r, side, dy ,dx, colour,type) {
   this.xDefault = x
@@ -216,10 +225,11 @@ function Ball(x, y, r, side, dy ,dx, colour,type) {
     }
   }
 }
-function Bullet (x,y,r,side,dy,dx,color,type){
+function Bullet (x,y,r,side,dy,dx,color,type,health){
   this.Side = side
   this.colour = (color == null) ? "red" : color;
   this.type = type;
+  this.health = health
   this.dy = (dy == null) ? 0 : dy;
   this.dx = (dx == null) ? 0 : dx;
   this.x = (x === null) ? 0 : x;
@@ -238,8 +248,21 @@ function Bullet (x,y,r,side,dy,dx,color,type){
     ctx.fillStyle = oldStyle
 
   }
-  this.removeBullet = function(ctx){
+  this.hit = function(){
+    //console.log(this.health + " " +  this.type)
+    this.health -= 1
+
+    if(this.health <= 0){
+      this.removeBullet()
+    }else if(this.health = 1){
+      this.colour = "red"
+    }
+
+
+  }
+  this.removeBullet = function(){
     this.Side = 0;
+    this.type = "dead"
   //  this.x =-10;
     //this.y =-10;
     this.dx = 0;
@@ -250,8 +273,8 @@ function Bullet (x,y,r,side,dy,dx,color,type){
       this.removeBullet()
     }
     if (this.x - this.r < 0 - this.r*2) { //Left
-      health -= 1;
-      if(health <= -5){
+      base -= 1;
+      if(base <= -5){
         gameOver = true;
       }
       this.removeBullet()
@@ -265,18 +288,6 @@ function Bullet (x,y,r,side,dy,dx,color,type){
 
 
   }}
-  this.collisions = function(ctx){
-    for(let i = 0;i<bullets.length;i++){
-      if(ballCollision(this,bullets[i])){
-        if(this.type !=  bullets[i].type){
-          this.removeBullet()
-          bullets[i].removeBullet()
-          player.Points += 1
-          Score +=1
-        }
-      }
-    }
-  }
 }
 function Turret(x,y,width,height,fireRate){
   this.x = x
@@ -301,7 +312,6 @@ function Turret(x,y,width,height,fireRate){
       this.fireCounter -= 1
       if(this.fireCounter <= 0){
         this.fireCounter = this.fireRate
-        console.log("test")
         bullets[bullets.length] = new Bullet(this.x+this.width, this.y+this.height/2, 5 , 3, 0 ,3, "green","bullet");
       }
     }
@@ -381,9 +391,40 @@ function createEnemies(){
   }
 
   if(paused){return}
-  bullets[bullets.length] =
-  new Bullet(newBullet.x, newBullet.y, newBullet.r , 3, newBullet.dy,newBullet.dx, "red","enemy");} //Calcualtions for new enemies
 
+  if(level == 2){
+    if(getRandomInt(2) == 1){
+      bullets[bullets.length] =
+      new Bullet(newBullet.x, newBullet.y, newBullet.r , 3, newBullet.dy,newBullet.dx, "darkred","enemy",2)
+    }else{
+       bullets[bullets.length] =
+       new Bullet(newBullet.x, newBullet.y, newBullet.r , 3, newBullet.dy,newBullet.dx, "red","enemy",1)
+    }
+  }else{
+     bullets[bullets.length] =
+     new Bullet(newBullet.x, newBullet.y, newBullet.r , 3, newBullet.dy,newBullet.dx, "red","enemy",1);
+  }
+} //Calcualtions for new enemies
+
+
+function calculateCollisions(){
+  let checked = []
+  for(let o = 0;o<bullets.length;o++){
+    for(let i = 0;i<bullets.length;i++){
+      if(i==o){continue}
+      if(ballCollision(bullets[o],bullets[i])){
+        checked[checked.length] == [o,i];
+        if(checked.includes([i,o])){ continue}
+        if(bullets[o].type !=  bullets[i].type && bullets[o].type != "dead" && bullets[i].type != "dead"){
+          console.log(bullets[o].x + " " + bullets[i].x)
+          bullets[o].hit()
+          player.Points += 1
+          Score +=1
+        }
+      }
+    }
+  }
+}
 //INPUT
 function userInput() {
 
@@ -414,7 +455,7 @@ function userInput() {
       fireNextCounter -= 1
       if(fireNextCounter<= 0){
         fireNextCounter = fireNextRate
-        bullets[bullets.length] = new Bullet(player.x+player.r*3, player.y, 5 , 3, 0 ,3, "green","bullet");
+        bullets[bullets.length] = new Bullet(player.x+player.r*3, player.y, 5 , 3, 0 ,3, "green","bullet",1);
 
 
       }
@@ -523,7 +564,7 @@ function button4(){
   }
 }
 function button5(){
-  if(player.Points >= 1){
+  if(player.Points >= 0){
     level +=1
     levelup = true
     //player.Points -= 500
@@ -536,7 +577,7 @@ function render() {
   ctx.fillText("Score: " + Score, 0, 40);
   ctx.fillText("Points: " + player.Points, 0, 70);
   ctx.fillText("Lives: " + player.Lives, 0, 90);
-  ctx.fillText("Health: " + health, 0, 110);
+  ctx.fillText("Base: " + base, 0, 110);
   ctx.fillText("Level: " + level, 0, 20);
 
   for(let i = 0;i<sprites.length;i++){ //Draws all players
@@ -565,11 +606,13 @@ function main() {
     sprites[i].y += sprites[i].dy;
     sprites[i].x += sprites[i].dx;
   }
+  calculateCollisions()
+
   for(let o = 0;o<bullets.length;o++){
     if(typeof bullets[o] === "undefined"){ continue }
     bullets[o].wallCheck(ctx);
-    bullets[o].collisions(ctx);
-    if(bullets[o].Side != 0){
+
+    if(bullets[o].type != "dead"){
       bullets[o].y += bullets[o].dy;
       bullets[o].x += bullets[o].dx;
     }else{
