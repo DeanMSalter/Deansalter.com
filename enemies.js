@@ -287,7 +287,7 @@ function Bullet (x,y,r,side,dy,dx,color,type,health){
       }
       this.removeBullet()
     }
-    if (this.y + this.r > playableAreaH) { //Bottom
+    if (this.y + this.r > playableAreaH-this.r) { //Bottom
       this.dy = -1;
       //this.removeBullet()
     }
