@@ -60,7 +60,8 @@ buttons[buttons.length] = new newButton(1,"Health-200",100,ctx.canvas.height-30,
 buttons[buttons.length] = new newButton(2,"Turret-250",200,ctx.canvas.height-30,100,30,"purple","white")
 buttons[buttons.length] = new newButton(3,"Speed-300",300,ctx.canvas.height-30,100,30,"purple","white")
 buttons[buttons.length] = new newButton(4,"Bullets-400",400,ctx.canvas.height-30,100,30,"purple","white")
-buttons[buttons.length] = new newButton(5,"Next Level-500",500,ctx.canvas.height-30,140,30,"gold","white")
+buttons[buttons.length] = new newButton(5,"Clear-150",500,ctx.canvas.height-30,100,30,"blue","white")
+buttons[buttons.length] = new newButton(6,"Next Level-500",600,ctx.canvas.height-30,140,30,"gold","white")
 function ballCollision(ball1 , ball2){
 
   if (ball1 == ball2){ return false; }
@@ -94,7 +95,9 @@ function restart(){
   buttons[buttons.length] = new newButton(2,"Turret-250",200,ctx.canvas.height-30,100,30,"purple","white")
   buttons[buttons.length] = new newButton(3,"Speed-300",300,ctx.canvas.height-30,100,30,"purple","white")
   buttons[buttons.length] = new newButton(4,"Bullets-400",400,ctx.canvas.height-30,100,30,"purple","white")
-  buttons[buttons.length] = new newButton(5,"Next Level-500",500,ctx.canvas.height-30,140,30,"gold","white")
+  buttons[buttons.length] = new newButton(5,"Clear-150",500,ctx.canvas.height-30,100,30,"blue","white")
+  buttons[buttons.length] = new newButton(6,"Next Level-500",600,ctx.canvas.height-30,140,30,"gold","white")
+
   player = new Ball(20,ctx.canvas.height/2, 20, 1 , 0, 0,"blue","Player1");
   sprites = [player]; //Might add more players to the game at some point , hence the array
 
@@ -530,6 +533,9 @@ function calculateButton(x,y){
         if(buttons[i].id == 5){
           button5()
         }
+        if(buttons[i].id == 6){
+          button6()
+        }
       }
     }
   }
@@ -566,6 +572,12 @@ function button4(){
   }
 }
 function button5(){
+  if(player.Points >= 0){
+    bullets = [];
+    player.Points -= 150
+  }
+}
+function button6(){
   if(player.Points >= 0){
     level +=1
     levelup = true
