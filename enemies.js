@@ -6,8 +6,11 @@ ctx.canvas.width = 900;
 ctx.canvas.height = 350;
 ctx.font = "20px Georgia";
 let midPoint = ctx.canvas.width /2
-let buttonHeightH = 30
-let playableAreaH = ctx.canvas.height - buttonHeightH
+let playableAreaH = ctx.canvas.height
+let playableAreaW = 145
+
+let base_image = new Image();
+base_image.src = 'bg.jpg';
 
 //Game States
 let requestAnimFrame = (function() {
@@ -49,19 +52,19 @@ canvas.oncontextmenu = function() {
     return false;
 } //Disables right click menu within the game
 
-let player = new Ball(20,ctx.canvas.height/2, 20, 1 , 0, 0,"blue","Player1");
+let player = new Ball(playableAreaW+25,ctx.canvas.height/2, 20, 1 , 0, 0,"blue","Player1");
 let sprites = [player]; //Might add more players to the game at some point , hence the array
 let turrets = [];
 let bullets = [];
 
 let buttons = [];//Create buttons
-buttons[buttons.length] = new newButton(0,"Life-100",0,ctx.canvas.height-30,100,30,"purple","white")
-buttons[buttons.length] = new newButton(1,"Health-200",100,ctx.canvas.height-30,100,30,"purple","white")
-buttons[buttons.length] = new newButton(2,"Turret-250",200,ctx.canvas.height-30,100,30,"purple","white")
-buttons[buttons.length] = new newButton(3,"Speed-300",300,ctx.canvas.height-30,100,30,"purple","white")
-buttons[buttons.length] = new newButton(4,"Bullets-400",400,ctx.canvas.height-30,100,30,"purple","white")
-buttons[buttons.length] = new newButton(5,"Clear-150",500,ctx.canvas.height-30,100,30,"blue","white")
-buttons[buttons.length] = new newButton(6,"Next Level-500",600,ctx.canvas.height-30,140,30,"gold","white")
+buttons[buttons.length] = new newButton(0,"Life-100",0,120,140,30,"purple","white")
+buttons[buttons.length] = new newButton(1,"Health-200",0,150,140,30,"purple","white")
+buttons[buttons.length] = new newButton(2,"Turret-250",0,180,140,30,"purple","white")
+buttons[buttons.length] = new newButton(3,"Speed-300",0,210,140,30,"purple","white")
+buttons[buttons.length] = new newButton(4,"Bullets-400",0,240,140,30,"purple","white")
+buttons[buttons.length] = new newButton(5,"Clear-150",0,270,140,30,"blue","white")
+buttons[buttons.length] = new newButton(6,"Next Level-500",0,300,140,30,"gold","white")
 function ballCollision(ball1 , ball2){
 
   if (ball1 == ball2){ return false; }
@@ -90,13 +93,13 @@ function restart(){
   let playableAreaH = ctx.canvas.height - buttonHeightH
 
   buttons = [];
-  buttons[buttons.length] = new newButton(0,"Life-100",0,ctx.canvas.height-30,100,30,"purple","white")
-  buttons[buttons.length] = new newButton(1,"Health-200",100,ctx.canvas.height-30,100,30,"purple","white")
-  buttons[buttons.length] = new newButton(2,"Turret-250",200,ctx.canvas.height-30,100,30,"purple","white")
-  buttons[buttons.length] = new newButton(3,"Speed-300",300,ctx.canvas.height-30,100,30,"purple","white")
-  buttons[buttons.length] = new newButton(4,"Bullets-400",400,ctx.canvas.height-30,100,30,"purple","white")
-  buttons[buttons.length] = new newButton(5,"Clear-150",500,ctx.canvas.height-30,100,30,"blue","white")
-  buttons[buttons.length] = new newButton(6,"Next Level-500",600,ctx.canvas.height-30,140,30,"gold","white")
+  buttons[buttons.length] = new newButton(0,"Life-100",0,120,140,30,"purple","white")
+  buttons[buttons.length] = new newButton(1,"Health-200",0,150,140,30,"purple","white")
+  buttons[buttons.length] = new newButton(2,"Turret-250",0,180,140,30,"purple","white")
+  buttons[buttons.length] = new newButton(3,"Speed-300",0,210,140,30,"purple","white")
+  buttons[buttons.length] = new newButton(4,"Bullets-400",0,240,140,30,"purple","white")
+  buttons[buttons.length] = new newButton(5,"Clear-150",0,270,140,30,"blue","white")
+  buttons[buttons.length] = new newButton(6,"Next Level-500",0,300,140,30,"gold","white")
 
   player = new Ball(20,ctx.canvas.height/2, 20, 1 , 0, 0,"blue","Player1");
   sprites = [player]; //Might add more players to the game at some point , hence the array
@@ -126,11 +129,11 @@ function restart(){
 function levelUp(){
   ctx.font = "20px Georgia";
   midPoint = ctx.canvas.width /2
-  buttonHeightH = 30
-  playableAreaH = ctx.canvas.height - buttonHeightH
+  playableAreaW = 145
+  playableAreaH = ctx.canvas.height
   turretMax +=2
   for(let i = 0; i<buttons.length;i++){
-    buttons[i].y = ctx.canvas.height-30
+    buttons[i].y = 120+i*30
   }
   levelup = false
 }
@@ -196,8 +199,8 @@ function Ball(x, y, r, side, dy ,dx, colour,type) {
     if (this.x + this.r > canvas.width) { //Right
         this.x = canvas.width - this.r;
     }
-    if (this.x - this.r < 0) { //Left
-        this.x = 0 + this.r;
+    if (this.x - this.r < playableAreaW+5) { //Left
+        this.x = playableAreaW+this.r+5;
     }
     if (this.y + this.r > playableAreaH) { //Bottom
         this.y = playableAreaH - this.r;
@@ -277,7 +280,7 @@ function Bullet (x,y,r,side,dy,dx,color,type,health){
     if (this.x + this.r > canvas.width+this.r*2) { //Right
       this.removeBullet()
     }
-    if (this.x - this.r < 0 - this.r*2) { //Left
+    if (this.x - this.r < playableAreaW+5) { //Left
       base -= 1;
       if(base <= -5){
         gameOver = true;
@@ -317,7 +320,7 @@ function Turret(x,y,width,height,fireRate){
       this.fireCounter -= 1
       if(this.fireCounter <= 0){
         this.fireCounter = this.fireRate
-        bullets[bullets.length] = new Bullet(this.x+this.width, this.y+this.height/2, 5 , 3, 0 ,3, "green","bullet",1);
+        bullets[bullets.length] = new Bullet(this.x+this.width, this.y+this.height/2, 5 , 3, 0 ,3, "lightgreen","bullet",1);
       }
     }
 }
@@ -347,7 +350,7 @@ function newButton(id,name,x,y,width,height,colour,textColour){
           ctx.fillStyle = this.textColour
         }
         ctx.textAlign = "center"
-        ctx.fillText(this.name,this.x+this.width/2,this.y+this.height/2 + this.height/5)
+        ctx.fillText(this.name,this.x+this.width/2,this.y+this.height/2 + this.height/5,this.width)
 
         ctx.fillStyle = oldStyle
         ctx.textAlign = "start"
@@ -460,7 +463,7 @@ function userInput() {
       fireNextCounter -= 1
       if(fireNextCounter<= 0){
         fireNextCounter = fireNextRate
-        bullets[bullets.length] = new Bullet(player.x+player.r*3, player.y, 5 , 3, 0 ,3, "green","bullet",1);
+        bullets[bullets.length] = new Bullet(player.x+player.r*3, player.y, 5 , 3, 0 ,3, "lightgreen","bullet",1);
 
 
       }
@@ -587,12 +590,16 @@ function button6(){
 //Draws everything
 function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "purple"
+
+  ctx.drawImage(base_image, 0, 0,canvas.width,canvas.height);
+  ctx.fillStyle = "white"
+
   ctx.fillText("Score: " + Score, 0, 40);
   ctx.fillText("Points: " + player.Points, 0, 70);
   ctx.fillText("Lives: " + player.Lives, 0, 90);
   ctx.fillText("Base: " + base, 0, 110);
   ctx.fillText("Level: " + level, 0, 20);
+
 
   for(let i = 0;i<sprites.length;i++){ //Draws all players
     sprites[i].fill(ctx);
@@ -607,6 +614,15 @@ function render() {
   for(let u = 0;u<turrets.length;u++){//Draws turrets
     turrets[u].fill(ctx)
   }
+  ctx.beginPath();
+  ctx.strokeStyle = "green"
+  ctx.lineWidth = 10
+  // Staring point (10,45)
+   ctx.moveTo(145,0);
+  // End point (180,47)
+  ctx.lineTo(145,canvas.height);
+  // Make the line visible
+  ctx.stroke();
 };
 //Main game loop
 function main() {
