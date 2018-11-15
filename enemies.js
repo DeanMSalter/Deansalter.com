@@ -1,5 +1,7 @@
 "use strict";
 //Creating canvas
+// localStorage.setItem("lastname", "Smith");
+// localStorage.getItem("lastname");
 const canvas = document.getElementById('ballCanvas')
 const ctx = canvas.getContext("2d");
 ctx.canvas.width = 900;
@@ -25,8 +27,8 @@ let gameOver = false;
 let paused = false;
 
 //Game variables
-let base = 5
-let Score = 0
+let base =  5
+let Score = parseInt((localStorage.getItem("Score") == null) ? 0 : localStorage.getItem("Score"),10)
 let turretSelected = false
 let turretMax = 2
 let level = 0
@@ -143,7 +145,7 @@ function Ball(x, y, r, side, dy ,dx, colour,type) {
   this.xDefault = x
   this.yDefault = y
   this.Side = side
-  this.Points = 0
+  this.Points = parseInt((localStorage.getItem("Score") == null) ? 0 : localStorage.getItem("Score"),10)
   this.Lives = 5;
   this.respawning = false;
   this.colour = colour;
@@ -472,7 +474,8 @@ function userInput() {
 window.onkeydown = function(e) {
    var key = e.keyCode ? e.keyCode : e.which;
    if(key == 80){ //User clicks P , testing purposes
-
+     console.log(localStorage.getItem("Score"))
+     console.log( typeof localStorage.getItem("Score"))
    }
    if (key == 87) { //W
        player.direction = 1;
@@ -670,6 +673,9 @@ function main() {
     ctx.canvas.height = 500;
     levelUp()
   }else if(level == 2 && levelup){
+    enemyRate -= 10
+    levelUp()
+  }else if(level == 2 && levelup){
     enemyRate -= 5
     levelUp()
   }
@@ -677,6 +683,13 @@ function main() {
     restart()
     return
   }
+
+  localStorage.setItem("Score",Score);
+  localStorage.setItem("Points",player.Points);
+  localStorage.setItem("Lives",player.Lives);
+  localStorage.setItem("Base",base);
+
+
 };
 
 main() // -------Start --------------
