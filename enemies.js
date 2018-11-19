@@ -377,23 +377,23 @@ function userInput() {
   //Player shoots to the right but can move in any direction , including diagonal
   if (!player.respawning) {
     if(input.isDown('W') && input.isDown("D") || input.isDown('D') && input.isDown('W')){
-      player.dx = player.speed;
-      player.dy = -player.speed;
+      player.x += player.speed;
+      player.y += -player.speed;
       player.direction = 5;
     }
     if(input.isDown('s') && input.isDown("D") || input.isDown('D') && input.isDown('s')){
-      player.dx = player.speed;
-      player.dy = player.speed;
+      player.x += player.speed;
+      player.y += player.speed;
       player.direction = 6;
     }
     if(input.isDown('S') && input.isDown("A") || input.isDown('A') && input.isDown('S')){
-      player.dx = -player.speed;
-      player.dy = player.speed;
+      player.x += -player.speed;
+      player.y += player.speed;
       player.direction = 7;
     }
     if(input.isDown('W') && input.isDown("A") || input.isDown('A') && input.isDown('W')){
-      player.dx = -player.speed;
-      player.dy = -player.speed;
+      player.x += -player.speed;
+      player.y += -player.speed;
       player.direction =8;
     }
 
@@ -414,20 +414,16 @@ window.onkeydown = function(e) {
    }
    if (key == 87) { //W
        player.direction = 1;
-       player.dx = 0;
-       player.dy = -player.speed;
+       player.y += -player.speed;
    }else if (key == 68) {//D
        player.direction = 2;
-       player.dx = player.speed;
-       player.dy = 0;
+       player.x += player.speed;
    }else if (key == 83) {//S
        player.direction = 3
-       player.dx = 0;
-       player.dy = player.speed;
+       player.y += player.speed;
    }else if (key == 65) {//A
        player.direction = 4;
-       player.dx = -player.speed;
-       player.dy = 0;
+       player.x += -player.speed;
    }
 }//for key presses that are simple
 canvas.onmousedown = function(event) {
