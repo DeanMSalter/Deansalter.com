@@ -1,13 +1,18 @@
 "use strict";
 //Creating canvas
+// localStorage.setItem("lastname", "Smith");
+// localStorage.getItem("lastname");
 const canvas = document.getElementById('ballCanvas')
 const ctx = canvas.getContext("2d");
 ctx.canvas.width = 900;
 ctx.canvas.height = 350;
 ctx.font = "20px Georgia";
-const midPoint = ctx.canvas.width /2
-let buttonHeightH = 30
-let playableAreaH = ctx.canvas.height - buttonHeightH
+let midPoint = ctx.canvas.width /2
+let playableAreaH = ctx.canvas.height
+let playableAreaW = 145
+
+let base_image = new Image();
+base_image.src = 'bg.jpg';
 
 //Game States
 let requestAnimFrame = (function() {
@@ -22,10 +27,12 @@ let gameOver = false;
 let paused = false;
 
 //Game variables
-let health = 5
-let Score = 0
+let base =  5
+let Score = parseInt((localStorage.getItem("Score") == null) ? 0 : localStorage.getItem("Score"),10)
 let turretSelected = false
-
+let turretMax = 2
+let level = 0
+let levelup = false
 //Timer variables
 let fireNextRate = 24
 let fireNextCounter = fireNextRate ;
@@ -35,7 +42,6 @@ let enemyCounter = enemyRate
 
 document.addEventListener("visibilitychange", function() {
   //true if hidden
-console.log( document.hidden );
   if(document.hidden){
     paused = true;
   }else{
@@ -48,27 +54,38 @@ canvas.oncontextmenu = function() {
     return false;
 } //Disables right click menu within the game
 
-let player = new Ball(20,ctx.canvas.height/2, 20, 1 , 0, 0,"blue","Player1");
+let player = new Ball(playableAreaW+25,ctx.canvas.height/2, 20, 1 , 0, 0,"blue","Player1");
 let sprites = [player]; //Might add more players to the game at some point , hence the array
 let turrets = [];
 let bullets = [];
 
 let buttons = [];//Create buttons
-buttons[buttons.length] = new newButton(0,"Life-100",0,ctx.canvas.height-30,100,30,"purple","white")
-buttons[buttons.length] = new newButton(1,"Health-200",100,ctx.canvas.height-30,100,30,"purple","white")
-buttons[buttons.length] = new newButton(2,"Turret-250",200,ctx.canvas.height-30,100,30,"purple","white")
-buttons[buttons.length] = new newButton(3,"Speed-300",300,ctx.canvas.height-30,100,30,"purple","white")
-
+buttons[buttons.length] = new newButton(0,"Life-100",0,120,140,30,"purple","white")
+buttons[buttons.length] = new newButton(1,"Health-200",0,150,140,30,"purple","white")
+buttons[buttons.length] = new newButton(2,"Turret-250",0,180,140,30,"purple","white")
+buttons[buttons.length] = new newButton(3,"Speed-300",0,210,140,30,"purple","white")
+buttons[buttons.length] = new newButton(4,"Bullets-400",0,240,140,30,"purple","white")
+buttons[buttons.length] = new newButton(5,"Clear-150",0,270,140,30,"blue","white")
+buttons[buttons.length] = new newButton(6,"Next Level-500",0,300,140,30,"gold","white")
 function ballCollision(ball1 , ball2){
+
   if (ball1 == ball2){ return false; }
   if(typeof ball1 === "undefined"){ return false;};
   if(typeof ball2 === "undefined"){ return false;};
+  if(ball1.type == ball2.type){ return false;};
   var dx = ball1.x - ball2.x; //Difference between x cords
   var dy = ball1.y - ball2.y; //Difference between y cords
   var distance = Math.sqrt((dx * dx) + (dy * dy));
   if(distance <= ball1.r +ball2.r){
     return true;
-  }}//checks if ball1 and ball2 collide
+
+  }else{
+    return false;
+  }
+}//checks if ball1 and ball2 collide
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
 function restart(){
   ctx.canvas.width = 900;
   ctx.canvas.height = 350;
@@ -78,18 +95,24 @@ function restart(){
   let playableAreaH = ctx.canvas.height - buttonHeightH
 
   buttons = [];
-  buttons[buttons.length] = new newButton(0,"Life-100",0,ctx.canvas.height-30,100,30,"purple","white")
-  buttons[buttons.length] = new newButton(1,"Health-200",100,ctx.canvas.height-30,100,30,"purple","white")
-  buttons[buttons.length] = new newButton(2,"Turret-250",200,ctx.canvas.height-30,100,30,"purple","white")
-  buttons[buttons.length] = new newButton(3,"Speed-300",300,ctx.canvas.height-30,100,30,"purple","white")
+  buttons[buttons.length] = new newButton(0,"Life-100",0,120,140,30,"purple","white")
+  buttons[buttons.length] = new newButton(1,"Health-200",0,150,140,30,"purple","white")
+  buttons[buttons.length] = new newButton(2,"Turret-250",0,180,140,30,"purple","white")
+  buttons[buttons.length] = new newButton(3,"Speed-300",0,210,140,30,"purple","white")
+  buttons[buttons.length] = new newButton(4,"Bullets-400",0,240,140,30,"purple","white")
+  buttons[buttons.length] = new newButton(5,"Clear-150",0,270,140,30,"blue","white")
+  buttons[buttons.length] = new newButton(6,"Next Level-500",0,300,140,30,"gold","white")
+
   player = new Ball(20,ctx.canvas.height/2, 20, 1 , 0, 0,"blue","Player1");
   sprites = [player]; //Might add more players to the game at some point , hence the array
 
   turrets = [];
+  turretMax = 2
   bullets = [];
   //Game variables
-  health = 5
+  base = 5
   Score = 0
+  level = 0
   //Button variables
   turretSelected = false
 
@@ -104,15 +127,25 @@ function restart(){
   bullets.length = 0
   player.respawning = false;
   player.respawn(ctx)
-  gameOver = false;
-} //Starts/Resets everything
+  gameOver = false;} //Starts/Resets everything
+function levelUp(){
+  ctx.font = "20px Georgia";
+  midPoint = ctx.canvas.width /2
+  playableAreaW = 145
+  playableAreaH = ctx.canvas.height
+  turretMax +=2
+  for(let i = 0; i<buttons.length;i++){
+    buttons[i].y = 120+i*30
+  }
+  levelup = false
+}
 
 //Create functions
 function Ball(x, y, r, side, dy ,dx, colour,type) {
   this.xDefault = x
   this.yDefault = y
   this.Side = side
-  this.Points = 0
+  this.Points = parseInt((localStorage.getItem("Score") == null) ? 0 : localStorage.getItem("Score"),10)
   this.Lives = 5;
   this.respawning = false;
   this.colour = colour;
@@ -168,8 +201,8 @@ function Ball(x, y, r, side, dy ,dx, colour,type) {
     if (this.x + this.r > canvas.width) { //Right
         this.x = canvas.width - this.r;
     }
-    if (this.x - this.r < 0) { //Left
-        this.x = 0 + this.r;
+    if (this.x - this.r < playableAreaW+5) { //Left
+        this.x = playableAreaW+this.r+5;
     }
     if (this.y + this.r > playableAreaH) { //Bottom
         this.y = playableAreaH - this.r;
@@ -203,10 +236,11 @@ function Ball(x, y, r, side, dy ,dx, colour,type) {
     }
   }
 }
-function Bullet (x,y,r,side,dy,dx,color,type){
+function Bullet (x,y,r,side,dy,dx,color,type,health){
   this.Side = side
   this.colour = (color == null) ? "red" : color;
   this.type = type;
+  this.health = health
   this.dy = (dy == null) ? 0 : dy;
   this.dx = (dx == null) ? 0 : dx;
   this.x = (x === null) ? 0 : x;
@@ -225,8 +259,20 @@ function Bullet (x,y,r,side,dy,dx,color,type){
     ctx.fillStyle = oldStyle
 
   }
-  this.removeBullet = function(ctx){
+  this.hit = function(){
+    this.health -= 1
+
+    if(this.health <= 0){
+      this.removeBullet()
+    }else if(this.health = 1){
+      this.colour = "red"
+    }
+
+
+  }
+  this.removeBullet = function(){
     this.Side = 0;
+    this.type = "dead"
   //  this.x =-10;
     //this.y =-10;
     this.dx = 0;
@@ -236,14 +282,14 @@ function Bullet (x,y,r,side,dy,dx,color,type){
     if (this.x + this.r > canvas.width+this.r*2) { //Right
       this.removeBullet()
     }
-    if (this.x - this.r < 0 - this.r*2) { //Left
-      health -= 1;
-      if(health <= -5){
+    if (this.x - this.r < playableAreaW+5) { //Left
+      base -= 1;
+      if(base <= -5){
         gameOver = true;
       }
       this.removeBullet()
     }
-    if (this.y + this.r > playableAreaH) { //Bottom
+    if (this.y + this.r > playableAreaH-this.r) { //Bottom
       this.dy = -1;
       //this.removeBullet()
     }
@@ -252,18 +298,6 @@ function Bullet (x,y,r,side,dy,dx,color,type){
 
 
   }}
-  this.collisions = function(ctx){
-    for(let i = 0;i<bullets.length;i++){
-      if(ballCollision(this,bullets[i])){
-        if(this.type !=  bullets[i].type){
-          this.removeBullet()
-          bullets[i].removeBullet()
-          player.Points += 1
-          Score +=1
-        }
-      }
-    }
-  }
 }
 function Turret(x,y,width,height,fireRate){
   this.x = x
@@ -288,8 +322,7 @@ function Turret(x,y,width,height,fireRate){
       this.fireCounter -= 1
       if(this.fireCounter <= 0){
         this.fireCounter = this.fireRate
-        console.log("test")
-        bullets[bullets.length] = new Bullet(this.x+this.width, this.y+this.height/2, 5 , 3, 0 ,3, "green","bullet");
+        bullets[bullets.length] = new Bullet(this.x+this.width, this.y+this.height/2, 5 , 3, 0 ,3, "lightgreen","bullet",1);
       }
     }
 }
@@ -319,7 +352,7 @@ function newButton(id,name,x,y,width,height,colour,textColour){
           ctx.fillStyle = this.textColour
         }
         ctx.textAlign = "center"
-        ctx.fillText(this.name,this.x+this.width/2,this.y+this.height/2 + this.height/5)
+        ctx.fillText(this.name,this.x+this.width/2,this.y+this.height/2 + this.height/5,this.width)
 
         ctx.fillStyle = oldStyle
         ctx.textAlign = "start"
@@ -368,9 +401,40 @@ function createEnemies(){
   }
 
   if(paused){return}
-  bullets[bullets.length] =
-  new Bullet(newBullet.x, newBullet.y, newBullet.r , 3, newBullet.dy,newBullet.dx, "red","enemy");} //Calcualtions for new enemies
 
+  if(level == 2){
+    if(getRandomInt(2) == 1){
+      bullets[bullets.length] =
+      new Bullet(newBullet.x, newBullet.y, newBullet.r , 3, newBullet.dy,newBullet.dx, "darkred","enemy",2)
+    }else{
+       bullets[bullets.length] =
+       new Bullet(newBullet.x, newBullet.y, newBullet.r , 3, newBullet.dy,newBullet.dx, "red","enemy",1)
+    }
+  }else{
+     bullets[bullets.length] =
+     new Bullet(newBullet.x, newBullet.y, newBullet.r , 3, newBullet.dy,newBullet.dx, "red","enemy",1);
+  }
+} //Calcualtions for new enemies
+
+
+function calculateCollisions(){
+  let checked = []
+  for(let o = 0;o<bullets.length;o++){
+    for(let i = 0;i<bullets.length;i++){
+      if(i==o){continue}
+      if(ballCollision(bullets[o],bullets[i])){
+        checked[checked.length] == [o,i];
+        if(checked.includes([i,o])){ continue}
+        if(bullets[o].type !=  bullets[i].type && bullets[o].type != "dead" && bullets[i].type != "dead"){
+          bullets[o].hit()
+          bullets[i].hit()
+          player.Points += 1
+          Score +=1
+        }
+      }
+    }
+  }
+}
 //INPUT
 function userInput() {
 
@@ -401,7 +465,7 @@ function userInput() {
       fireNextCounter -= 1
       if(fireNextCounter<= 0){
         fireNextCounter = fireNextRate
-        bullets[bullets.length] = new Bullet(player.x+player.r*3, player.y, 5 , 3, 0 ,3, "green","bullet");
+        bullets[bullets.length] = new Bullet(player.x+player.r*3, player.y, 5 , 3, 0 ,3, "lightgreen","bullet",1);
 
 
       }
@@ -410,7 +474,8 @@ function userInput() {
 window.onkeydown = function(e) {
    var key = e.keyCode ? e.keyCode : e.which;
    if(key == 80){ //User clicks P , testing purposes
-
+     console.log(localStorage.getItem("Score"))
+     console.log( typeof localStorage.getItem("Score"))
    }
    if (key == 87) { //W
        player.direction = 1;
@@ -464,7 +529,15 @@ function calculateButton(x,y){
         if(buttons[i].id == 3){
           button3()
         }
-
+        if(buttons[i].id == 4){
+          button4()
+        }
+        if(buttons[i].id == 5){
+          button5()
+        }
+        if(buttons[i].id == 6){
+          button6()
+        }
       }
     }
   }
@@ -481,7 +554,7 @@ function button1(){
   }
 }
 function button2(){
-  if(player.Points >= 1){
+  if(player.Points >= 1 && turrets.length < turretMax){
 
     console.log("turret selected")
     buttons[2].colour = "green"
@@ -494,15 +567,39 @@ function button3(){
     player.Points -= 300
   }
 }
-
+function button4(){
+  if(player.Points >= 1){
+    fireNextRate -= 1
+    player.Points -= 400
+  }
+}
+function button5(){
+  if(player.Points >= 0){
+    bullets = [];
+    player.Points -= 150
+  }
+}
+function button6(){
+  if(player.Points >= 0){
+    level +=1
+    levelup = true
+    //player.Points -= 500
+  }
+}
 //Draws everything
 function render() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "purple"
-  ctx.fillText("Score: " + Score, 0, 20);
-  ctx.fillText("Points: " + player.Points, 0, 50);
-  ctx.fillText("Lives: " + player.Lives, 0, 70);
-  ctx.fillText("Health: " + health, 0, 90);
+
+  ctx.drawImage(base_image, 0, 0,canvas.width,canvas.height);
+  ctx.fillStyle = "white"
+
+  ctx.fillText("Score: " + Score, 0, 40);
+  ctx.fillText("Points: " + player.Points, 0, 70);
+  ctx.fillText("Lives: " + player.Lives, 0, 90);
+  ctx.fillText("Base: " + base, 0, 110);
+  ctx.fillText("Level: " + level, 0, 20);
+
+
   for(let i = 0;i<sprites.length;i++){ //Draws all players
     sprites[i].fill(ctx);
   }
@@ -516,6 +613,15 @@ function render() {
   for(let u = 0;u<turrets.length;u++){//Draws turrets
     turrets[u].fill(ctx)
   }
+  ctx.beginPath();
+  ctx.strokeStyle = "green"
+  ctx.lineWidth = 10
+  // Staring point (10,45)
+   ctx.moveTo(145,0);
+  // End point (180,47)
+  ctx.lineTo(145,canvas.height);
+  // Make the line visible
+  ctx.stroke();
 };
 //Main game loop
 function main() {
@@ -529,11 +635,13 @@ function main() {
     sprites[i].y += sprites[i].dy;
     sprites[i].x += sprites[i].dx;
   }
+  calculateCollisions()
+
   for(let o = 0;o<bullets.length;o++){
     if(typeof bullets[o] === "undefined"){ continue }
     bullets[o].wallCheck(ctx);
-    bullets[o].collisions(ctx);
-    if(bullets[o].Side != 0){
+
+    if(bullets[o].type != "dead"){
       bullets[o].y += bullets[o].dy;
       bullets[o].x += bullets[o].dx;
     }else{
@@ -556,10 +664,28 @@ function main() {
   requestAnimFrame(main);
 
   //Resets game if game is over
+  if(level == 1 && levelup){
+    ctx.canvas.width = 900;
+    ctx.canvas.height = 500;
+    levelUp()
+  }else if(level == 2 && levelup){
+    enemyRate -= 10
+    levelUp()
+  }else if(level == 2 && levelup){
+    enemyRate -= 5
+    levelUp()
+  }
   if (gameOver) {
     restart()
     return
   }
+
+  localStorage.setItem("Score",Score);
+  localStorage.setItem("Points",player.Points);
+  localStorage.setItem("Lives",player.Lives);
+  localStorage.setItem("Base",base);
+
+
 };
 
 main() // -------Start --------------
