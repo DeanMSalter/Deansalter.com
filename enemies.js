@@ -34,10 +34,10 @@ let turretMax = 2
 let level = 0
 let levelup = false
 //Timer variables
-let fireNextRate = 24
+let fireNextRate = 22
 let fireNextCounter = fireNextRate ;
 
-let enemyRate = 25
+let enemyRate = 23
 let enemyCounter = enemyRate
 
 document.addEventListener("visibilitychange", function() {
@@ -117,9 +117,9 @@ function restart(){
   turretSelected = false
 
   //Timer variables
-  fireNextRate = 24
+  fireNextRate = 22
   fireNextCounter = fireNextRate ;
-  enemyRate = 25
+  enemyRate = 23
   enemyCounter = enemyRate
 
   player.Points = 0;
@@ -440,32 +440,56 @@ function userInput() {
 
   //Player shoots to the right but can move in any direction , including diagonal
   if (!player.respawning) {
-    if(input.isDown('W') && input.isDown("D") || input.isDown('D') && input.isDown('W')){
-      player.x += player.speed;
-      player.y += -player.speed;
-      player.direction = 5;
+
+    if(input.isDown('W')){
+
+        player.y += -player.speed;
+
+
     }
-    if(input.isDown('s') && input.isDown("D") || input.isDown('D') && input.isDown('s')){
-      player.x += player.speed;
-      player.y += player.speed;
-      player.direction = 6;
+    if(input.isDown('A')){
+
+        player.x += -player.speed;
+
     }
-    if(input.isDown('S') && input.isDown("A") || input.isDown('A') && input.isDown('S')){
-      player.x += -player.speed;
-      player.y += player.speed;
-      player.direction = 7;
+    if(input.isDown('S')){
+
+        player.y += player.speed;
+
+
     }
-    if(input.isDown('W') && input.isDown("A") || input.isDown('A') && input.isDown('W')){
-      player.x += -player.speed;
-      player.y += -player.speed;
-      player.direction =8;
+    if(input.isDown('D')){
+
+        player.x += player.speed;
+
+
     }
+    // if(input.isDown('W') && input.isDown("D") || input.isDown('D') && input.isDown('W')){
+    //   player.x += player.speed;
+    //   player.y += -player.speed;
+    //   player.direction = 5;
+    // }
+    // if(input.isDown('s') && input.isDown("D") || input.isDown('D') && input.isDown('s')){
+    //   player.x += player.speed/2;
+    //   player.y += player.speed/2;
+    //   player.direction = 6;
+    // }
+    // if(input.isDown('S') && input.isDown("A") || input.isDown('A') && input.isDown('S')){
+    //   player.x += -player.speed/2;
+    //   player.y += player.speed/2;
+    //   player.direction = 7;
+    // }
+    // if(input.isDown('W') && input.isDown("A") || input.isDown('A') && input.isDown('W')){
+    //   player.x += -player.speed/2;
+    //   player.y += -player.speed/2;
+    //   player.direction =8;
+    // }
 
     if(input.isDown('SPACE')){
       fireNextCounter -= 1
       if(fireNextCounter<= 0){
         fireNextCounter = fireNextRate
-        bullets[bullets.length] = new Bullet(player.x+player.r*3, player.y, 5 , 3, 0 ,3, "lightgreen","bullet",1);
+        bullets[bullets.length] = new Bullet(player.x+player.r*3, player.y, 5 , 3, 0 ,6, "lightgreen","bullet",1);
 
 
       }
@@ -477,25 +501,26 @@ window.onkeydown = function(e) {
      console.log(localStorage.getItem("Score"))
      console.log( typeof localStorage.getItem("Score"))
    }
-   if (key == 87) { //W
-       player.direction = 1;
-       player.y += -player.speed;
-   }else if (key == 68) {//D
-       player.direction = 2;
-       player.x += player.speed;
-   }else if (key == 83) {//S
-       player.direction = 3
-       player.y += player.speed;
-   }else if (key == 65) {//A
-       player.direction = 4;
-       player.x += -player.speed;
-   }
+   // if (key == 87) { //W
+   //     player.direction = 1;
+   //    // player.y += -player.speed;
+   // }else if (key == 68) {//D
+   //     player.direction = 2;
+   //     //player.x += player.speed;
+   // }else if (key == 83) {//S
+   //     player.direction = 3
+   //  //   player.y += player.speed;
+   // }else if (key == 65) {//A
+   //     player.direction = 4;
+   //     //player.x += -player.speed;
+   // }
 }//for key presses that are simple
 canvas.onmousedown = function(event) {
     if (event.which == 3) {
         if(turretSelected){
           turretSelected = false
           buttons[2].colour = "purple"
+          player.Points -= 250
         }
     }
 }//Right click to unselect anything youve selected
@@ -548,13 +573,13 @@ function button0(){
   }
 }
 function button1(){
-  if(player.Points >= 1){
+  if(player.Points >= 200){
     health += 1
     player.Points -= 200
   }
 }
 function button2(){
-  if(player.Points >= 1 && turrets.length < turretMax){
+  if(player.Points >= 250 && turrets.length < turretMax){
 
     console.log("turret selected")
     buttons[2].colour = "green"
@@ -562,28 +587,28 @@ function button2(){
   }
 }
 function button3(){
-  if(player.Points >= 1){
+  if(player.Points >= 300){
     player.Speed += 1
     player.Points -= 300
   }
 }
 function button4(){
-  if(player.Points >= 1){
+  if(player.Points >= 400){
     fireNextRate -= 1
     player.Points -= 400
   }
 }
 function button5(){
-  if(player.Points >= 0){
+  if(player.Points >= 150){
     bullets = [];
     player.Points -= 150
   }
 }
 function button6(){
-  if(player.Points >= 0){
+  if(player.Points >= 500){
     level +=1
     levelup = true
-    //player.Points -= 500
+    player.Points -= 500
   }
 }
 //Draws everything
