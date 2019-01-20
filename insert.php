@@ -3,6 +3,7 @@
   createTable($mysqli);
   insertIntoTable($mysqli);
 
+  
   function connectDatabase($databaseName){
     $mysqli = mysqli_connect("localhost", "root", "root", "$databaseName");
     if($mysqli === false){
