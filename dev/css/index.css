@@ -1,0 +1,10 @@
+a{
+  display: table;
+}
+iframe{
+  border:1;
+  border-style: solid;
+}
+#databaseList{
+  float: right;
+}

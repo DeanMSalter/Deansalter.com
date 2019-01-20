@@ -2,7 +2,7 @@
 <html>
 <head>
 <title> Deans testing website </title>
-<link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="CSS/index.css">
 
 </head>
 
@@ -17,7 +17,8 @@ E-mail: <input type="text" name="email"><br>
 
 
 
-<button id="clickButton" class="buttonStyle">Update list</button>
+<button id="updateButton" class="buttonStyle">Update list</button>
+<button id="purgeButton" class="buttonStyle">Purge list</button>
 <ul id="databaseList">
 
 </ul>
@@ -25,15 +26,13 @@ E-mail: <input type="text" name="email"><br>
 
 <script>
 
+let updateButton = document.getElementById("updateButton");
+let purgeButton = document.getElementById("purgeButton");
 
+updateButton.addEventListener('click', getData, false)
+purgeButton.addEventListener('click', purgeData, false)
 
-
-  var myButton = document.getElementById("clickButton");
-
-
-  myButton.addEventListener('click', getData, false)
-
-  function getData() {
+function getData() {
     //Set the request handler
     var request = new XMLHttpRequest();
     var url = "getData.php";
@@ -53,10 +52,12 @@ E-mail: <input type="text" name="email"><br>
       }
     }
     //Send the request with the above "settings"
-    request.send();
+    request.send();}
+function purgeData(){
+
 }
 
-//response comes from request.responseText
+
 function updateList(response) {
   let list = document.getElementById('databaseList');
   while(list.firstChild){
@@ -70,27 +71,22 @@ function updateList(response) {
     list.appendChild(entry);
 
   }
-
 }
-
-
-
 </script>
 
 
-Welcome <?php echo $_POST["name"]; ?><br>
-Your email address is: <?php echo $_POST["email"]; ?>
+
 <h3>Java Script practising</h3>
 <nav>
-<a href="https://www.deansalter.com/palindrome.html"> Plaindrome </a>
-<a href="https://www.deansalter.com/ball.html"> Ball </a>
-<a href="https://www.deansalter.com/enemies.html"> Enemies </a>
+<a href="../html/palindrome.html"> Plaindrome </a>
+<a href="../html/ball.html"> Ball </a>
+<a href="../html/enemies.html"> Enemies </a>
 </nav>
-<iframe id="palindrome" src="https://www.deansalter.com/palindrome.html" height= 500px; width=350px scrolling="no"></iframe>
-<iframe id="ball" src="https://www.deansalter.com/ball.html"  height= 500px; width=500px scrolling="no"></iframe>
+<iframe id="palindrome" src="../html/palindrome.html" height= 500px; width=350px scrolling="no"></iframe>
+<iframe id="ball" src="../html/ball.html"  height= 500px; width=500px scrolling="no"></iframe>
 <p>
 
-<iframe src="https://www.deansalter.com/enemies.html"  height = 660px; width = 858px; scrolling="no"></iframe>
+<iframe src="../html/enemies.html"  height = 660px; width = 858px; scrolling="no"></iframe>
 <h2>Useful Links</h2>
 <a href="https://cloud.scaleway.com/#/">  Scaleway</a>
 <a href="https://account.names.co.uk/dashboard#/">  Names.co.uk</a>
