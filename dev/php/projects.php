@@ -2,32 +2,42 @@
 <html>
 <head>
 <title> Deans testing website </title>
-<link rel="stylesheet" href="CSS/index.css">
+<link rel="stylesheet" href="../css/index.css">
 
 </head>
-
-
-
 <body>
-<form action="insert.php" method="post" target="dummyframe" onsubmit="this.submit(); this.reset(); return false;">
-Name: <input type="text" name="name"><br>
-E-mail: <input type="text" name="email"><br>
-<input type="submit">
-</form>
+<div id="database">
+  <form action="insert.php" method="post" target="dummyframe" onsubmit="this.submit(); this.reset(); return false;">
+  Name: <input type="text" name="name"><br>
+  E-mail: <input type="text" name="email"><br>
+  <input type="submit" value="Enter">
+  </form>
 
+  <form action="deleteValue.php" method="post" target="dummyframe" onsubmit="this.submit(); this.reset(); return false;">
+  ID: <input type="text" name="id"><br>
+  <input type="submit" value="Delete">
+  </form>
 
+  <button id="updateButton" class="buttonStyle">Update list</button>
+  <button id="purgeButton" class="buttonStyle">Purge list</button>
+  <h5> Database entries </h5>
+  <table id="databaseTable">
+    <tr>
+      <th >ID</th>
+      <th >Name</th>
+      <th >Email</th>
+    </tr>
+    <tr>
+      <th> example</th>
+      <th> example2</th>
+      <th> example3</th>
+    </tr>
+  </table>
+  <ul id="databaseList">
+  </ul>
+  <h2 id="status"></h2>
+</div>
 
-<button id="updateButton" class="buttonStyle">Update list</button>
-<button id="purgeButton" class="buttonStyle">Purge list</button>
-<ul id="databaseList">
-
-</ul>
-
-
-
-
-
-<h2 id="status"></h2>
 <h3>Java Script practising</h3>
 <nav>
 <a href="../html/palindrome.html"> Plaindrome </a>

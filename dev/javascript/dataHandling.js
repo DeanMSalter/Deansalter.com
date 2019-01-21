@@ -57,17 +57,85 @@ function purgeData(){
   getData();
 }
 function updateList(response) {
-  let list = document.getElementById('databaseList');
-  while(list.firstChild){
-    list.removeChild(list.firstChild);
+  let list = document.getElementById('databaseTable');
+  while(list.rows.length > 0){
+    list.deleteRow(0);
   }
+  console.log(list.rows.length)
 
+   if(response.length == 0){
+
+    let row = document.createElement('tr');
+    let value1 = document.createElement('th');
+    value1.appendChild(document.createTextNode("Database is empty!"));
+    row.appendChild(value1);
+    list.appendChild(row);
+  }else{
+    let row = document.createElement('tr');
+    let value1 = document.createElement('th');
+    let value2 = document.createElement('th');
+    let value3 = document.createElement('th');
+    let value4 = document.createElement('th');
+    value1.appendChild(document.createTextNode("ID"));
+    value2.appendChild(document.createTextNode("Name"));
+    value3.appendChild(document.createTextNode("Email"));
+    value4.appendChild(document.createTextNode("Actions"));
+    value1.id="Tableheader";
+    value2.id="Tableheader";
+    value3.id="Tableheader";
+    value4.id="Tableheader";
+    row.appendChild(value1);
+    row.appendChild(value2);
+    row.appendChild(value3);
+    row.appendChild(value4);
+    list.appendChild(row);
+  }
   for(let i = 0;i<=response.length-1;i++){
-    let entry = document.createElement('li');
-    let textContent = "ID: " + response[i].id + " Name: " +response[i].firstname + " Email: " + response[i].email
-    entry.appendChild(document.createTextNode(textContent));
-    list.appendChild(entry);
+
+    let row = document.createElement('tr');
+
+
+    let id = document.createElement('th');
+    let name = document.createElement('th');
+    let email = document.createElement('th');
+    let actionButtons = document.createElement('th');
+
+    id.appendChild(document.createTextNode(response[i].id));
+    name.appendChild(document.createTextNode(response[i].firstname));
+
+    let delButton = document.createElement('input');
+    delButton.type = "button";
+    delButton.value = "Delete " + (response[i].id);
+    delButton.addEventListener('click', function(){
+        console.log(response[i].id)
+        document.cookie="id=" + (response[i].id) ;
+        deleteRequest();
+    }, false)
+
+
+
+
+    email.appendChild(document.createTextNode(response[i].email));
+    actionButtons.appendChild(delButton);
+    row.appendChild(id);
+    row.appendChild(name);
+    row.appendChild(email);
+    row.appendChild(actionButtons);
+    list.appendChild(row);
 
   }
   let status = document.getElementById('status');
+}
+function deleteRequest(){
+
+  let xmlhttp;
+  xmlhttp=new XMLHttpRequest();
+
+  xmlhttp.onreadystatechange=function(){
+    if (xmlhttp.readyState==4 && xmlhttp.status==200){
+    // Do something with the results here
+    }
+  }
+  xmlhttp.open("GET","deleteValue.php",true);
+  xmlhttp.send();
 }

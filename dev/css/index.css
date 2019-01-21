@@ -8,3 +8,14 @@ iframe{
 #databaseList{
   float: right;
 }
+table, th, tr {
+  border-collapse: collapse;
+  border: 1px solid black;
+  text-align: left;
+}
+table{
+  width:50%;
+}
+#Tableheader{
+  text-align: center;
+}
