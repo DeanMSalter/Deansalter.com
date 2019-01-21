@@ -24,58 +24,10 @@ E-mail: <input type="text" name="email"><br>
 </ul>
 
 
-<script>
-
-let updateButton = document.getElementById("updateButton");
-let purgeButton = document.getElementById("purgeButton");
-
-updateButton.addEventListener('click', getData, false)
-purgeButton.addEventListener('click', purgeData, false)
-
-function getData() {
-    //Set the request handler
-    var request = new XMLHttpRequest();
-    var url = "getData.php";
-
-    //opens a request to send/post data to the specifed url
-    request.open("POST", url, true);
-    //sets the type of data to send
-    request.setRequestHeader("Content-Type", "text/html");
-
-    //When request is accpeted/recieved
-    request.onreadystatechange = function() {
-      //Checks to see if the request is fine (4 means complete , 200 is okay)
-      if(request.readyState == 4 && request.status == 200) {
-          let parsedData = JSON.parse(request.responseText);
-        updateList(parsedData);
-
-      }
-    }
-    //Send the request with the above "settings"
-    request.send();}
-function purgeData(){
-
-}
-
-
-function updateList(response) {
-  let list = document.getElementById('databaseList');
-  while(list.firstChild){
-    list.removeChild(list.firstChild);
-  }
-
-  for(let i = 0;i<=response.length-1;i++){
-    let entry = document.createElement('li');
-    let textContent = "ID: " + response[i].id + " Name: " +response[i].firstname + " Email: " + response[i].email
-    entry.appendChild(document.createTextNode(textContent));
-    list.appendChild(entry);
-
-  }
-}
-</script>
 
 
 
+<h2 id="status"></h2>
 <h3>Java Script practising</h3>
 <nav>
 <a href="../html/palindrome.html"> Plaindrome </a>
@@ -93,9 +45,7 @@ function updateList(response) {
 <a href="https://www.wix.com/dashboard/15440e53-a389-4c32-a0b1-5a651877a841/home">  Wix</a>
 <a href="https://ap.www.namecheap.com/dashboard">  Namecheap</a>
 <a href="https://www.ssls.com/user/certificates/activate/5048449">  ssl</a><p>---------------------</p>
-<script src="index.js"></script>
-<iframe width="0" height="0" border="0" name="dummyframe" id="dummyframe">
-
-</iframe>
+<iframe width="0" height="0" border="0" name="dummyframe" id="dummyframe"></iframe>
+<script src="../javascript/dataHandling.js"></script>
 </body>
 </html>
