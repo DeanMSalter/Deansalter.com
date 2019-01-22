@@ -38,7 +38,7 @@
   <h2 id="status"></h2>
 </div>
 
-<h3>Java Script practising</h3>
+<h3>Java Script asdasdas</h3>
 <nav>
 <a href="../html/palindrome.html"> Plaindrome </a>
 <a href="../html/ball.html"> Ball </a>
