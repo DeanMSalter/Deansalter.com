@@ -8,14 +8,23 @@ iframe{
 #databaseList{
   float: right;
 }
-table, th, tr {
+table, th, tr ,td{
   border-collapse: collapse;
   border: 1px solid black;
   text-align: left;
+  height:auto;
 }
-table{
-  width:50%;
-}
-#Tableheader{
+.Tableheader{
+  font-weight: bold;
   text-align: center;
+}
+#purgeButton{
+  float:left;
+}
+#deleteForm{
+  width:100%;
+  margin:inherit;
+}
+#deleteButton{
+  width:100%;
 }

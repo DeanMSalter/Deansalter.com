@@ -25,7 +25,6 @@
     $email = $_POST['email'];
     $sql = "INSERT INTO MyGuests (firstname, email) VALUES ('$name','$email')";
     runQuery($mysqli,$sql);
-    echo '<script type="text/javascript"> getData(); </script>';
 
   }
   function runQuery($mysqli,$sql){
