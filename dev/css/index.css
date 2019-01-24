@@ -1,9 +1,15 @@
 a{
   display: table;
+  
+border-bottom: 1px solid rgba(255, 255, 255, 1);
 }
 iframe{
   border:1;
   border-style: solid;
+}
+body{
+  background-color: #333333;
+  color:white;
 }
 #databaseList{
   float: right;
@@ -31,4 +37,5 @@ table, th, tr ,td{
 #loginButton,#logoutButton,#registerButton{
   float:right;
   margin-left: 30px;
+  color: rgba(255, 255, 255, 1);
 }
