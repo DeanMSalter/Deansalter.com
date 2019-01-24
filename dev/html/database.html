@@ -1,0 +1,31 @@
+<meta name="viewport" content="initial-scale=1.0">
+<html>
+<head>
+<title> Deans testing website </title>
+<link rel="stylesheet" href="../css/index.css">
+</head>
+<body>
+  <table id="databaseTable" style="width:100%">
+      <tr id= "perma" class="Tableheader">
+        <td colspan="4" class="Tableheader"><button id="purgeButton" class="buttonStyle">Purge</button> Database of visitors </td>
+      </tr>
+      <tr id= "perma">
+        <th class = "Tableheader">ID</th>
+        <th class = "Tableheader">Name</th>
+        <th class = "Tableheader">Email</th>
+        <th class = "Tableheader"> Action </th>
+      </tr>
+       <tr id="perma">
+        <form action="../php/insert.php" method="post" target="dummyframe" onsubmit="this.submit(); this.reset(); return false;">
+            <th> </th>
+            <th><input style="width:100%; text-align:center" type="text" name="name" title="insert Name" value="insert Name"><br></th>
+            <th><input style="width:100%; text-align:center" type="text" name="email" title="insert Email" value="insert Email"><br></th>
+            <th><input style="width:100%; text-align:center" type="submit" value="Enter"></th>
+            </form>
+            </th>
+      </tr>
+  </table>
+  <iframe width="0" height="0" border="0" name="dummyframe" id="dummyframe"></iframe>
+  <script src="../javascript/dataHandling.js"></script>
+</body>
+</html>
