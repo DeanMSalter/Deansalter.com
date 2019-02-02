@@ -33,6 +33,7 @@ io.on('connection', function(socket) {
   let active = false
   //create a listner of these data to look for when a new player is created
   socket.on('new player', function(data) {
+    console.log("new player")
     //assign each player based on their id , a position
     players[socket.id] = {
       x: 500,
@@ -59,7 +60,7 @@ io.on('connection', function(socket) {
     //  console.log("active? " + player.active + " " + socket.id)
     }
 
-    let distanceSpeed =  0.1
+    let distanceSpeed =  0.05
     let dx = (mouse.x - player.x) * distanceSpeed; //the differences between the x and y positions multiplied by distanceSpeed
     let dy = (mouse.y - player.y) * distanceSpeed;
         //if the difference between mouse and cursor is less than 0.1 then make the ball be in the position of the mouse
@@ -73,7 +74,7 @@ io.on('connection', function(socket) {
   });
   socket.on('dragStart',function(data){
       let player = players[socket.id] || {};
-      if (pointInCircle(data.x, data.y, player.x, player.y, 10)) {
+      if (pointInCircle(data.x, data.y, player.x, player.y, 100)) {
         player.active = true;
       }
   })
@@ -83,6 +84,7 @@ io.on('connection', function(socket) {
 
   })
   socket.on('drag',function(data){
+    //console.log(data.x)
     //if dragging is happening then do stuff
     let player = players[socket.id] || {};
     let mouse = mouses[socket.id] || {};

@@ -3,8 +3,8 @@ let socket = io();
 
 let canvas = document.getElementById('ballCanvas')
 let ctx = canvas.getContext("2d");
-ctx.canvas.width = 1000;
-ctx.canvas.height = 1000;
+ctx.canvas.width = 2000;
+ctx.canvas.height = 2000;
 
 //item to drag and its container
 let container = document.querySelector("#ballCanvas");
@@ -57,7 +57,7 @@ function dragStart(e){
 
 function dragEnd(e){
 
-  if (e.type === "touchstart") {
+  if (e.type === "touchend") {
     mouse = {
       x:e.touches[0].clientX  - rect.left,
       y:e.touches[0].clientY  - rect.top,
@@ -72,7 +72,8 @@ function dragEnd(e){
     socket.emit('dragEnd',false);
 }
 function drag(e){
-  if (e.type === "touchstart") {
+
+  if (e.type === "touchmove") {
     mouse = {
       x:e.touches[0].clientX  - rect.left,
       y:e.touches[0].clientY  - rect.top,
@@ -97,14 +98,12 @@ setInterval(function() {
 
 socket.on('state', function(players) {
   //console.log(players);
-  ctx.clearRect(0, 0, 800, 600);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.fillStyle = 'green';
   for (var id in players) {
     var player = players[id];
-    players
-    currentPlayer = player;
     ctx.beginPath();
-    ctx.arc(player.x, player.y, 10, 0, 2 * Math.PI);
+    ctx.arc(player.x, player.y, 75, 0, 2 * Math.PI);
     ctx.fill();
   }
 });
