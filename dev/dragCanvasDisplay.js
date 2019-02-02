@@ -5,7 +5,7 @@ let x;
 let y;
 window.setInterval(function(){
   loadMessages();
-}, 1000);
+}, 1);
 
 
 window.addEventListener('load', initialize);
