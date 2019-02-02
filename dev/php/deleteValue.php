@@ -1,11 +1,7 @@
 <?php
-
-  $hello =  $_COOKIE['id'];
-  //echo $hello;
-
   $mysqli = connectDatabase("test");
 
-  $id = $hello;
+  $id = $_POST['id'];
   $sql = "DELETE FROM MyGuests WHERE id = '$id'";
   runQuery($mysqli,$sql);
 

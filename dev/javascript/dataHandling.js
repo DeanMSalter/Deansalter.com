@@ -1,20 +1,20 @@
 
 //Updates the list every 0.5 seconds , dirty as all hell but works for now.
 //TODO: Better solution.
+
 window.setInterval(function(){
   getData();
 }, 500);
 
-let updateButton = document.getElementById("updateButton");
+
 let purgeButton = document.getElementById("purgeButton");
 
-updateButton.addEventListener('click', getData, false)
 purgeButton.addEventListener('click', purgeData, false)
 
 function getData() {
     //Set the request handler
     var request = new XMLHttpRequest();
-    var url = "getData.php";
+    var url = "../php/getData.php";
 
     //opens a request to send/post data to the specifed url
     request.open("POST", url, true);
@@ -35,7 +35,7 @@ function getData() {
 function purgeData(){
   //Set the request handler
   var request = new XMLHttpRequest();
-  var url = "purgeData.php";
+  var url = "../php/purgeData.php";
 
   //opens a request to send/post data to the specifed url
   request.open("POST", url, true);
@@ -52,42 +52,23 @@ function purgeData(){
   }
   //Send the request with the above "settings"
   request.send();
-  let status = document.getElementById('status');
-  status.textContent = "Purged List!"
   getData();
 }
 function updateList(response) {
   let list = document.getElementById('databaseTable');
-  while(list.rows.length > 0){
-    list.deleteRow(0);
-  }
-  console.log(list.rows.length)
+   while(list.rows.length > 3){
+          list.deleteRow(list.rows.length-1);
 
+
+   }
    if(response.length == 0){
 
     let row = document.createElement('tr');
-    let value1 = document.createElement('th');
+    let value1 = document.createElement('td');
     value1.appendChild(document.createTextNode("Database is empty!"));
+    value1.colSpan = "4";
+    value1.className="Tableheader";
     row.appendChild(value1);
-    list.appendChild(row);
-  }else{
-    let row = document.createElement('tr');
-    let value1 = document.createElement('th');
-    let value2 = document.createElement('th');
-    let value3 = document.createElement('th');
-    let value4 = document.createElement('th');
-    value1.appendChild(document.createTextNode("ID"));
-    value2.appendChild(document.createTextNode("Name"));
-    value3.appendChild(document.createTextNode("Email"));
-    value4.appendChild(document.createTextNode("Actions"));
-    value1.id="Tableheader";
-    value2.id="Tableheader";
-    value3.id="Tableheader";
-    value4.id="Tableheader";
-    row.appendChild(value1);
-    row.appendChild(value2);
-    row.appendChild(value3);
-    row.appendChild(value4);
     list.appendChild(row);
   }
   for(let i = 0;i<=response.length-1;i++){
@@ -102,20 +83,27 @@ function updateList(response) {
 
     id.appendChild(document.createTextNode(response[i].id));
     name.appendChild(document.createTextNode(response[i].firstname));
-
-    let delButton = document.createElement('input');
-    delButton.type = "button";
-    delButton.value = "Delete " + (response[i].id);
-    delButton.addEventListener('click', function(){
-        console.log(response[i].id)
-        document.cookie="id=" + (response[i].id) ;
-        deleteRequest();
-    }, false)
-
-
-
-
     email.appendChild(document.createTextNode(response[i].email));
+
+    let delButton = document.createElement('form');
+    delButton.method="post";
+    delButton.action="../php/deleteValue.php";
+    delButton.target="dummyframe";
+    delButton.id="deleteForm";
+    let input = document.createElement('input');
+    input.className= "button";
+    input.name="delete_Button";
+    input.type = "submit";
+    input.value = "Delete";
+    input.id="deleteButton";
+    delButton.appendChild(input);
+
+    let inputHidden = document.createElement('input');
+    inputHidden.type = "hidden";
+    inputHidden.name="id";
+    inputHidden.value = response[i].id;
+    delButton.appendChild(inputHidden);
+
     actionButtons.appendChild(delButton);
     row.appendChild(id);
     row.appendChild(name);
@@ -124,8 +112,9 @@ function updateList(response) {
     list.appendChild(row);
 
   }
-  let status = document.getElementById('status');
 }
+
+
 function deleteRequest(){
 
   let xmlhttp;
@@ -136,6 +125,7 @@ function deleteRequest(){
     // Do something with the results here
     }
   }
-  xmlhttp.open("GET","deleteValue.php",true);
+  xmlhttp.open("GET","../php/deleteValue.php",true);
   xmlhttp.send();
 }
+//getData();
