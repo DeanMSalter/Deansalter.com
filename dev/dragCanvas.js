@@ -1,56 +1,12 @@
 'use strict';
 
-let id = 1;
-let x = 0;
-let y = 0;
-window.setInterval(function(){
-  addMessage();
-  loadMessages();
-}, 1000);
 
 
-window.addEventListener('load', initialize);
-function initialize(){
-  addMessage();
-  loadMessages();
-}
 
 
-function keyDownHandler (e) {
-  if (e.defaultPrevented) {
-    return; // Do nothing if the event was already processed
-  }
-  if (e.key === 'Enter') {
-    console.log("enter")
-    addMessage();
-    e.preventDefault();
-  }
-}
-console.log("running")
 
-async function loadMessages (isUpdate = false) {
-  console.log("test")
-  const response = await fetch('http://www.deansalter.com:8080/position');
-  if (!response.ok) {
-    console.log("error")
-    console.error('bad response');
-    return;
-  }
-  const data = await response.json();
-  console.log(data[0].x)
-  x = data[0].x
-  y = data[0].y
-}
-async function addMessage (e) {
 
-  const response = await fetch('http://www.deansalter.com:8080/position', {
-    method: 'POST',
-    body: JSON.stringify({ id: id ,x:player1.x,y:player1.y}),
-    headers: {
-      'content-type': 'application/json'
-    }
-  });
-}
+
 
 
 let canvas = document.getElementById('ballCanvas')
@@ -167,19 +123,10 @@ function drag(e) {
     xOffset = currentX;
     yOffset = currentY;
 
-    //move the item
-    setTranslate(currentX, currentY);
   }
 }
 
-//move the item using css
-function setTranslate(xPos, yPos) {
 
-  //console.log(" MOVE x: " + player1.x + "y: " + player1.y)
-
-//  player1.fill(ctx);
-
-}
 
 
 
