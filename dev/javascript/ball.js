@@ -242,7 +242,7 @@ function render() {
   ctx.fillStyle = "red";
   player2.fill(ctx);
 
-  ctx.fillStyle = "purple"
+  ctx.fillStyle = "white"
   ctx.fillText("Score: " + player1.Score, 0, 20);
   ctx.fillText("Score: " + player2.Score, midPoint * 2 - 85, 20);
   ctx.fillText("Games: " + player1.Games, 0, 40);
