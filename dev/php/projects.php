@@ -1,78 +1,53 @@
-<?php
-// Initialize the session
-session_start();
 
-
-// Check if the user is logged in, if not then redirect him to login page
-
-function loggedIn(){
-  if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
-    return true;
-  }else{
-    return false;
-  }
-}
-function getUser(){
-  if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
-    return $_SESSION["username"];
-  }else{
-    return false;
-  }
-}
-?>
-
-
-<meta name="viewport" content="initial-scale=1.0">
 <html>
-<head>
-<title> Deans testing website </title>
-<link rel="stylesheet" href="../css/index.css">
-</head>
-<body>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta name="google-signin-client_id" content="974772643933-sfeul7mma9r9r5210el2qh60mm7ehdil.apps.googleusercontent.com">
+    <title> Deans testing website </title>
+    <link rel="stylesheet" href="../css/projects.css">
+  </head>
+  <body>
+    <div id="SignInBar">
+      <div id="SignInBox">
+        <div class="g-signin2" data-onsuccess="onSignIn" ></div>
+        <a href=""  id="SignOutLink" ></a>
+      </div>
+      <img id="userPic">
 
-<h1> <?php if(loggedIn()){
-  echo getUser();
-}?></h1>
-<h3 id="header1">Java Script testing</h3>
-<?php
-  if(!loggedIn()){
-    echo "<button type='button' id='loginButton'><a href='login.php'>Sign in</a></button>";
-    echo "<button type='button' id='registerButton'><a href='register.php'>Register</a></button>";
-  }else{
-      echo "<button type='button' id='logoutButton'><a href='logout.php'>Sign Out of Your Account</a></button>";
-  }
+    </div>
 
- ?>
-=======
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script src="../javascript/projects.js" async defer></script>
 
-<h3>Java Script test</h3>
 
-<nav>
-<a href="../html/palindrome.html"> Plaindrome </a>
-<a href="../html/ball.html"> Ball </a>
-<a href="../html/enemies.html"> Enemies </a>
-<a href="../html/drag.html"> Drag </a>
-</nav>
-<iframe id="palindrome" src="../html/palindrome.html" height= 500px; width=350px scrolling="no"></iframe>
-<iframe id="ball" src="../html/ball.html"  height= 500px; width=500px scrolling="no"></iframe>
-<iframe src="../html/database.html"  height = 500px; width = 500px; scrolling="yes"></iframe>
-<p>
-<iframe src="../html/enemies.html"  height = 660px; width = 858px; scrolling="no"></iframe>
 
-<<<<<<< HEAD
+    <h3 id="header1">Java Script testing</h3>
 
-=======
->>>>>>> d73dc90146951debc1e0b1f0a31090be0daf4450
-<h2>Useful Links</h2>
-<a href="https://cloud.scaleway.com/#/">  Scaleway</a>
-<a href="https://account.names.co.uk/dashboard#/">  Names.co.uk</a>
-<a href="https://www.wix.com/dashboard/15440e53-a389-4c32-a0b1-5a651877a841/home">  Wix</a>
-<a href="https://ap.www.namecheap.com/dashboard">  Namecheap</a>
-<a href="https://www.ssls.com/user/certificates/activate/5048449">  ssl</a><p>---------------------</p>
+    <nav>
+        <a href="../html/palindrome.html"> Plaindrome </a>
+        <a href="../html/ball.html"> Ball </a>
+        <a href="../html/enemies.html"> Enemies </a>
+        <a href="http://deansalter.com:5000/"> Drag </a>
+    </nav>
+    <div id="iFrames">
+        <iframe id="palindrome" src="../html/palindrome.html" height= 500px; width=350px scrolling="no"></iframe>
+        <iframe id="ball" src="../html/ball.html"  height= 500px; width=500px scrolling="no"></iframe>
+        <iframe src="../html/database.html"  height = 500px; width = 859.3px; scrolling="yes"></iframe>
+        <p>
+        <iframe src="../html/enemies.html"  height = 660px; width = 859.3px; scrolling="no"></iframe>
+    </div>
 
-<<<<<<< HEAD
-=======
 
->>>>>>> d73dc90146951debc1e0b1f0a31090be0daf4450
-</body>
+
+
+
+    <div id="Links">
+        <h2>Useful Links</h2>
+        <a href="https://cloud.scaleway.com/#/">  Scaleway</a>
+        <a href="https://account.names.co.uk/dashboard#/">  Names.co.uk</a>
+        <a href="https://www.wix.com/dashboard/15440e53-a389-4c32-a0b1-5a651877a841/home">  Wix</a>
+        <a href="https://ap.www.namecheap.com/dashboard">  Namecheap</a>
+        <a href="https://www.ssls.com/user/certificates/activate/5048449">  ssl</a>
+    </div>
+  </body>
 </html>

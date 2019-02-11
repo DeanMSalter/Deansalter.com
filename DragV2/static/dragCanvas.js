@@ -3,109 +3,161 @@ let socket = io();
 
 let canvas = document.getElementById('ballCanvas')
 let ctx = canvas.getContext("2d");
-ctx.canvas.width = 2000;
-ctx.canvas.height = 2000;
-
-//item to drag and its container
-let container = document.querySelector("#ballCanvas");
+canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
 
 
-//touchscreen listners
-container.addEventListener("touchstart", dragStart, false);
-container.addEventListener("touchend", dragEnd, false);
-container.addEventListener("touchmove", drag, false);
+let pointerLocked = false;
 
-//mouse listners
-container.addEventListener("mousedown", dragStart, false);
-container.addEventListener("mouseup", dragEnd, false);
-container.addEventListener("mousemove", drag, false);
+canvas.onclick = function() {
+  canvas.requestPointerLock();
+};
 
+document.addEventListener('pointerlockchange', lockChangeAlert, false);
+document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
+
+document.addEventListener("touchmove", touchMove, false);
+document.addEventListener("touchstart", touchStart, false);
+document.addEventListener("touchend", touchEnd, false);
 
 let rect = canvas.getBoundingClientRect();
+let prevX = 0;
+let prevY = 0;
+
+let mouse = {};
+let  addButton =  new Circle(50,50,15)
+
+
+
+
 let active = false;
+//positional variables
 let currentX = 100;
 let currentY = 100;
 let initialX;
 let initialY;
+let defaultSpeed = 5;
+//offsets , initally 0 but this will change once movement commences
 let xOffset = 0;
 let yOffset = 0;
-let currentPlayer;
-let players;
-let movement = {
-  x:currentX,
-  y:currentY,
-}
-let mouse = {};
+
+function touchStart(e) {
 
 
-function dragStart(e){
-    if (e.type === "touchstart") {
-      mouse = {
-        x:e.touches[0].clientX  - rect.left,
-        y:e.touches[0].clientY  - rect.top,
-
-      }
-    } else {
-      mouse = {
-        x: e.clientX - rect.left,
-        y: e.clientY  - rect.top,
-      }
-    }
-
-  socket.emit('dragStart',mouse);
+  //   initialX = e.touches[0].clientX  - rect.left;
+  //   initialY = e.touches[0].clientY  - rect.top;
+  //
+  //
+  // //check to make sure the target is the item we want to drag , then set that dragging is happening
+  // //console.log("X: " + initialX + "Y: " + initialY + "P X: " + player1.x + "P Y: " + player1.y)
+  // if (pointInCircle(initialX, initialY, player1.x, player1.y, player1.r)) {
+    active = true;
+//  }
 }
 
-function dragEnd(e){
+//when dragging is finished , stop moving and set dragging as false
+function touchEnd(e) {
 
-  if (e.type === "touchend") {
-    mouse = {
-      x:e.touches[0].clientX  - rect.left,
-      y:e.touches[0].clientY  - rect.top,
+  initialX = currentX;
+  initialY = currentY;
+//  console.log("X: " + initialX + "Y: " +initialY)
+  active = false;
+}
 
+function touchMove(e) {
+  //if dragging is happening then do stuff
+  if (true) {
+
+    e.preventDefault();
+
+    currentX = e.touches[0].clientX  - rect.left ;
+    currentY = e.touches[0].clientY  - rect.top;
+
+
+    //seeting the offset as the new location to allow for the next "move" to start from the new position
+    xOffset = currentX;
+    yOffset = currentY;
+
+    let touchData = {
+      x:currentX,
+      y:currentY
     }
-  } else {
-    mouse = {
-      x: e.clientX - rect.left,
-      y: e.clientY  - rect.top,
-    }
+    socket.emit('touch',touchData);
   }
-    socket.emit('dragEnd',false);
 }
-function drag(e){
 
-  if (e.type === "touchmove") {
-    mouse = {
-      x:e.touches[0].clientX  - rect.left,
-      y:e.touches[0].clientY  - rect.top,
 
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function lockChangeAlert() {
+  if (document.pointerLockElement === canvas ||document.mozPointerLockElement === canvas) {
+    console.log('The pointer lock status is now locked');
+    pointerLocked = true;
+    document.addEventListener("mousemove", drag, false);
   } else {
+    console.log('The pointer lock status is now unlocked');
+    pointerLocked = false;
+    document.removeEventListener("mousemove", drag, false);
+  }
+}
+
+function Circle(x, y, r) {
+  this.xDefault = x
+  this.yDefault = y
+  this.x = (x === null) ? 0 : x;
+  this.y = (y === null) ? 0 : y;
+  this.r = (r === null) ? 0 : r;
+
+  this.fill = function(ctx) {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+function drag(e){
+  if (e.type === "touchmove") {
+    let movementX = (prevX ? e.touches[0].clientX  - rect.left - prevX : 0)
+    let movementY = (prevY ? e.touches[0].clientY  - rect.top - prevY : 0)
+
     mouse = {
-      x: e.clientX - rect.left,
-      y: e.clientY  - rect.top,
+      x:movementX,
+      y:movementY,
+    }
+    prevX = e.touches[0].clientX  - rect.left;
+    prevY = e.touches[0].clientY  - rect.top;
+    pointerLocked = true;
+  }else {
+    mouse = {
+      x: e.movementX,
+      y: e.movementY,
     }
   }
   socket.emit('drag',mouse);
-
 }
 
-socket.emit('new player',rect);
-//update server on player position
-setInterval(function() {
-  socket.emit('movement', movement);
-}, 1000 / 60);
-
-
 socket.on('state', function(players) {
-  //console.log(players);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  clearScreen()
   ctx.fillStyle = 'green';
   for (var id in players) {
     var player = players[id];
-    ctx.beginPath();
-    ctx.arc(player.x, player.y, 75, 0, 2 * Math.PI);
-    ctx.fill();
+    drawCircle(player.x,player.y,player.r)
   }
+  ctx.fillStyle = "red"
+  addButton.fill(ctx);
+
 });
 
 function pointInCircle(x, y, cx, cy, radius) {
@@ -113,70 +165,23 @@ function pointInCircle(x, y, cx, cy, radius) {
   return distancesquared <= radius * radius;
 }
 
+function clearScreen(){
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
 
-// function drag(e) {
-//   //if dragging is happening then do stuff
-//   if (active) {
-//     let rect = canvas.getBoundingClientRect();
-//     e.preventDefault();
-//     //if using touchscreen
-//     if (e.type === "touchmove") {
-//       currentX = e.touches[0].clientX  - rect.left ;
-//       currentY = e.touches[0].clientY  - rect.top;
-//     } else {
-//       currentX = e.clientX  - rect.left;
-//       currentY = e.clientY  - rect.top;
-//     }
-//
-//     //seeting the offset as the new location to allow for the next "move" to start from the new position
-//     xOffset = currentX;
-//     yOffset = currentY;
-//     movement.x = currentX;
-//     movement.y = currentY;
-//   }
-// }
+function drawCircle(x,y,r){
+  ctx.beginPath();
+  ctx.arc(x,y,r, 0, 2 * Math.PI);
+  ctx.fill();
+}
 
+function createCircle(){
+  socket.emit('new player',rect);
+}
 
-
-
-
-//Main game loop
-// function main() {
-//   let now = Date.now();
-//   let dt = (now - lastTime) / 1000.0;
-//
-//   lastTime = now;
-//
-// };
-
-// function render() {
-//
-//   ctx.clearRect(0, 0, canvas.width, canvas.height);
-//   ctx.fillStyle = "blue";
-//   player1.fill(ctx);
-//
-// };
-
-// function checkWall(dt) {
-//
-//     if (player1.x + player1.r > canvas.width) { //Right
-//       console.log("right")
-//       player1.x = canvas.width - player1.r;
-//     }
-//     if (player1.x - player1.r < 0) { //Left
-//         console.log("left")
-//         player1.x = 0 + player1.r;
-//     }
-//     if (player1.y + player1.r > canvas.height) { //Bottom
-//         console.log("bottom")
-//         player1.y = canvas.height - player1.r;
-//     }
-//     if (player1.y - player1.r < 0) { //Top
-//         console.log("top")
-//         player1.y = 0 + player1.r;
-//     }
-//
-// }
-
-
-//main() // -------Start --------------
+let clientData = {
+  canvasWidth:ctx.canvas.width,
+  canvasHeight:ctx.canvas.height
+}
+socket.emit('client data',clientData);
+createCircle()
