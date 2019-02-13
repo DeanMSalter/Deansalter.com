@@ -36,6 +36,18 @@ document.addEventListener("touchend", touchEnd, false);
 
 document.addEventListener("mousedown", click, false);
 
+let lastTime;
+let requestAnimFrame = (function() {
+  return window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
+    function(callback) {
+      window.setTimeout(callback, 1000 / 60);
+    };
+})(); //Function to request a new frame of animation
+
 let rect = canvas.getBoundingClientRect();
 let prevX = 0;
 let prevY = 0;
@@ -43,9 +55,7 @@ let prevY = 0;
 let mouse = {};
 let  addButton =  new Circle(50,50,30)
 
-
-
-
+let players = {};
 let active = false;
 //positional variables
 let currentX = 100;
@@ -90,19 +100,37 @@ function touchMove(e) {
 
 
 
+//Updates gametime.
+function update(dt) {
 
+}
+//Main game loop
+function main() {
+  let now = Date.now();
+  let dt = (now - lastTime) / 1000.0;
 
+  update(dt);
 
+  render();
 
+  lastTime = now;
+  requestAnimFrame(main);
 
+};
 
-
-
-
-
-
-
-
+function render() {
+  clearScreen()
+  for (var id in players) {
+    var player = players[id];
+    ctx.fillStyle = player.colour;
+    drawCircle(player.x,player.y,player.r)
+    ctx.fillStyle = "black"
+    ctx.font = "30px Arial";
+    ctx.fillText(player.id, player.x, player.y);
+  }
+  ctx.fillStyle = "red"
+  addButton.fill(ctx);
+};
 function lockChangeAlert() {
   if (document.pointerLockElement === canvas ||document.mozPointerLockElement === canvas) {
     console.log('The pointer lock status is now locked');
@@ -139,20 +167,8 @@ function drag(e){
   socket.emit('drag',mouse);
 }
 
-socket.on('state', function(players) {
-  clearScreen()
-
-  for (var id in players) {
-    var player = players[id];
-    ctx.fillStyle = player.colour;
-    drawCircle(player.x,player.y,player.r)
-    ctx.fillStyle = "black"
-    ctx.font = "30px Arial";
-    ctx.fillText(player.id, player.x, player.y);
-  }
-  ctx.fillStyle = "red"
-  addButton.fill(ctx);
-
+socket.on('state', function(playersData) {
+  players = playersData;
 });
 
 function pointInCircle(x, y, cx, cy, radius) {
@@ -181,3 +197,4 @@ let clientData = {
 }
 socket.emit('client data',clientData);
 //createCircle()
+main();

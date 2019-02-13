@@ -43,9 +43,12 @@ function getRandomColor() {
   return color;
 }
 function addButtonCheck(data){
-  if (pointInCircle(data.x, data.y, addButton.x, addButton.y, addButton.r)){
-    newPlayer(data.socket)
+  if(typeof addButton != "undefined"){
+    if (pointInCircle(data.x, data.y, addButton.x, addButton.y, addButton.r)){
+      newPlayer(data.socket)
+    }
   }
+
 }
 function newPlayer(data){
   console.log("new player")
