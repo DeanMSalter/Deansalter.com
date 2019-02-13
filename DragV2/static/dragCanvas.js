@@ -9,9 +9,23 @@ document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLo
 
 let pointerLocked = false;
 
-canvas.onclick = function() {
-  canvas.requestPointerLock();
-};
+window.onkeyup = function(e) {
+   let key = e.keyCode ? e.keyCode : e.which;
+
+
+   if (key == 76) {
+     if(pointerLocked){
+       document.exitPointerLock();
+     }else{
+       canvas.requestPointerLock();
+     }
+
+   }
+}
+
+// canvas.onclick = function() {
+//   canvas.requestPointerLock();
+// };
 
 document.addEventListener('pointerlockchange', lockChangeAlert, false);
 document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
@@ -20,12 +34,14 @@ document.addEventListener("touchmove", touchMove, false);
 document.addEventListener("touchstart", touchStart, false);
 document.addEventListener("touchend", touchEnd, false);
 
+document.addEventListener("mousedown", click, false);
+
 let rect = canvas.getBoundingClientRect();
 let prevX = 0;
 let prevY = 0;
 
 let mouse = {};
-let  addButton =  new Circle(50,50,15)
+let  addButton =  new Circle(50,50,30)
 
 
 
@@ -53,9 +69,15 @@ function touchStart(e) {
 
 //when dragging is finished , stop moving and set dragging as false
 function touchEnd(e) {
-  socket.emit('touchEnd',false);
+  socket.emit('touchEnd');
 }
-
+function click(e){
+  mouse = {
+    x: (e.pageX - rect.left)*scaleX,
+    y: (e.pageY  - rect.top)*scaleY
+  }
+  socket.emit("click",mouse)
+}
 function touchMove(e) {
   mouse = {
     x:(e.touches[0].pageX  - rect.left)*scaleX,
@@ -103,37 +125,30 @@ function Circle(x, y, r) {
   this.fill = function(ctx) {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+
     ctx.fill();
   }
 }
 
 function drag(e){
-  if (e.type === "touchmove") {
-    let movementX = (prevX ? e.touches[0].clientX  - rect.left - prevX : 0)
-    let movementY = (prevY ? e.touches[0].clientY  - rect.top - prevY : 0)
-
-    mouse = {
-      x:movementX,
-      y:movementY,
-    }
-    prevX = e.touches[0].clientX  - rect.left;
-    prevY = e.touches[0].clientY  - rect.top;
-    pointerLocked = true;
-  }else {
     mouse = {
       x: e.movementX,
       y: e.movementY,
     }
-  }
+
   socket.emit('drag',mouse);
 }
 
 socket.on('state', function(players) {
   clearScreen()
-  ctx.fillStyle = 'green';
+
   for (var id in players) {
     var player = players[id];
+    ctx.fillStyle = player.colour;
     drawCircle(player.x,player.y,player.r)
+    ctx.fillStyle = "black"
+    ctx.font = "30px Arial";
+    ctx.fillText(player.id, player.x, player.y);
   }
   ctx.fillStyle = "red"
   addButton.fill(ctx);
@@ -156,12 +171,13 @@ function drawCircle(x,y,r){
 }
 
 function createCircle(){
-  socket.emit('new player',rect);
+  socket.emit('new player');
 }
 
 let clientData = {
   canvasWidth:ctx.canvas.width,
-  canvasHeight:ctx.canvas.height
+  canvasHeight:ctx.canvas.height,
+  addButton: addButton,
 }
 socket.emit('client data',clientData);
-createCircle()
+//createCircle()
