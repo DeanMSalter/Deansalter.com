@@ -32,9 +32,18 @@ function pointInCircle(x, y, cx, cy, radius) {
   let distancesquared = (x - cx) * (x - cx) + (y - cy) * (y - cy);
   return distancesquared <= radius * radius;
 }
+function getRandomColor() {
+  let letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
 //Create a listner for when a player connects.
 //socket contains all the information passed to the server from the client
 io.on('connection', function(socket) {
+  let active = false
   //create a listner of these data to look for when a new player is created
   socket.on('new player', function(data) {
     console.log("new player")
@@ -43,6 +52,8 @@ io.on('connection', function(socket) {
       x: 500,
       y: 500,
       r: 50,
+      colour: getRandomColor(),
+      active:false,
     };
 
     mouses[socket.id] = {
@@ -69,19 +80,29 @@ io.on('connection', function(socket) {
 
   })
   socket.on("touch",function(data){
+    //console.log("touching")
+    //if dragging is happening then do stuff
+   let player = players[socket.id] || {};
+   let mouse = mouses[socket.id] || {};
+   if (player.active) {
+    mouse.x = data.x
+     mouse.y = data.y
+     //console.log(mouse)
+     touchMovement(socket.id)
+   }
+  });
+  socket.on("touchStart",function(data){
     let player = players[socket.id] || {};
-    console.log("running")
-    let distanceSpeed =  0.4
-    let dx = (data.x - player.x) * distanceSpeed; //the differences between the x and y positions multiplied by distanceSpeed
-    let dy = (data.y - player.y) * distanceSpeed;
-        //if the difference between mouse and cursor is less than 0.1 then make the ball be in the position of the mouse
-        if(Math.abs(dx) + Math.abs(dy) < 0.1) {
-             player.x = data.x;
-             player.y = data.y;
-        } else { // else add difference
-             player.x += dx;
-             player.y += dy;
-        }
+    console.log(data.x , " " , player.x  )
+    if (pointInCircle(data.x, data.y, player.x, player.y, player.r)) {
+      player.active = true;
+      console.log("active")
+    }
+  });
+  socket.on("touchEnd",function(data){
+    let player = players[socket.id] || {};
+    player.active = data;
+    console.log(player.active)
   });
 
 
@@ -91,6 +112,23 @@ io.on('connection', function(socket) {
 
 });
 
+function touchMovement(socket){
+  console.log("move")
+  let player = players[socket] || {};
+  let mouse = mouses[socket] || {};
+  console.log(mouse)
+  let distanceSpeed =  0.1
+  let dx = (mouse.x - player.x) * distanceSpeed; //the differences between the x and y positions multiplied by distanceSpeed
+  let dy = (mouse.y - player.y) * distanceSpeed;
+      //if the difference between mouse and cursor is less than 0.1 then make the ball be in the position of the mouse
+      if(Math.abs(dx) + Math.abs(dy) < 0.1) {
+           player.x = mouse.x;
+           player.y = mouse.y;
+      } else { // else add difference
+           player.x += dx;
+           player.y += dy;
+      }
+}
 function movement(socket){
   let player = players[socket] || {};
   let mouse = mouses[socket] || {};

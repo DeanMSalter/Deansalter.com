@@ -40,51 +40,31 @@ let defaultSpeed = 5;
 //offsets , initally 0 but this will change once movement commences
 let xOffset = 0;
 let yOffset = 0;
-
+let scaleX = canvas.width / rect.width;    // relationship bitmap vs. element for X
+let scaleY = canvas.height / rect.height;
 function touchStart(e) {
+      mouse = {
+        x:(e.touches[0].pageX  - rect.left)*scaleX,
+        y:(e.touches[0].pageY  - rect.top)*scaleY,
+      }
 
-
-  //   initialX = e.touches[0].clientX  - rect.left;
-  //   initialY = e.touches[0].clientY  - rect.top;
-  //
-  //
-  // //check to make sure the target is the item we want to drag , then set that dragging is happening
-  // //console.log("X: " + initialX + "Y: " + initialY + "P X: " + player1.x + "P Y: " + player1.y)
-  // if (pointInCircle(initialX, initialY, player1.x, player1.y, player1.r)) {
-    active = true;
-//  }
+  socket.emit('touchStart',mouse);
 }
 
 //when dragging is finished , stop moving and set dragging as false
 function touchEnd(e) {
-
-  initialX = currentX;
-  initialY = currentY;
-//  console.log("X: " + initialX + "Y: " +initialY)
-  active = false;
+  socket.emit('touchEnd',false);
 }
 
 function touchMove(e) {
-  //if dragging is happening then do stuff
-  if (true) {
-
-    e.preventDefault();
-
-    currentX = e.touches[0].clientX  - rect.left ;
-    currentY = e.touches[0].clientY  - rect.top;
-
-
-    //seeting the offset as the new location to allow for the next "move" to start from the new position
-    xOffset = currentX;
-    yOffset = currentY;
-
-    let touchData = {
-      x:currentX,
-      y:currentY
-    }
-    socket.emit('touch',touchData);
+  mouse = {
+    x:(e.touches[0].pageX  - rect.left)*scaleX,
+    y:(e.touches[0].pageY  - rect.top)*scaleY,
   }
+
+  socket.emit('touch',mouse);
 }
+
 
 
 
