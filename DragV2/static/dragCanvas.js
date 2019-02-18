@@ -25,11 +25,6 @@ window.onkeyup = function(e) {
 
    }
 }
-
-// canvas.onclick = function() {
-//   canvas.requestPointerLock();
-// };
-
 document.addEventListener('pointerlockchange', lockChangeAlert, false);
 document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
 
@@ -75,6 +70,68 @@ let xOffset = 0;
 let yOffset = 0;
 let scaleX = canvas.width / rect.width;    // relationship bitmap vs. element for X
 let scaleY = canvas.height / rect.height;
+
+let pointx = 0;
+let pointy = 0;
+function Circle(x, y, r,colour) {
+  this.xDefault = x
+  this.yDefault = y
+  this.x = (x === null) ? 0 : x;
+  this.y = (y === null) ? 0 : y;
+  this.r = (r === null) ? 0 : r;
+
+  this.fill = function(ctx) {
+    ctx.fillStyle = colour;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+
+    ctx.fill();
+  }
+
+};
+function clearScreen(){
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "black"
+  ctx.fillRect(midPoint, 0, 10, canvas.height);
+
+  ctx.fillStyle = "blue"
+  ctx.fillRect(0, 0, 60, canvas.height);
+
+  ctx.fillStyle = "red"
+  ctx.fillRect(canvas.width-60, 0, 100, canvas.height);
+
+  ctx.fillStyle = "black"
+  ctx.font = "bold 22px SanSerif";
+  ctx.fillText("Click a coloured circle to join a team", midPoint+15 ,200);
+  ctx.fillText("Reach the side of the opposite colour to score", midPoint+15 ,220);
+  ctx.fillText("Press L to lock in and move your ball", midPoint+15 ,240);
+
+  ctx.fillText("Click a coloured circle to join a team", 65 ,200);
+  ctx.fillText("Reach the side of the opposite colour to score", 65 ,220);
+  ctx.fillText("Press L to lock in and move your ball", 65 ,240);
+}
+function drawCircle(x,y,r){
+  ctx.beginPath();
+  ctx.arc(x,y,r, 0, 2 * Math.PI);
+  ctx.fill();
+}
+function createCircle(){
+  socket.emit('new player');
+}
+
+function lockChangeAlert() {
+  if (document.pointerLockElement === canvas ||document.mozPointerLockElement === canvas) {
+    console.log('The pointer lock status is now locked');
+    pointerLocked = true;
+    document.addEventListener("mousemove", drag, false);
+  } else {
+    console.log('The pointer lock status is now unlocked');
+    pointerLocked = false;
+    document.removeEventListener("mousemove", drag, false);
+  }
+}
+
 function touchStart(e) {
       mouse = {
         x:(e.touches[0].pageX  - rect.left)*scaleX,
@@ -84,17 +141,8 @@ function touchStart(e) {
 
   socket.emit('touchStart',mouse);
 }
-
-//when dragging is finished , stop moving and set dragging as false
 function touchEnd(e) {
   socket.emit('touchEnd');
-}
-function click(e){
-  mouse = {
-    x: (e.pageX - rect.left)*scaleX,
-    y: (e.pageY  - rect.top)*scaleY
-  }
-  socket.emit("click",mouse)
 }
 function touchMove(e) {
   mouse = {
@@ -104,6 +152,25 @@ function touchMove(e) {
 
   socket.emit('touch',mouse);
 }
+
+function click(e){
+  mouse = {
+    x: (e.pageX - rect.left)*scaleX,
+    y: (e.pageY  - rect.top)*scaleY
+  }
+  socket.emit("click",mouse)
+}
+
+
+function drag(e){
+    mouse = {
+      x: e.movementX,
+      y: e.movementY,
+    }
+
+  socket.emit('drag',mouse);
+}
+
 
 //Main game loop
 function main() {
@@ -116,10 +183,11 @@ function main() {
   requestAnimFrame(main);
 
 };
-
 function render() {
   clearScreen()
+  ctx.fillStyle = "blue"
   addButton1.fill(ctx);
+  ctx.fillStyle = "red"
   addButton2.fill(ctx);
   for (let id in players) {
     let player = players[id];
@@ -140,6 +208,8 @@ function render() {
       ctx.fillText("Points: " + player.points,addButton1.x+80, 85);
       ctx.fillText("Kills: " + player.kills, addButton1.x+80, 105);
       ctx.fillText("Deaths: " + player.deaths, addButton1.x+80, 125);
+
+
     }
     ctx.font = "bold 50px SanSerif";
     ctx.fillText(side1Points, addButton1.x-10 ,addButton1.y+10);
@@ -148,125 +218,7 @@ function render() {
 
 
 };
-function lockChangeAlert() {
-  if (document.pointerLockElement === canvas ||document.mozPointerLockElement === canvas) {
-    console.log('The pointer lock status is now locked');
-    pointerLocked = true;
-    document.addEventListener("mousemove", drag, false);
-  } else {
-    console.log('The pointer lock status is now unlocked');
-    pointerLocked = false;
-    document.removeEventListener("mousemove", drag, false);
-  }
 
-
-  socket.emit('touchStart',mouse);
-}
-
-//when dragging is finished , stop moving and set dragging as false
-function touchEnd(e) {
-  socket.emit('touchEnd');
-}
-function click(e){
-  mouse = {
-    x: (e.pageX - rect.left)*scaleX,
-    y: (e.pageY  - rect.top)*scaleY
-  }
-  socket.emit("click",mouse)
-}
-function touchMove(e) {
-  mouse = {
-    x:(e.touches[0].pageX  - rect.left)*scaleX,
-    y:(e.touches[0].pageY  - rect.top)*scaleY,
-  }
-
-  socket.emit('touch',mouse);
-}
-
-function Circle(x, y, r,colour) {
-  this.xDefault = x
-  this.yDefault = y
-  this.x = (x === null) ? 0 : x;
-  this.y = (y === null) ? 0 : y;
-  this.r = (r === null) ? 0 : r;
-
-  this.fill = function(ctx) {
-    ctx.fillStyle = colour;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-
-    ctx.fill();
-  }
-
-};
-function render() {
-  clearScreen()
-  ctx.fillStyle = "blue"
-  addButton1.fill(ctx);
-  ctx.fillStyle = "red"
-  addButton2.fill(ctx);
-  for (let id in players) {
-      let player = players[id];
-      ctx.fillStyle = player.colour;
-      drawCircle(player.x,player.y,player.r)
-
-      ctx.fillStyle = "black"
-      ctx.font = "bold 30px SanSerif";
-      ctx.fillText(player.id, player.x-8, player.y+8);
-      ctx.font = "bold 20px SanSerif";
-      if(id == socket.id){
-        ctx.font = "bold 25px SanSerif";
-        ctx.fillText("Player Stats " , addButton1.x+55 , 20);
-        ctx.font = "bold 20px SanSerif";
-        ctx.fillText("X: " + player.x, addButton1.x+80 , 45);
-        ctx.fillText("Y: " + player.y, addButton1.x+80 , 65);
-        ctx.fillText("Points: " + player.points,addButton1.x+80, 85);
-        ctx.fillText("Kills: " + player.kills, addButton1.x+80, 105);
-        ctx.fillText("Deaths: " + player.deaths, addButton1.x+80, 125);
-      }
-    }
-      ctx.fillStyle = "black";
-      ctx.font = "bold 50px SanSerif";
-      ctx.fillText(side1Points, addButton1.x-10 ,addButton1.y+10);
-      ctx.fillText(side2Points, addButton2.x-10 ,addButton2.y+10);
-
-
-};
-function lockChangeAlert() {
-  if (document.pointerLockElement === canvas ||document.mozPointerLockElement === canvas) {
-    console.log('The pointer lock status is now locked');
-    pointerLocked = true;
-    document.addEventListener("mousemove", drag, false);
-  } else {
-    console.log('The pointer lock status is now unlocked');
-    pointerLocked = false;
-    document.removeEventListener("mousemove", drag, false);
-  }
-}
-
-function Circle(x, y, r) {
-  this.xDefault = x
-  this.yDefault = y
-  this.x = (x === null) ? 0 : x;
-  this.y = (y === null) ? 0 : y;
-  this.r = (r === null) ? 0 : r;
-
-  this.fill = function(ctx) {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-
-    ctx.fill();
-  }
-}
-
-function drag(e){
-    mouse = {
-      x: e.movementX,
-      y: e.movementY,
-    }
-
-  socket.emit('drag',mouse);
-}
 
 
 socket.on('state', function(gameData) {
@@ -276,60 +228,12 @@ socket.on('state', function(gameData) {
 });
 
 
-
-function pointInCircle(x, y, cx, cy, radius) {
-  let distancesquared = (x - cx) * (x - cx) + (y - cy) * (y - cy);
-  return distancesquared <= radius * radius;
-}
-
-function clearScreen(){
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  ctx.fillStyle = "black"
-  ctx.fillRect(midPoint, 0, 10, canvas.height);
-
-  ctx.fillStyle = "blue"
-  ctx.fillRect(0, 0, 60, canvas.height);
-
-  ctx.fillStyle = "red"
-  ctx.fillRect(canvas.width-60, 0, 100, canvas.height);
-
-  ctx.fillStyle = "black"
-  ctx.font = "bold 22px SanSerif";
-  ctx.fillText("Click a coloured circle to join a team", midPoint+15 ,200);
-  ctx.fillText("Reach the side of the opposite colour to score", midPoint+15 ,220);
-
-  ctx.fillText("Click a coloured circle to join a team", 65 ,200);
-  ctx.fillText("Reach the side of the opposite colour to score", 65 ,220);
-
-}
-
-function drawCircle(x,y,r){
-  ctx.beginPath();
-  ctx.arc(x,y,r, 0, 2 * Math.PI);
-  ctx.fill();
-}
-
-function createCircle(){
-  socket.emit('new player');
-}
-
-
-
-function drawCircle(x,y,r){
-  ctx.beginPath();
-  ctx.arc(x,y,r, 0, 2 * Math.PI);
-  ctx.fill();
-}
-
-function createCircle(){
-  socket.emit('new player');
-}
-
+main();
 let clientData = {
   canvasWidth:ctx.canvas.width,
   canvasHeight:ctx.canvas.height,
   midPoint:midPoint,
+  midX:canvas.height/2,
   addButton1: addButton1,
   addButton2: addButton2,
   side1Points:side1Points,
@@ -337,5 +241,3 @@ let clientData = {
 
 }
 socket.emit('client data',clientData);
-//createCircle()
-main();

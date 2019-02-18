@@ -29,11 +29,10 @@ let canvasHeight;
 let addButton1;
 let addButton2;
 let midPoint;
+let midX;
 
-let x =500;
-let y = 500;
 let idTracker = 0;
-let active = false;
+
 
 function pointInCircle(x, y, cx, cy, radius) {
   let distancesquared = (x - cx) * (x - cx) + (y - cy) * (y - cy);
@@ -53,7 +52,6 @@ function ballCollision(ball1 , ball2){
     return false;
   }
 }
-
 function getRandomColor() {
   let letters = '0123456789ABCDEF';
   let color = '#';
@@ -62,7 +60,6 @@ function getRandomColor() {
   }
   return color;
 }
-
 function addButtonCheck(data){
   if(typeof addButton1 != "undefined"){
     if (pointInCircle(data.x, data.y, addButton1.x, addButton1.y, addButton1.r)){
@@ -91,11 +88,15 @@ function newPlayer(data,x,colour){
     points: 0,
     kills: 0,
     deaths: 0,
+    newX: 0,
+    newY: 0,
+    oldX: 0,
+    oldY: 0
   }
 
   mouses[data] = {
-    x:x,
-    y:y,
+    x:0,
+    y:0,
   }
 }
 
@@ -180,20 +181,40 @@ function touchMovement(socket){
   let mouse = mouses[socket] || {};
 
 
-  if(!player.moving){return};
-  let distanceSpeed =  0.2
 
-  let distanceSpeed =  0.1
-  let dx = (mouse.x - player.x) * distanceSpeed; //the differences between the x and y positions multiplied by distanceSpeed
-  let dy = (mouse.y - player.y) * distanceSpeed;
-  //if the difference between mouse and cursor is less than 0.1 then make the ball be in the position of the mouse
-  if(Math.abs(dx) + Math.abs(dy) < 0.1) {
-    player.x = mouse.x;
-    player.y = mouse.y;
-  } else { // else add difference
-    player.x += dx;
-    player.y += dy;
+
+  if(!player.moving){return};
+  let speed = 10;
+  let targetX = mouse.x;
+  let targetY = mouse.y;
+
+  let dx = targetX - player.x;
+  let dy = targetY - player.y;
+
+  let dist = Math.sqrt(dx * dx + dy * dy);
+
+  let velX = (dx/dist) * speed;
+  let velY = (dy/dist) * speed;
+
+  if (dist > player.r/2) {
+
+    // add our velocities
+    player.x += velX;
+    player.y += velY;
   }
+  // let distanceSpeed =  0.01
+  // let dx = (mouse.x - player.x) * distanceSpeed; //the differences between the x and y positions multiplied by distanceSpeed
+  // let dy = (mouse.y - player.y) * distanceSpeed;
+  // //if the difference between mouse and cursor is less than 0.1 then make the ball be in the position of the mouse
+  // if(Math.abs(dx) + Math.abs(dy) < 0.1) {
+  //   player.x = mouse.x;
+  //   player.y = mouse.y;
+  // } else { // else add difference
+  //   player.oldX = player.x
+  //   player.oldY = player.y
+  //   player.x += dx;
+  //   player.y += dy;
+  // }
 
   wallCheck(player)
   collisionCheck(player)
@@ -202,14 +223,17 @@ function touchMovement(socket){
 function mouseMovement(socket){
   let player = players[socket] || {};
   let mouse = mouses[socket] || {};
-  if(!player.moving){return};
-  player.x += mouse.x *0.03;
-  player.y += mouse.y *0.03;
+  let distanceSpeed =  0.05
 
-  wallCheck(player)
-  collisionCheck(player)
+   if(!player.moving){return};
+  // dx = (dx - midX) * distanceSpeed; //the differences between the x and y positions multiplied by distanceSpeed
+  //dy = (dy - midPoint) * distanceSpeed;
+   player.x += mouse.x* distanceSpeed
+   player.y += mouse.y* distanceSpeed
+
+   wallCheck(player)
+   collisionCheck(player)
 }
-
 
 io.on('connection', function(socket) {
   //create a listner of these data to look for when a new player is created
@@ -219,7 +243,9 @@ io.on('connection', function(socket) {
     addButton1 = clientData.addButton1;
     addButton2 = clientData.addButton2;
     midPoint = clientData.midPoint;
+    midX = clientData.midX;
   });
+
   socket.on('drag',function(data){
     //if dragging is happening then do stuff
     let player = players[socket.id] || {};
@@ -227,74 +253,7 @@ io.on('connection', function(socket) {
 
     mouse.x = data.x
     mouse.y = data.y
-
     mouseMovement(socket.id)
-
-  });
-  socket.on("touch",function(data){
-    //if dragging is happening then do stuff
-   let player = players[socket.id] || {};
-   let mouse = mouses[socket.id] || {};
-
-   if (player.active) {
-     mouse.x = data.x
-     mouse.y = data.y
-
-     touchMovement(socket.id)
-   }
-  });
-  socket.on("touchStart",function(data){
-    let player = players[socket.id] || {};
-    if (pointInCircle(data.x, data.y, player.x, player.y, player.r)) {
-      player.active = true;
-    }
-
-    let click = {
-      x:data.x,
-      y:data.y,
-      socket:socket.id
-    }
-    addButtonCheck(click)
-
-  });
-  socket.on("touchEnd",function(){
-    let player = players[socket.id] || {};
-    player.active = false;
-
-
-    mouseMovement(socket.id)
-
-  });
-  socket.on("touch",function(data){
-    //if dragging is happening then do stuff
-   let player = players[socket.id] || {};
-   let mouse = mouses[socket.id] || {};
-
-   if (player.active) {
-     mouse.x = data.x
-     mouse.y = data.y
-
-     touchMovement(socket.id)
-   }
-  });
-  socket.on("touchStart",function(data){
-    let player = players[socket.id] || {};
-    if (pointInCircle(data.x, data.y, player.x, player.y, player.r)) {
-      player.active = true;
-    }
-
-    let click = {
-      x:data.x,
-      y:data.y,
-      socket:socket.id
-    }
-    addButtonCheck(click)
-
-  });
-  socket.on("touchEnd",function(){
-    let player = players[socket.id] || {};
-    player.active = false;
-
   });
   socket.on("click",function(data){
     let click = {
@@ -303,15 +262,51 @@ io.on('connection', function(socket) {
       socket:socket.id
     }
     addButtonCheck(click)
-  })
+  });
+
+
+  socket.on("touchStart",function(data){
+    let player = players[socket.id] || {};
+    if (pointInCircle(data.x, data.y, player.x, player.y, player.r)) {
+      player.active = true;
+    }else{
+      player.active = false;
+    }
+
+    let click = {
+      x:data.x,
+      y:data.y,
+      socket:socket.id
+    }
+    addButtonCheck(click)
+
+  });
+  socket.on("touchEnd",function(){
+    let player = players[socket.id] || {};
+    player.active = false;
+  });
+  socket.on("touch",function(data){
+    //if dragging is happening then do stuff
+   let player = players[socket.id] || {};
+   let mouse = mouses[socket.id] || {};
+
+   if (player.active) {
+     mouse.x = data.x
+     mouse.y = data.y
+     touchMovement(socket.id)
+   }
+  });
+
 });
 
 //update 60 times a second to update clients
 setInterval(function() {
+  mouseMovement()
   let gameData = {
     players: players,
     side1Points: side1Points,
     side2Points: side2Points,
   }
+//  console.log(players)
   io.sockets.emit('state', gameData);
 }, 1000 / 60);
