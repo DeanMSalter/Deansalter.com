@@ -1,0 +1,6 @@
+{
+  "name": "baller",
+  "version": "1.0.0",
+  "description": "moves balls around basically",
+  "main": "baller.js"
+}
