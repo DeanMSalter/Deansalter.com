@@ -3,7 +3,7 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 const socketIO = require('socket.io');
-const baller = require('../baller');
+const baller = require('./baller');
 
 const app = express();
 const server = http.Server(app);
@@ -11,10 +11,11 @@ const io = socketIO(server);
 
 //########## Server set up
 app.set('port', 5000);
-app.use('/static', express.static(__dirname + '/static'));
-app.use(express.static("."));
-app.get('/', function(request, response) {
-  response.sendFile(path.join(__dirname, 'drag.html'));
+app.use(express.static('.'))
+app.get('/tag', function(request, response) {
+  app.use(express.static('TagDefense'))
+  response.sendFile(path.join(__dirname, 'TagDefense/index.html'));
+
 });
 server.listen(5000, function() {
   console.log('Starting server on port 5000');
