@@ -1,6 +1,6 @@
 'use strict';
 //########## Constant variables / canvas stuff
-const socket = io();
+const socket = io('/TagDefense');
 const canvas = document.getElementById('ballCanvas')
 canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
 document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
@@ -47,6 +47,7 @@ const clientData = {
 //Socket interations
 socket.emit('client data',clientData);
 socket.on('state', function(gameData) {
+  console.log("refresh")
   players = gameData.players ;
   side1Points = gameData.side1Points;
   side2Points = gameData.side2Points;
