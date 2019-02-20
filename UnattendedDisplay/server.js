@@ -204,6 +204,7 @@ tagDefense.on('connection', function(socket) {
   });
 
   socket.on("touchStart",function(data){
+    console.log("touchstart")
     let player = tagDefenseGameData.players[socket.id] || {};
     if (baller.pointInCircle(data.x, data.y, player.x, player.y, player.r)) {
       player.active = true;
@@ -220,13 +221,15 @@ tagDefense.on('connection', function(socket) {
 
   });
   socket.on("touchEnd",function(){
+    console.log("touchend")
     let player = tagDefenseGameData.players[socket.id] || {};
     player.active = false;
   });
   socket.on("touch",function(data){
+    console.log("touch")
     //if dragging is happening then do stuff
-   let player = players[socket.id] || {};
-   let mouse = mouses[socket.id] || {};
+   let player = tagDefenseGameData.players[socket.id] || {};
+   let mouse = tagDefenseGameData.mouses[socket.id] || {};
 
    if (player.active) {
      mouse.x = data.x
@@ -234,189 +237,187 @@ tagDefense.on('connection', function(socket) {
      touchMovement(socket.id)
    }
   });
-
-
 });
 
 
-
-tag.on('connection', function(socket) {
-
-  //########## game state variables
-
-  let canvasWidth;
-  let canvasHeight;
-  let midPoint;
-
-  let addButton;
-
-  //########## utility functions
-  function newPlayer(data,x,colour){
-    console.log("new player")
-    tagGameData.players[data] = {
-      x: x,
-      y: 500,
-      xDefault:x,
-      yDefault:500,
-      r: 45,
-      colour: colour,
-      active:false,
-      id:tagGameData.idTracker,
-      moving: true,
-      tagged: false,
-    }
-
-    tagGameData.mouses[data] = {
-      x:0,
-      y:0,
-    }
-    tagGameData.idTracker += 1;
-  }
-  function respawnPlayer(player){
-    console.log("respawn")
-    player.x = player.xDefault;
-    player.y = player.yDefault;
-
-    player.moving = false;
-    setTimeout(function() {
-      player.moving = true;
-    }, 1 * 1000);
-  }
-
-  //########## Check functions
-  function addButtonCheck(data){
-    if(typeof addButton != "undefined"){
-      if (baller.pointInCircle(data.x, data.y, addButton.x, addButton.y, addButton.r)){
-        newPlayer(data.socket,200,"blue")
-
-      }
-    }
-
-
-  }
-  function wallCheck(player){
-    if (player.x >= (canvasWidth - player.r)-60) { //Right
-        player.x = canvasWidth - player.r -60;
-    }
-    if (player.y >= canvasHeight - player.r) { //Bottom
-      player.y = canvasHeight - player.r;
-    }
-    if (player.x <= player.r + 60) { //Left
-        player.x = player.r + 60
-    }
-    if (player.y <= player.r) { //Top
-      player.y = player.r
-    }
-  }
-  function collisionCheck(player){
-    for(let i = 0;i<Object.keys(tagGameData.players).length;i++){
-      if(baller.ballCollision(player,tagGameData.players[Object.keys(tagGameData.players)[i]])){
-
-        if(player.xDefault == tagGameData.players[Object.keys(tagGameData.players)[i]].xDefault){
-          continue;
-        }
-
-        else if((player.x + player.r >= midPoint) && (player.xDefault <= midPoint) ){
-
-
-        }else if((player.x + player.r >= midPoint) && (player.xDefault >= midPoint)){
-
-        }
-
-        else if((player.x + player.r <= midPoint) && (player.xDefault <= midPoint)){
-
-        }else if((player.x + player.r <= midPoint) && (player.xDefault >= midPoint)){
-
-        }
-      }
-    }
-  }
-
-  //########## movement functions
-  function touchMovement(socket){
-    let player = tagGameData.players[socket] || {};
-    let mouse = tagGameData.mouses[socket] || {};
-
-    if(!player.moving){return};
-    baller.constantMovement(player,mouse,10)
-
-    wallCheck(player)
-    collisionCheck(player)
-
-  }
-  function mouseMovement(socket){
-    let player = tagGameData.players[socket] || {};
-    let mouse = tagGameData.mouses[socket] || {};
-    let distanceSpeed =  0.05
-
-     if(!player.moving){return};
-     player.x += mouse.x* distanceSpeed
-     player.y += mouse.y* distanceSpeed
-
-     wallCheck(player)
-     collisionCheck(player)
-  }
-
-  socket.on('client data',function(clientData){
-    canvasWidth = clientData.canvasWidth;
-    canvasHeight = clientData.canvasHeight;
-    midPoint = clientData.midPoint;
-    addButton = clientData.addButton;
-  });
-
-  socket.on('mouseMove',function(data){
-    //if dragging is happening then do stuff
-    let player = tagGameData.players[socket.id] || {};
-    let mouse = tagGameData.mouses[socket.id] || {};
-
-    mouse.x = data.x
-    mouse.y = data.y
-    mouseMovement(socket.id)
-  });
-  socket.on("click",function(data){
-    let click = {
-      x:data.x,
-      y:data.y,
-      socket:socket.id
-    }
-    addButtonCheck(click)
-  });
-
-  socket.on("touchStart",function(data){
-    let player = tagGameData.players[socket.id] || {};
-    if (baller.pointInCircle(data.x, data.y, player.x, player.y, player.r)) {
-      player.active = true;
-    }else{
-      player.active = false;
-    }
-
-    let click = {
-      x:data.x,
-      y:data.y,
-      socket:socket.id
-    }
-    addButtonCheck(click)
-
-  });
-  socket.on("touchEnd",function(){
-    let player = tagGameData.players[socket.id] || {};
-    player.active = false;
-  });
-  socket.on("touch",function(data){
-    //if dragging is happening then do stuff
-   let player = tagGameData.players[socket.id] || {};
-   let mouse = tagGameData.mouses[socket.id] || {};
-
-   if (player.active) {
-     mouse.x = data.x
-     mouse.y = data.y
-     touchMovement(socket.id)
-   }
-  });
-
-
-});
-//update 60 times a second to update clients
+//
+// tag.on('connection', function(socket) {
+//
+//   //########## game state variables
+//
+//   let canvasWidth;
+//   let canvasHeight;
+//   let midPoint;
+//
+//   let addButton;
+//
+//   //########## utility functions
+//   function newPlayer(data,x,colour){
+//     console.log("new player")
+//     tagGameData.players[data] = {
+//       x: x,
+//       y: 500,
+//       xDefault:x,
+//       yDefault:500,
+//       r: 45,
+//       colour: colour,
+//       active:false,
+//       id:tagGameData.idTracker,
+//       moving: true,
+//       tagged: false,
+//     }
+//
+//     tagGameData.mouses[data] = {
+//       x:0,
+//       y:0,
+//     }
+//     tagGameData.idTracker += 1;
+//   }
+//   function respawnPlayer(player){
+//     console.log("respawn")
+//     player.x = player.xDefault;
+//     player.y = player.yDefault;
+//
+//     player.moving = false;
+//     setTimeout(function() {
+//       player.moving = true;
+//     }, 1 * 1000);
+//   }
+//
+//   //########## Check functions
+//   function addButtonCheck(data){
+//     if(typeof addButton != "undefined"){
+//       if (baller.pointInCircle(data.x, data.y, addButton.x, addButton.y, addButton.r)){
+//         newPlayer(data.socket,200,"blue")
+//
+//       }
+//     }
+//
+//
+//   }
+//   function wallCheck(player){
+//     if (player.x >= (canvasWidth - player.r)-60) { //Right
+//         player.x = canvasWidth - player.r -60;
+//     }
+//     if (player.y >= canvasHeight - player.r) { //Bottom
+//       player.y = canvasHeight - player.r;
+//     }
+//     if (player.x <= player.r + 60) { //Left
+//         player.x = player.r + 60
+//     }
+//     if (player.y <= player.r) { //Top
+//       player.y = player.r
+//     }
+//   }
+//   function collisionCheck(player){
+//     for(let i = 0;i<Object.keys(tagGameData.players).length;i++){
+//       if(baller.ballCollision(player,tagGameData.players[Object.keys(tagGameData.players)[i]])){
+//
+//         if(player.xDefault == tagGameData.players[Object.keys(tagGameData.players)[i]].xDefault){
+//           continue;
+//         }
+//
+//         else if((player.x + player.r >= midPoint) && (player.xDefault <= midPoint) ){
+//
+//
+//         }else if((player.x + player.r >= midPoint) && (player.xDefault >= midPoint)){
+//
+//         }
+//
+//         else if((player.x + player.r <= midPoint) && (player.xDefault <= midPoint)){
+//
+//         }else if((player.x + player.r <= midPoint) && (player.xDefault >= midPoint)){
+//
+//         }
+//       }
+//     }
+//   }
+//
+//   //########## movement functions
+//   function touchMovement(socket){
+//     let player = tagGameData.players[socket] || {};
+//     let mouse = tagGameData.mouses[socket] || {};
+//
+//     if(!player.moving){return};
+//     baller.constantMovement(player,mouse,10)
+//
+//     wallCheck(player)
+//     collisionCheck(player)
+//
+//   }
+//   function mouseMovement(socket){
+//     let player = tagGameData.players[socket] || {};
+//     let mouse = tagGameData.mouses[socket] || {};
+//     let distanceSpeed =  0.05
+//
+//      if(!player.moving){return};
+//      player.x += mouse.x* distanceSpeed
+//      player.y += mouse.y* distanceSpeed
+//
+//      wallCheck(player)
+//      collisionCheck(player)
+//   }
+//
+//   socket.on('client data',function(clientData){
+//     canvasWidth = clientData.canvasWidth;
+//     canvasHeight = clientData.canvasHeight;
+//     midPoint = clientData.midPoint;
+//     addButton = clientData.addButton;
+//   });
+//
+//   socket.on('mouseMove',function(data){
+//     //if dragging is happening then do stuff
+//     let player = tagGameData.players[socket.id] || {};
+//     let mouse = tagGameData.mouses[socket.id] || {};
+//
+//     mouse.x = data.x
+//     mouse.y = data.y
+//     mouseMovement(socket.id)
+//   });
+//   socket.on("click",function(data){
+//     let click = {
+//       x:data.x,
+//       y:data.y,
+//       socket:socket.id
+//     }
+//     addButtonCheck(click)
+//   });
+//
+//   socket.on("touchStart",function(data){
+//     let player = tagGameData.players[socket.id] || {};
+//     if (baller.pointInCircle(data.x, data.y, player.x, player.y, player.r)) {
+//       player.active = true;
+//     }else{
+//       player.active = false;
+//     }
+//
+//     let click = {
+//       x:data.x,
+//       y:data.y,
+//       socket:socket.id
+//     }
+//     addButtonCheck(click)
+//
+//   });
+//   socket.on("touchEnd",function(){
+//     let player = tagGameData.players[socket.id] || {};
+//     player.active = false;
+//   });
+//   socket.on("touch",function(data){
+//     //if dragging is happening then do stuff
+//    let player = tagGameData.players[socket.id] || {};
+//    let mouse = tagGameData.mouses[socket.id] || {};
+//
+//    if (player.active) {
+//      mouse.x = data.x
+//      mouse.y = data.y
+//      touchMovement(socket.id)
+//    }
+//   });
+//
+//
+// });
+// //update 60 times a second to update clients
 
 
 //update 60 times a second to update clients
@@ -429,9 +430,9 @@ setInterval(function() {
   tagDefense.emit('state', tagDefenseEmitData);
 }, 1000 / 60);
 
-setInterval(function() {
-  let tagEmitData = {
-    players: tagGameData.players,
-  }
-  tag.emit('state', tagEmitData);
-}, 1000 / 60);
+// setInterval(function() {
+//   let tagEmitData = {
+//     players: tagGameData.players,
+//   }
+//   tag.emit('state', tagEmitData);
+// }, 1000 / 60);

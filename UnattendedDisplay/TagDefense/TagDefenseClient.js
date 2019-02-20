@@ -1,7 +1,7 @@
 'use strict';
 //########## Constant variables / canvas stuff
 const socket = io('/TagDefense');
-const canvas = document.getElementById('ballCanvas')
+const canvas = document.getElementById('tagDefenseCanvas')
 canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
 document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
 const ctx = canvas.getContext("2d");
