@@ -1,6 +1,6 @@
 'use strict';
 //########## Constant variables / canvas stuff
-const socket = io('/Tag');
+const socket = io('/Tag',{transports: ['websocket']});
 const canvas = document.getElementById('ballCanvas')
 canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
 document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;

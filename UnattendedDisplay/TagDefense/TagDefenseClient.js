@@ -1,6 +1,8 @@
 'use strict';
 //########## Constant variables / canvas stuff
-const socket = io('/TagDefense');
+
+///////// Please explain this???!?!?!?!?!
+const socket = io('/TagDefense',{transports: ['websocket']});
 const canvas = document.getElementById('tagDefenseCanvas')
 canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
 document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
