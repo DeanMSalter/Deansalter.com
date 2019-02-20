@@ -74,6 +74,13 @@ tagDefense.on('connection', function(socket) {
       y:0,
     }
     tagDefenseGameData.idTracker += 1;
+
+    let tagDefenseEmitData = {
+      players: tagDefenseGameData.players,
+      side1Points: tagDefenseGameData.side1Points,
+      side2Points: tagDefenseGameData.side2Points,
+    }
+    tagDefense.emit('state', tagDefenseEmitData);
   }
   function respawnPlayer(player){
     console.log("respawn")
@@ -84,6 +91,13 @@ tagDefense.on('connection', function(socket) {
     setTimeout(function() {
       player.moving = true;
     }, 1 * 1000);
+
+    let tagDefenseEmitData = {
+      players: tagDefenseGameData.players,
+      side1Points: tagDefenseGameData.side1Points,
+      side2Points: tagDefenseGameData.side2Points,
+    }
+    tagDefense.emit('state', tagDefenseEmitData);
   }
 
   //########## Check functions
@@ -162,7 +176,12 @@ tagDefense.on('connection', function(socket) {
 
     wallCheck(player)
     collisionCheck(player)
-
+    let tagDefenseEmitData = {
+      players: tagDefenseGameData.players,
+      side1Points: tagDefenseGameData.side1Points,
+      side2Points: tagDefenseGameData.side2Points,
+    }
+    tagDefense.emit('state', tagDefenseEmitData);
   }
   function mouseMovement(socket){
     let player = tagDefenseGameData.players[socket] || {};
@@ -175,6 +194,12 @@ tagDefense.on('connection', function(socket) {
 
      wallCheck(player)
      collisionCheck(player)
+     let tagDefenseEmitData = {
+       players: tagDefenseGameData.players,
+       side1Points: tagDefenseGameData.side1Points,
+       side2Points: tagDefenseGameData.side2Points,
+     }
+     tagDefense.emit('state', tagDefenseEmitData);
   }
 
   socket.on('client data',function(clientData){
@@ -183,6 +208,12 @@ tagDefense.on('connection', function(socket) {
     addButton1 = clientData.addButton1;
     addButton2 = clientData.addButton2;
     midPoint = clientData.midPoint;
+    let tagDefenseEmitData = {
+      players: tagDefenseGameData.players,
+      side1Points: tagDefenseGameData.side1Points,
+      side2Points: tagDefenseGameData.side2Points,
+    }
+    tagDefense.emit('state', tagDefenseEmitData);
   });
 
   socket.on('mouseMove',function(data){
@@ -242,9 +273,8 @@ tagDefense.on('connection', function(socket) {
 
 
 tag.on('connection', function(socket) {
-
   //########## game state variables
-
+  console.log("connect")
   let canvasWidth;
   let canvasHeight;
   let midPoint;
@@ -272,18 +302,8 @@ tag.on('connection', function(socket) {
       y:0,
     }
     tagGameData.idTracker += 1;
+    tag.emit('state', tagGameData.players);
   }
-  function respawnPlayer(player){
-    console.log("respawn")
-    player.x = player.xDefault;
-    player.y = player.yDefault;
-
-    player.moving = false;
-    setTimeout(function() {
-      player.moving = true;
-    }, 1 * 1000);
-  }
-
   //########## Check functions
   function addButtonCheck(data){
     if(typeof addButton != "undefined"){
@@ -296,14 +316,14 @@ tag.on('connection', function(socket) {
 
   }
   function wallCheck(player){
-    if (player.x >= (canvasWidth - player.r)-60) { //Right
-        player.x = canvasWidth - player.r -60;
+    if (player.x >= (canvasWidth - player.r)) { //Right
+        player.x = canvasWidth - player.r;
     }
     if (player.y >= canvasHeight - player.r) { //Bottom
       player.y = canvasHeight - player.r;
     }
-    if (player.x <= player.r + 60) { //Left
-        player.x = player.r + 60
+    if (player.x <= player.r ) { //Left
+        player.x = player.r
     }
     if (player.y <= player.r) { //Top
       player.y = player.r
@@ -343,6 +363,7 @@ tag.on('connection', function(socket) {
 
     wallCheck(player)
     collisionCheck(player)
+    tag.emit('state', tagGameData.players);
 
   }
   function mouseMovement(socket){
@@ -356,6 +377,7 @@ tag.on('connection', function(socket) {
 
      wallCheck(player)
      collisionCheck(player)
+     tag.emit('state', tagGameData.players);
   }
 
   socket.on('client data',function(clientData){
@@ -363,6 +385,7 @@ tag.on('connection', function(socket) {
     canvasHeight = clientData.canvasHeight;
     midPoint = clientData.midPoint;
     addButton = clientData.addButton;
+    tag.emit('state', tagGameData.players);
   });
 
   socket.on('mouseMove',function(data){
@@ -418,21 +441,16 @@ tag.on('connection', function(socket) {
 
 });
 // //update 60 times a second to update clients
-
-
-//update 60 times a second to update clients
-setInterval(function() {
-  let tagDefenseEmitData = {
-    players: tagDefenseGameData.players,
-    side1Points: tagDefenseGameData.side1Points,
-    side2Points: tagDefenseGameData.side2Points,
-  }
-  tagDefense.emit('state', tagDefenseEmitData);
-}, 1000 / 60);
-
-setInterval(function() {
-  let tagEmitData = {
-    players: tagGameData.players,
-  }
-  tag.emit('state', tagEmitData);
-}, 1000 / 60);
+//
+// setInterval(function() {
+//   let tagDefenseEmitData = {
+//     players: tagDefenseGameData.players,
+//     side1Points: tagDefenseGameData.side1Points,
+//     side2Points: tagDefenseGameData.side2Points,
+//   }
+//   tagDefense.emit('state', tagDefenseEmitData);
+// }, 2000 );
+//
+// setInterval(function() {
+//    tag.emit('state', tagGameData.players);
+// }, 2000 );

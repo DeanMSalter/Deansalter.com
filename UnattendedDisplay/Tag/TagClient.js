@@ -42,8 +42,7 @@ const clientData = {
 //Socket interations
 socket.emit('client data',clientData);
 socket.on('state', function(gameData) {
-  console.log("refresh")
-  players = gameData.players ;
+  players = gameData ;
 });
 
 //Start client
