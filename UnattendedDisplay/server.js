@@ -287,7 +287,6 @@ tag.on('connection', function(socket) {
   function newPlayer(data){
 
     if(tagGameData.players[data]){
-      console.log("duplicate");
       return;
     }
 

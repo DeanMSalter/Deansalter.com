@@ -260,7 +260,6 @@ function touchMove(e) {
   socket.emit('touch',mouse);
 }
 function enteredUsername(){
-  console.log(document.getElementById('uNameInputField').value)
   socket.emit('usernameRecieved',document.getElementById('uNameInputField').value);
 }
 //Mouse status changes
@@ -310,7 +309,6 @@ function render() {
 
   for (let id in players) {
     let player = players[id];
-    console.log(player.name);
     if(player.tagged && player.delayed){
         drawHollowCircle(player.x,player.y,player.r/2,player.colour)
     }else if (player.tagged && !player.delayed){
