@@ -20,14 +20,14 @@ const scaleX = canvas.width / rect.width;
 const scaleY = canvas.height / rect.height;
 
 //########## Static drawn elements defined
-const  addButton =  new Circle(midPoint,100,50,"gold")
+
 
 
 //########## Game state variables
 
 let lastTime;
 let pointerLocked = false;
-
+let lastTap;
 let mouse = {};
 let players = {};
 
@@ -36,7 +36,6 @@ const clientData = {
   canvasWidth:ctx.canvas.width,
   canvasHeight:ctx.canvas.height,
   midPoint:midPoint,
-  addButton: addButton,
 }
 
 //Socket interations
@@ -52,14 +51,17 @@ main();
 window.onkeyup = function(e) {
    let key = e.keyCode ? e.keyCode : e.which;
 
-   if (key == 76) {
+   if (key == 76) { //L Key
      if(pointerLocked){
        document.exitPointerLock();
      }else{
        canvas.requestPointerLock();
      }
-
    }
+   if (key == 78) { //N key
+     socket.emit('new player');
+   }
+
 }
 
 document.addEventListener('pointerlockchange', lockChangeAlert, false);
@@ -72,22 +74,18 @@ document.addEventListener("touchend", touchEnd, false);
 document.addEventListener("mousedown", click, false);
 
 //########## Utility functions
-function Circle(x, y, r,colour) {
-  this.xDefault = x
-  this.yDefault = y
-  this.x = (x === null) ? 0 : x;
-  this.y = (y === null) ? 0 : y;
-  this.r = (r === null) ? 0 : r;
+function doubleTap(){
+  let now = new Date().getTime();
+  let timesince = now - lastTap;
+  if((timesince < 600) && (timesince > 0)){
+    socket.emit('new player');
+   // double tap
 
-  this.fill = function(ctx) {
-    ctx.fillStyle = colour;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-
-    ctx.fill();
+  }else{
+           // too much time to be a doubletap
   }
-
-};
+  lastTap = new Date().getTime();
+}
 function clearScreen(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -105,9 +103,10 @@ function clearScreen(){
 function drawBackgroundText(){
   ctx.fillStyle = "black"
   ctx.font = "bold 22px SanSerif";
-  ctx.fillText("Click the top ball to join", 30 ,60);
-  ctx.fillText("Stay Tagged the least time as possible", 30 ,80);
-  ctx.fillText("Your a rectangle if your tagged", 30 ,100);
+  ctx.fillText("Stay tagged for as little time as you can", 30 ,60);
+  ctx.fillText("A tagged player has a hollow circle, with a red ID", 30 ,80);
+  ctx.fillText("If the tagged player is small , it means they are currently safe", 30 ,100);
+
 
 }
 function drawCircle(x,y,r,colour){
@@ -117,6 +116,17 @@ function drawCircle(x,y,r,colour){
   ctx.beginPath();
   ctx.arc(x,y,r, 0, 2 * Math.PI);
   ctx.fill();
+}
+function drawHollowCircle(x,y,r,colour){
+  if(colour !== null){
+    ctx.strokeStyle = colour;
+  }
+  ctx.beginPath();
+  ctx.lineWidth = 5
+  ctx.arc(x, y, r, 0, Math.PI * 2, true); // Outer circle
+  ctx.stroke();
+
+
 }
 
 //########## Simple listener/response functions
@@ -136,10 +146,12 @@ function lockChangeAlert() {
 
 //When touching statuses happen
 function touchStart(e) {
+  doubleTap()
   mouse = {
     x:(e.touches[0].pageX  - rect.left)*scaleX,
     y:(e.touches[0].pageY  - rect.top)*scaleY,
   }
+
   socket.emit('touchStart',mouse);
 }
 function touchEnd(e) {
@@ -187,26 +199,53 @@ function render() {
   clearScreen()
   drawBackgroundText()
 
-  addButton.fill(ctx);
 
+  let displaySize;
+
+  if(!players[socket.id]){
+    let text = "Press N to join the game!"
+    ctx.fillText(text, midPoint-ctx.measureText(text).width/2 ,500);
+    text = "Or double tap if on mobile"
+    ctx.fillText(text, midPoint-ctx.measureText(text).width/2 ,520);
+  }
   for (let id in players) {
     let player = players[id];
-    drawCircle(player.x,player.y,player.r,player.colour)
+    if(player.tagged){
+      if(player.delayed){
+        displaySize = player.r/2
+      }else{
+        displaySize = player.r
+      }
+      drawHollowCircle(player.x,player.y,displaySize,player.colour)
+    }else{
+      drawCircle(player.x,player.y,player.r,player.colour)
+    }
+
 
     ctx.fillStyle = "black"
     ctx.font = "bold 30px SanSerif";
+    if(player.tagged){
+      ctx.fillStyle = "red"
+    }
     ctx.fillText(player.id, player.x-8, player.y+8);
 
     //If the client is this specific player
     if(id == socket.id){
+      if(player.tagged){
+        ctx.fillStyle = "red"
+        ctx.font = "bold 50px SanSerif";
+        ctx.fillText("Your Tagged! ",midPoint+100, 85);
+      }
       ctx.font = "bold 25px SanSerif";
-      ctx.fillText("Player Stats " , addButton.x+55 , 20);
+      ctx.fillText("Player Stats " , midPoint-55 , 20);
 
       ctx.font = "bold 20px SanSerif";
-      ctx.fillText("X: " + player.x, addButton.x+80 , 45);
-      ctx.fillText("Y: " + player.y, addButton.x+80 , 65);
-      ctx.fillText("Points: " + player.points,addButton.x+80, 85);
-    }
 
+      ctx.fillText("X: " + player.x, midPoint-80 , 45);
+      ctx.fillText("Y: " + player.y, midPoint-80 , 65);
+      ctx.fillText("Points: " + player.points,midPoint-80, 85);
+
+    }
   }
+
 };

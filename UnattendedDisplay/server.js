@@ -37,6 +37,7 @@ let tagGameData = {
   players:{},
   mouses:{},
   idTracker:0,
+  taggedPlayer:null,
 }
 
 // //Socket listeners
@@ -53,6 +54,7 @@ tagDefense.on('connection', function(socket) {
 
   //########## utility functions
   function newPlayer(data,x,colour){
+
     console.log("new player")
     tagDefenseGameData.players[data] = {
       x: x,
@@ -283,20 +285,31 @@ tag.on('connection', function(socket) {
 
   //########## utility functions
   function newPlayer(data,x,colour){
+
+    if(tagGameData.players[data]){
+      console.log("duplicate");
+      return;
+    }
+
     console.log("new player")
     tagGameData.players[data] = {
-      x: x,
+      x: 200,
       y: 500,
       xDefault:x,
       yDefault:500,
       r: 45,
-      colour: colour,
+      colour: baller.getRandomColor(),
       active:false,
       id:tagGameData.idTracker,
+      points:500,
       moving: true,
       tagged: false,
+      delayed: false,
     }
-
+    if(tagGameData.taggedPlayer == null){
+      tagGameData.players[data].tagged = true;
+      tagGameData.taggedPlayer = socket.id
+    }
     tagGameData.mouses[data] = {
       x:0,
       y:0,
@@ -305,16 +318,7 @@ tag.on('connection', function(socket) {
     tag.emit('state', tagGameData.players);
   }
   //########## Check functions
-  function addButtonCheck(data){
-    if(typeof addButton != "undefined"){
-      if (baller.pointInCircle(data.x, data.y, addButton.x, addButton.y, addButton.r)){
-        newPlayer(data.socket,200,"blue")
 
-      }
-    }
-
-
-  }
   function wallCheck(player){
     if (player.x >= (canvasWidth - player.r)) { //Right
         player.x = canvasWidth - player.r;
@@ -332,21 +336,26 @@ tag.on('connection', function(socket) {
   function collisionCheck(player){
     for(let i = 0;i<Object.keys(tagGameData.players).length;i++){
       if(baller.ballCollision(player,tagGameData.players[Object.keys(tagGameData.players)[i]])){
+        if(player.tagged && !player.delayed){
+          tagGameData.players[Object.keys(tagGameData.players)[i]].tagged = true;
+          player.tagged = false;
+          tagGameData.taggedPlayer = Object.keys(tagGameData.players)[i]
 
-        if(player.xDefault == tagGameData.players[Object.keys(tagGameData.players)[i]].xDefault){
-          continue;
+          tagGameData.players[Object.keys(tagGameData.players)[i]].delayed = true
+          setTimeout(function() {
+            tagGameData.players[Object.keys(tagGameData.players)[i]].delayed = false
+          }, 2 * 1000);
         }
+        else if(tagGameData.players[Object.keys(tagGameData.players)[i]].tagged && !tagGameData.players[Object.keys(tagGameData.players)[i]].delayed){
+          tagGameData.players[Object.keys(tagGameData.players)[i]].tagged = false;
+          player.tagged = true;
+          tagGameData.taggedPlayer = socket.id
 
-        else if((player.x + player.r >= midPoint) && (player.xDefault <= midPoint) ){
+          player.delayed = true
+          setTimeout(function() {
+            player.delayed = false
+          }, 2 * 1000);
 
-
-        }else if((player.x + player.r >= midPoint) && (player.xDefault >= midPoint)){
-
-        }
-
-        else if((player.x + player.r <= midPoint) && (player.xDefault <= midPoint)){
-
-        }else if((player.x + player.r <= midPoint) && (player.xDefault >= midPoint)){
 
         }
       }
@@ -387,7 +396,9 @@ tag.on('connection', function(socket) {
     addButton = clientData.addButton;
     tag.emit('state', tagGameData.players);
   });
-
+  socket.on('new player',function(){
+    newPlayer(socket.id)
+  });
   socket.on('mouseMove',function(data){
     //if dragging is happening then do stuff
     let player = tagGameData.players[socket.id] || {};
@@ -397,14 +408,7 @@ tag.on('connection', function(socket) {
     mouse.y = data.y
     mouseMovement(socket.id)
   });
-  socket.on("click",function(data){
-    let click = {
-      x:data.x,
-      y:data.y,
-      socket:socket.id
-    }
-    addButtonCheck(click)
-  });
+
 
   socket.on("touchStart",function(data){
     let player = tagGameData.players[socket.id] || {};
@@ -419,7 +423,6 @@ tag.on('connection', function(socket) {
       y:data.y,
       socket:socket.id
     }
-    addButtonCheck(click)
 
   });
   socket.on("touchEnd",function(){
@@ -440,6 +443,18 @@ tag.on('connection', function(socket) {
 
 
 });
+
+setInterval(function(){
+  if(tagGameData.taggedPlayer != null){
+    tagGameData.players[tagGameData.taggedPlayer].points -= 1;
+  }
+
+},1000*1);
+
+//Send data every second just to ensure that the client stays somewhat up to date even if no real change occurs
+setInterval(function(){
+  tag.emit('state', tagGameData.players);
+},1000*1);
 // //update 60 times a second to update clients
 //
 // setInterval(function() {
