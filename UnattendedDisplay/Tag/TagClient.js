@@ -124,12 +124,10 @@ function clearScreen(){
 function drawBackgroundText(){
   ctx.fillStyle = "black"
   ctx.font = "bold 22px SanSerif";
-  let text = "Stay tagged for as little time as you can"
-  ctx.fillText(text, topLeft.x ,topLeft.y);
-  ctx.fillText("A tagged player has a hollow circle", topLeft.x ,topLeft.y+20);
-  ctx.fillText("If the tagged player is small , it means they are currently safe",topLeft.x ,topLeft.y+40);
-  ctx.fillText("Your ball with have a large and green ID",topLeft.x ,topLeft.y+60);
-
+  ctx.fillText("Stay tagged for as little time as you can", topLeft.x ,topLeft.y);
+  ctx.fillText("A tagged player has a hollow circle", topLeft.x ,topLeft.y+paddingY);
+  ctx.fillText("If the tagged player is small , it means they are currently safe",topLeft.x ,topLeft.y+paddingY*2);
+  ctx.fillText("Your ball will have a large and green ID",topLeft.x ,topLeft.y+paddingY*3);
 }
 function drawCircle(x,y,r,colour){
   if(colour !== null){
@@ -150,7 +148,71 @@ function drawHollowCircle(x,y,r,colour){
 
 
 }
+function drawJoinText(){
+  ctx.fillStyle = "black"
+  let text = "Press N to join the game"
+  ctx.fillText(text, topRight.x-ctx.measureText(text).width ,topRight.y);
+  ctx.fillText("Double tap if on mobile", topRight.x-ctx.measureText(text).width ,topRight.y+paddingY);
+}
+function drawControlText(){
+  let text;
+  let text2;
+  if(!pointerLocked){
+    ctx.fillStyle = "red"
+    text = "Press L to start controlling your ball"
+  }else{
+    ctx.fillStyle = "black"
+    text = "Move your mouse to move your ball"
+  }
+  if(players[socket.id].active){
+    ctx.fillStyle = "red"
+    text2 = "Move your finger to move your ball"
+    text = ""
+  }else{
+    ctx.fillStyle = "black"
+    text2 = "If on mobile hold onto your ball to start moving it"
+  }
 
+  if(pointerLocked){
+    text2 = ""
+  }
+  ctx.fillText(text, bottomRight.x-ctx.measureText(text).width ,bottomRight.y-10);
+  ctx.fillText(text2, bottomRight.x-ctx.measureText(text2).width ,bottomRight.y+10);
+}
+function drawLeaderboard(){
+  let leaderboardTop = topRight.y
+  let leaderboardPadding = 0;
+  if(!players[socket.id]){ //If player hasnt joined
+    leaderboardTop = paddingY*4
+  }
+  ctx.fillText("Leaderboard", topRight.x-ctx.measureText("Leaderboard").width, leaderboardTop+leaderboardPadding);
+  console.log(players)
+  let playersIsEmpty = true;
+  for(let id in players){
+    playersIsEmpty = false;
+    let player = players[id];
+    if(id == socket.id){
+      ctx.fillStyle = "green"
+    }else{
+      ctx.fillStyle = "black"
+    }
+
+    ctx.font = "bold 20px SanSerif"
+    let playerScore = player.id + ": " + player.points
+
+    ctx.fillText(playerScore, topRight.x-ctx.measureText(playerScore).width, topRight.y+leaderboardPadding+leaderboardTop-10);
+
+    leaderboardPadding += 20;
+  }
+  if(playersIsEmpty){
+    ctx.fillStyle = "red"
+    let playerScore = "~~Game is empty~~"
+    ctx.fillText(playerScore, topRight.x-ctx.measureText(playerScore).width, topRight.y+leaderboardPadding+leaderboardTop-10);
+  }
+
+
+
+}
 //########## Simple listener/response functions
 
 //Monitors when the cursor lock status changes, acts accordingly
@@ -220,56 +282,26 @@ function main() {
 function render() {
   clearScreen()
   drawBackgroundText()
-
-
-  let displaySize;
-
-  if(!players[socket.id]){
-    let text = "Press N to join the game"
-    ctx.fillText(text, topRight.x-ctx.measureText(text).width ,topRight.y);
-    ctx.fillText("Double tap if on mobile", topRight.x-ctx.measureText(text).width ,topRight.y+20);
+  drawLeaderboard();
+  if(!players[socket.id]){ //If player hasnt joined
+    drawJoinText()
   }else{
-    let text;
-    let text2;
-    if(!pointerLocked){
-      ctx.fillStyle = "red"
-      text = "Press L to start controlling your ball"
-    }else{
-      ctx.fillStyle = "black"
-      text = "Move your mouse to move your ball"
-    }
-    if(players[socket.id].active){
-      ctx.fillStyle = "red"
-      text2 = "Move your finger to move your ball"
-      text = ""
-    }else{
-      ctx.fillStyle = "black"
-      text2 = "If on mobile hold onto your ball to start moving it"
-
-    }
-
-    if(pointerLocked){
-      text2 = ""
-    }
-    ctx.fillText(text, bottomRight.x-ctx.measureText(text).width ,bottomRight.y-10);
-    ctx.fillText(text2, bottomRight.x-ctx.measureText(text2).width ,bottomRight.y+10);
-
+    drawControlText()
   }
+
+
+
+
   for (let id in players) {
     let player = players[id];
-    if(player.tagged){
-      if(player.delayed){
-        displaySize = player.r/2
-      }else{
-        displaySize = player.r
-      }
-      drawHollowCircle(player.x,player.y,displaySize,player.colour)
+
+    if(player.tagged && player.delayed){
+        drawHollowCircle(player.x,player.y,player.r/2,player.colour)
+    }else if (player.tagged && !player.delayed){
+        drawHollowCircle(player.x,player.y,player.r,player.colour)
     }else{
-      drawCircle(player.x,player.y,player.r,player.colour)
+        drawCircle(player.x,player.y,player.r,player.colour)
     }
-
-
-
 
 
 
