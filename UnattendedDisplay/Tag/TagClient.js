@@ -186,19 +186,29 @@ function drawLeaderboard(){
     leaderboardTop = paddingY*4
   }
   ctx.fillText("Leaderboard", topRight.x-ctx.measureText("Leaderboard").width, leaderboardTop+leaderboardPadding);
-  console.log(players)
   let playersIsEmpty = true;
   for(let id in players){
     playersIsEmpty = false;
     let player = players[id];
     if(id == socket.id){
       ctx.fillStyle = "green"
-    }else{
+    }else if(player.tagged){
+      ctx.fillStyle = "red"
+    }
+    else{
       ctx.fillStyle = "black"
     }
 
+
     ctx.font = "bold 20px SanSerif"
-    let playerScore = player.id + ": " + player.points
+
+    let displayName;
+    if(player.name ){
+      displayName = player.name
+    }else{
+      displayName = player.id
+    }
+    let playerScore = displayName + "- L: " + player.life + " P: " + player.points
 
     ctx.fillText(playerScore, topRight.x-ctx.measureText(playerScore).width, topRight.y+leaderboardPadding+leaderboardTop-10);
 
@@ -249,7 +259,10 @@ function touchMove(e) {
 
   socket.emit('touch',mouse);
 }
-
+function enteredUsername(){
+  console.log(document.getElementById('uNameInputField').value)
+  socket.emit('usernameRecieved',document.getElementById('uNameInputField').value);
+}
 //Mouse status changes
 function click(e){
   mouse = {
@@ -285,8 +298,11 @@ function render() {
   drawLeaderboard();
   if(!players[socket.id]){ //If player hasnt joined
     drawJoinText()
+    document.getElementById("ballCanvas").style.height = "85vh";
   }else{
     drawControlText()
+    document.getElementById("ballCanvas").style.height = "90vh";
+    document.getElementById("uNameInput").style.display = "none";
   }
 
 
@@ -294,7 +310,7 @@ function render() {
 
   for (let id in players) {
     let player = players[id];
-
+    console.log(player.name);
     if(player.tagged && player.delayed){
         drawHollowCircle(player.x,player.y,player.r/2,player.colour)
     }else if (player.tagged && !player.delayed){
@@ -309,19 +325,21 @@ function render() {
     if(id == socket.id){
       ctx.fillStyle = "Green"
       ctx.font = "bold 45px SanSerif"
-      ctx.fillText(player.id, player.x-10, player.y+10);
+      ctx.fillText(player.id, player.x-10, player.y+12);
       if(player.tagged){
         ctx.fillStyle = "red"
         ctx.font = "bold 30px SanSerif";
-        ctx.fillText("Your Tagged! ",bottomLeft.x, bottomLeft.y-55);
+        ctx.fillText("Your Tagged! ",bottomLeft.x, bottomLeft.y-paddingY*5);
       }else{
         ctx.fillStyle = "black"
       }
 
       ctx.font = "bold 20px SanSerif";
-      ctx.fillText("X: " + player.x, bottomLeft.x , bottomLeft.y-30);
-      ctx.fillText("Y: " + player.y, bottomLeft.x , bottomLeft.y-10);
-      ctx.fillText("Points: " + player.points,bottomLeft.x, bottomLeft.y+10);
+      ctx.fillText("Name/ID: " + player.name + "/" + player.id, bottomLeft.x , bottomLeft.y-paddingY*4);
+      ctx.fillText("X: " + player.x, bottomLeft.x , bottomLeft.y-paddingY*3);
+      ctx.fillText("Y: " + player.y, bottomLeft.x , bottomLeft.y-paddingY*2);
+      ctx.fillText("life: " + player.life,bottomLeft.x, bottomLeft.y-paddingY);
+      ctx.fillText("points: " + player.points,bottomLeft.x, bottomLeft.y);
     }else{
       ctx.fillStyle = "black"
       ctx.font = "bold 30px SanSerif";

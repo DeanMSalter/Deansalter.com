@@ -284,7 +284,7 @@ tag.on('connection', function(socket) {
   let addButton;
 
   //########## utility functions
-  function newPlayer(data,x,colour){
+  function newPlayer(data){
 
     if(tagGameData.players[data]){
       console.log("duplicate");
@@ -295,13 +295,13 @@ tag.on('connection', function(socket) {
     tagGameData.players[data] = {
       x: 200,
       y: 500,
-      xDefault:x,
-      yDefault:500,
       r: 45,
       colour: baller.getRandomColor(),
       active:false,
       id:tagGameData.idTracker,
-      points:500,
+      name:null,
+      life:60,
+      points:0,
       tagged: false,
       delayed: false,
     }
@@ -397,6 +397,11 @@ tag.on('connection', function(socket) {
   socket.on('new player',function(){
     newPlayer(socket.id)
   });
+  socket.on('usernameRecieved',function(data){
+    newPlayer(socket.id)
+    let player = tagGameData.players[socket.id] || {};
+    player.name = data;
+  });
   socket.on('mouseMove',function(data){
     //if dragging is happening then do stuff
     let player = tagGameData.players[socket.id] || {};
@@ -444,26 +449,12 @@ tag.on('connection', function(socket) {
 
 setInterval(function(){
   if(tagGameData.taggedPlayer != null){
-    tagGameData.players[tagGameData.taggedPlayer].points -= 1;
+    tagGameData.players[tagGameData.taggedPlayer].life -= 1;
   }
-
+  for (let id in   tagGameData.players) {
+    tagGameData.players[id].points +=1;
+  }
+  tag.emit('state', tagGameData.players);
 },1000*1);
 
 //Send data every second just to ensure that the client stays somewhat up to date even if no real change occurs
-setInterval(function(){
-  tag.emit('state', tagGameData.players);
-},1000*1);
-// //update 60 times a second to update clients
-//
-// setInterval(function() {
-//   let tagDefenseEmitData = {
-//     players: tagDefenseGameData.players,
-//     side1Points: tagDefenseGameData.side1Points,
-//     side2Points: tagDefenseGameData.side2Points,
-//   }
-//   tagDefense.emit('state', tagDefenseEmitData);
-// }, 2000 );
-//
-// setInterval(function() {
-//    tag.emit('state', tagGameData.players);
-// }, 2000 );
