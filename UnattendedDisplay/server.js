@@ -302,7 +302,6 @@ tag.on('connection', function(socket) {
       active:false,
       id:tagGameData.idTracker,
       points:500,
-      moving: true,
       tagged: false,
       delayed: false,
     }
@@ -367,7 +366,6 @@ tag.on('connection', function(socket) {
     let player = tagGameData.players[socket] || {};
     let mouse = tagGameData.mouses[socket] || {};
 
-    if(!player.moving){return};
     baller.constantMovement(player,mouse,10)
 
     wallCheck(player)
@@ -380,7 +378,7 @@ tag.on('connection', function(socket) {
     let mouse = tagGameData.mouses[socket] || {};
     let distanceSpeed =  0.05
 
-     if(!player.moving){return};
+
      player.x += mouse.x* distanceSpeed
      player.y += mouse.y* distanceSpeed
 

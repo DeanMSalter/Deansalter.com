@@ -19,6 +19,27 @@ const midPoint = canvas.width/2
 const scaleX = canvas.width / rect.width;
 const scaleY = canvas.height / rect.height;
 
+
+const paddingX = 15;
+const paddingY = 30;
+
+const bottomLeft ={
+  x:paddingX,
+  y:canvas.height-paddingY
+}
+const bottomRight ={
+  x:canvas.width-paddingX,
+  y:canvas.height-paddingY
+}
+const topLeft ={
+  x:paddingX,
+  y:paddingY
+}
+const topRight ={
+  x:canvas.width-paddingX,
+  y:paddingY
+}
+
 //########## Static drawn elements defined
 
 
@@ -91,7 +112,7 @@ function clearScreen(){
 
   ctx.beginPath();
   ctx.lineWidth = "20";
-  ctx.strokeStyle = "gold";
+  ctx.strokeStyle = "Green";
   ctx.rect(0, 0, canvas.width, canvas.height);
   ctx.stroke();
 
@@ -103,10 +124,11 @@ function clearScreen(){
 function drawBackgroundText(){
   ctx.fillStyle = "black"
   ctx.font = "bold 22px SanSerif";
-  ctx.fillText("Stay tagged for as little time as you can", 30 ,60);
-  ctx.fillText("A tagged player has a hollow circle, with a red ID", 30 ,80);
-  ctx.fillText("If the tagged player is small , it means they are currently safe", 30 ,100);
-
+  let text = "Stay tagged for as little time as you can"
+  ctx.fillText(text, topLeft.x ,topLeft.y);
+  ctx.fillText("A tagged player has a hollow circle", topLeft.x ,topLeft.y+20);
+  ctx.fillText("If the tagged player is small , it means they are currently safe",topLeft.x ,topLeft.y+40);
+  ctx.fillText("Your ball with have a large and green ID",topLeft.x ,topLeft.y+60);
 
 }
 function drawCircle(x,y,r,colour){
@@ -203,10 +225,35 @@ function render() {
   let displaySize;
 
   if(!players[socket.id]){
-    let text = "Press N to join the game!"
-    ctx.fillText(text, midPoint-ctx.measureText(text).width/2 ,500);
-    text = "Or double tap if on mobile"
-    ctx.fillText(text, midPoint-ctx.measureText(text).width/2 ,520);
+    let text = "Press N to join the game"
+    ctx.fillText(text, topRight.x-ctx.measureText(text).width ,topRight.y);
+    ctx.fillText("Double tap if on mobile", topRight.x-ctx.measureText(text).width ,topRight.y+20);
+  }else{
+    let text;
+    let text2;
+    if(!pointerLocked){
+      ctx.fillStyle = "red"
+      text = "Press L to start controlling your ball"
+    }else{
+      ctx.fillStyle = "black"
+      text = "Move your mouse to move your ball"
+    }
+    if(players[socket.id].active){
+      ctx.fillStyle = "red"
+      text2 = "Move your finger to move your ball"
+      text = ""
+    }else{
+      ctx.fillStyle = "black"
+      text2 = "If on mobile hold onto your ball to start moving it"
+
+    }
+
+    if(pointerLocked){
+      text2 = ""
+    }
+    ctx.fillText(text, bottomRight.x-ctx.measureText(text).width ,bottomRight.y-10);
+    ctx.fillText(text2, bottomRight.x-ctx.measureText(text2).width ,bottomRight.y+10);
+
   }
   for (let id in players) {
     let player = players[id];
@@ -222,29 +269,31 @@ function render() {
     }
 
 
-    ctx.fillStyle = "black"
-    ctx.font = "bold 30px SanSerif";
-    if(player.tagged){
-      ctx.fillStyle = "red"
-    }
-    ctx.fillText(player.id, player.x-8, player.y+8);
+
+
+
 
     //If the client is this specific player
     if(id == socket.id){
+      ctx.fillStyle = "Green"
+      ctx.font = "bold 45px SanSerif"
+      ctx.fillText(player.id, player.x-10, player.y+10);
       if(player.tagged){
         ctx.fillStyle = "red"
-        ctx.font = "bold 50px SanSerif";
-        ctx.fillText("Your Tagged! ",midPoint+100, 85);
+        ctx.font = "bold 30px SanSerif";
+        ctx.fillText("Your Tagged! ",bottomLeft.x, bottomLeft.y-55);
+      }else{
+        ctx.fillStyle = "black"
       }
-      ctx.font = "bold 25px SanSerif";
-      ctx.fillText("Player Stats " , midPoint-55 , 20);
 
       ctx.font = "bold 20px SanSerif";
-
-      ctx.fillText("X: " + player.x, midPoint-80 , 45);
-      ctx.fillText("Y: " + player.y, midPoint-80 , 65);
-      ctx.fillText("Points: " + player.points,midPoint-80, 85);
-
+      ctx.fillText("X: " + player.x, bottomLeft.x , bottomLeft.y-30);
+      ctx.fillText("Y: " + player.y, bottomLeft.x , bottomLeft.y-10);
+      ctx.fillText("Points: " + player.points,bottomLeft.x, bottomLeft.y+10);
+    }else{
+      ctx.fillStyle = "black"
+      ctx.font = "bold 30px SanSerif";
+      ctx.fillText(player.id, player.x-8, player.y+8);
     }
   }
 
