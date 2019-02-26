@@ -1,17 +1,21 @@
 'use strict';
 //########## Constant variables / canvas stuff
-const socket = io('/tagMobile',{transports: ['websocket']});
+const socket = io('/tagDesktop',{transports: ['websocket']});
 const canvas = document.getElementById('ballCanvas')
 canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
 document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
 const ctx = canvas.getContext("2d");
-canvas.style.height =window.innerHeight +"px";
-canvas.style.width =window.innerWidth +"px";
-
-
-if(!isMobileDevice()){
-  window.location.href = '/tagDesktop';
+if(isMobileDevice()){
+  window.location.href = '/tag';
 }
+
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+document.addEventListener('resize', function(event){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
 
 const requestAnimFrame = (function() {
   return window.requestAnimationFrame ||
@@ -86,30 +90,35 @@ socket.on('state', function(gameData) {
 main();
 
 //########## Listener functions
+window.onkeyup = function(e) {
+   let key = e.keyCode ? e.keyCode : e.which;
+
+   if (key == 76) { //L Key
+     if(pointerLocked){
+       document.exitPointerLock();
+     }else{
+       canvas.requestPointerLock();
+     }
+   }
+   if (key == 78) { //N key
+     console.log("try new player")
+     socket.emit('new player');
+   }
+
+}
+
+document.addEventListener('pointerlockchange', lockChangeAlert, false);
+document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
 
 
-document.addEventListener("touchmove", touchMove, false);
-document.addEventListener("touchstart", touchStart, false);
-document.addEventListener("touchend", touchEnd, false);
-
+document.addEventListener("mousedown", click, false);
 
 //########## Utility functions
 function isMobileDevice() {
   return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
 };
 
-function doubleTap(){
-  let now = new Date().getTime();
-  let timesince = now - lastTap;
-  if((timesince < 600) && (timesince > 0)){
-    socket.emit('new player');
-   // double tap
 
-  }else{
-           // too much time to be a doubletap
-  }
-  lastTap = new Date().getTime();
-}
 function clearScreen(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -153,19 +162,18 @@ function drawHollowCircle(x,y,r,colour){
 }
 function drawJoinText(){
   ctx.fillStyle = "black"
-  ctx.fillText("Double tap to join!", topRight.x-ctx.measureText("Double tap to join!").width ,topRight.y);
+  let text = "Press N to join the game"
+  ctx.fillText(text, topRight.x-ctx.measureText(text).width ,topRight.y);
 }
 function drawControlText(){
   let text;
-
-  if(players[socket.id].active){
+  if(!pointerLocked){
     ctx.fillStyle = "red"
-    text = "Move your finger to move your ball"
+    text = "Press L to start controlling your ball"
   }else{
     ctx.fillStyle = "black"
-    text = "Hold onto your ball to start moving it"
+    text = "Move your mouse to move your ball"
   }
-
   ctx.fillText(text, bottomRight.x-ctx.measureText(text).width ,bottomRight.y-10);
 }
 function drawLeaderboard(){
@@ -217,35 +225,39 @@ function drawLeaderboard(){
 //########## Simple listener/response functions
 
 //Monitors when the cursor lock status changes, acts accordingly
-
+function lockChangeAlert() {
+  if (document.pointerLockElement === canvas ||document.mozPointerLockElement === canvas) {
+    console.log('The pointer lock status is now locked');
+    pointerLocked = true;
+    document.addEventListener("mousemove", mouseMove, false);
+  } else {
+    console.log('The pointer lock status is now unlocked');
+    pointerLocked = false;
+    document.removeEventListener("mousemove", mouseMove, false);
+  }
+}
 
 //When touching statuses happen
-function touchStart(e) {
-  doubleTap()
-  mouse = {
-    x:(e.touches[0].pageX  - rect.left)*scaleX,
-    y:(e.touches[0].pageY  - rect.top)*scaleY,
-  }
 
-  socket.emit('touchStart',mouse);
-}
-function touchEnd(e) {
-  socket.emit('touchEnd');
-}
-function touchMove(e) {
-  mouse = {
-    x:(e.touches[0].pageX  - rect.left)*scaleX,
-    y:(e.touches[0].pageY  - rect.top)*scaleY,
-  }
-
-  socket.emit('touch',mouse);
-}
 function enteredUsername(){
   socket.emit('usernameRecieved',document.getElementById('uNameInputField').value);
 }
 //Mouse status changes
+function click(e){
+  mouse = {
+    x: (e.pageX - rect.left)*scaleX,
+    y: (e.pageY  - rect.top)*scaleY
+  }
+  socket.emit("click",mouse)
+}
+function mouseMove(e){
+    mouse = {
+      x: e.movementX,
+      y: e.movementY,
+    }
 
-
+  socket.emit('mouseMove',mouse);
+}
 //########## Core game functions
 //Main game loop
 function main() {

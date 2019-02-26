@@ -1,17 +1,17 @@
 'use strict';
 //########## Constant variables / canvas stuff
-const socket = io('/tagMobile',{transports: ['websocket']});
+const socket = io('/tagDesktop',{transports: ['websocket']});
 const canvas = document.getElementById('ballCanvas')
-canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
-document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
 const ctx = canvas.getContext("2d");
-canvas.style.height =window.innerHeight +"px";
-canvas.style.width =window.innerWidth +"px";
-
-
-if(!isMobileDevice()){
-  window.location.href = '/tagDesktop';
+if(isMobileDevice()){
+  canvas.style.height =window.innerHeight;
+  canvas.style.width =window.innerWidth;
 }
+canvas.width = window.innerWidth*5;
+canvas.height = window.innerHeight*5;
+
+
+
 
 const requestAnimFrame = (function() {
   return window.requestAnimationFrame ||
@@ -62,14 +62,9 @@ let players = {};
 let allPlayers = {};
 let oldPlayerLength = 0;
 
-const clientData = {
-  canvasWidth:ctx.canvas.width,
-  canvasHeight:ctx.canvas.height,
-  midPoint:midPoint,
-}
+
 
 //Socket interations
-socket.emit('client data',clientData);
 socket.on('state', function(gameData) {
   players = gameData ;
   let playerLength = Object.keys(players).length
@@ -88,9 +83,7 @@ main();
 //########## Listener functions
 
 
-document.addEventListener("touchmove", touchMove, false);
-document.addEventListener("touchstart", touchStart, false);
-document.addEventListener("touchend", touchEnd, false);
+
 
 
 //########## Utility functions
@@ -98,18 +91,7 @@ function isMobileDevice() {
   return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
 };
 
-function doubleTap(){
-  let now = new Date().getTime();
-  let timesince = now - lastTap;
-  if((timesince < 600) && (timesince > 0)){
-    socket.emit('new player');
-   // double tap
 
-  }else{
-           // too much time to be a doubletap
-  }
-  lastTap = new Date().getTime();
-}
 function clearScreen(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -118,11 +100,6 @@ function clearScreen(){
   ctx.strokeStyle = "Green";
   ctx.rect(0, 0, canvas.width, canvas.height);
   ctx.stroke();
-
-
-
-
-
 }
 function drawBackgroundText(){
   ctx.fillStyle = "black"
@@ -130,7 +107,6 @@ function drawBackgroundText(){
   ctx.fillText("Stay tagged for as little time as you can", topLeft.x ,topLeft.y);
   ctx.fillText("A tagged player has a hollow circle", topLeft.x ,topLeft.y+paddingY);
   ctx.fillText("If the tagged player is small , it means they are currently safe",topLeft.x ,topLeft.y+paddingY*2);
-  ctx.fillText("Your ball will have a large and green ID",topLeft.x ,topLeft.y+paddingY*3);
 }
 function drawCircle(x,y,r,colour){
   if(colour !== null){
@@ -220,29 +196,7 @@ function drawLeaderboard(){
 
 
 //When touching statuses happen
-function touchStart(e) {
-  doubleTap()
-  mouse = {
-    x:(e.touches[0].pageX  - rect.left)*scaleX,
-    y:(e.touches[0].pageY  - rect.top)*scaleY,
-  }
 
-  socket.emit('touchStart',mouse);
-}
-function touchEnd(e) {
-  socket.emit('touchEnd');
-}
-function touchMove(e) {
-  mouse = {
-    x:(e.touches[0].pageX  - rect.left)*scaleX,
-    y:(e.touches[0].pageY  - rect.top)*scaleY,
-  }
-
-  socket.emit('touch',mouse);
-}
-function enteredUsername(){
-  socket.emit('usernameRecieved',document.getElementById('uNameInputField').value);
-}
 //Mouse status changes
 
 
@@ -263,19 +217,6 @@ function render() {
   drawBackgroundText()
   drawLeaderboard();
 
-  if(!players[socket.id]){ //If player hasnt joined
-    document.getElementById("uNameInput").style.display = "block";
-    drawJoinText()
-    //document.getElementById("ballCanvas").style.height = "85vh";
-  }else{
-    drawControlText()
-  //  document.getElementById("ballCanvas").style.height = "90vh";
-    document.getElementById("uNameInput").style.display = "none";
-  }
-
-
-
-
   for (let id in players) {
     let player = players[id];
     if(player.tagged && player.delayed){
@@ -289,29 +230,11 @@ function render() {
 
 
     //If the client is this specific player
-    if(id == socket.id){
-      ctx.fillStyle = "Green"
-      ctx.font = "bold 45px SanSerif"
-      ctx.fillText(player.id, player.x-10, player.y+12);
-      if(player.tagged){
-        ctx.fillStyle = "red"
-        ctx.font = "bold 30px SanSerif";
-        ctx.fillText("Your Tagged! ",bottomLeft.x, bottomLeft.y-paddingY*5);
-      }else{
-        ctx.fillStyle = "black"
-      }
 
-      ctx.font = "bold 20px SanSerif";
-      ctx.fillText("Name/ID: " + player.name + "/" + player.id, bottomLeft.x , bottomLeft.y-paddingY*4);
-      ctx.fillText("X: " + player.x, bottomLeft.x , bottomLeft.y-paddingY*3);
-      ctx.fillText("Y: " + player.y, bottomLeft.x , bottomLeft.y-paddingY*2);
-      ctx.fillText("life: " + player.life,bottomLeft.x, bottomLeft.y-paddingY);
-      ctx.fillText("points: " + player.points,bottomLeft.x, bottomLeft.y);
-    }else{
       ctx.fillStyle = "black"
       ctx.font = "bold 30px SanSerif";
       ctx.fillText(player.id, player.x-8, player.y+8);
-    }
+
   }
 
 };

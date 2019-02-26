@@ -1,15 +1,17 @@
 'use strict';
 //########## Constant variables / canvas stuff
-
-if(!isMobileDevice()){
-  window.location.href = '/tagDefenseDesktop';
+if(isMobileDevice()){
+  window.location.href = '/tagDefense';
 }
 ///////// Please explain this???!?!?!?!?!
-const socket = io('/TagDefense',{transports: ['websocket']});
-
+const socket = io('/TagDefenseDesktop',{transports: ['websocket']});
 const canvas = document.getElementById('tagDefenseCanvas')
-canvas.style.height =window.innerHeight +"px";
-canvas.style.width =window.innerWidth +"px";
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+document.addEventListener('resize', function(event){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
 
 canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
 document.exitPointerLock = document.exitPointerLock || document.mozExitPointerLock;
@@ -92,7 +94,6 @@ document.addEventListener("mousedown", click, false);
 function isMobileDevice() {
   return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
 };
-
 function Circle(x, y, r,colour) {
   this.xDefault = x
   this.yDefault = y
