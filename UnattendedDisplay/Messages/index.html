@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width,
+      initial-scale=1, maximum-scale=1, user-scalable=0"/>
+
+  <link rel="stylesheet" href="messages.css">
+  <title>Messages</title>
+</head>
+
+<body>
+  <div id ="dateTime">
+    <p id = "time">
+    <p id="date">
+  </div>
+  <div id="mainContent">
+    <p id ="currentMessage">
+      Lecture has been moved to Lion Gate 0.123215
+    </p>
+    <p class="oldMessage"> The building is on fire
+    <p class="oldMessage"> Lecture theatre 3 is locked
+  </div>
+  <div id="locationData">
+    <p id="currentLocation"> </p>
+    <p id="weatherData"> </p>
+    <p id="buildingData"> Some data about the building, i.E toilets have a squid in </p>
+  </div>
+  <div id="gameData">
+    <ol id="gameList">
+      <li>First Player - 1337</li>
+    </ol>
+  </div>
+</body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="messagesClient.js" ></script>
+<script type="application/javascript" src="https://ipinfo.io/?format=jsonp&callback=getIP"></script>
+
+
+
+</html>

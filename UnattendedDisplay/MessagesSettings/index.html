@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <link rel="stylesheet" href="settings.css">
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <form onsubmit="return Submission();">
+      ScreenID: <input type="text" id="screenID"><br>
+      City: <input type="text" id="city"><br>
+      Building: <input type="text" id="building"><br>
+      <input type="submit" value="Submit">
+    </form>
+
+  </body>
+    <script src="/socket.io/socket.io.js"></script>
+  <script src="messagesClientSettings.js" ></script>
+  <script type="application/javascript" src="https://ipinfo.io/?format=jsonp&callback=getIP"></script>
+
+
+</html>

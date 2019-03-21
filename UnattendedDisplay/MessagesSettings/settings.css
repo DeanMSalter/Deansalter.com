@@ -1,0 +1,85 @@
+html{
+  background-color: rgb(240,240,240);
+}
+#mainContent{
+  width:75%;
+  height:65%;
+  left:0%;
+  top: 9%;
+  position: absolute;
+  margin: 0;
+  border-bottom: solid;
+  border-top: solid;
+  background-color: rgb(255,200,200);
+}
+#currentMessage{
+  position: relative;
+  text-align:left;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 300%;
+  top:0em;
+  margin:0;
+}
+.oldMessage{
+  position: relative;
+  text-align:left;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 150%;
+  margin:0;
+}
+
+
+#locationData{
+  width: 75%;
+  height:25%;
+  left:0%;
+  position: absolute;
+  top: 74%;
+  border-top:solid;
+  background-color: rgb(200,200,255);
+}
+#currentLocation,#weatherData,#buildingData{
+  position: relative;
+  text-align:left;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 150%;
+  margin:0;
+}
+#gameData{
+  top: 9%;
+  left:75%;
+  position: absolute;
+  margin: 0;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 150%;
+  width:24.7%;
+  height:90%;
+  border-top:solid;
+  border-left:solid;
+  background-color: rgb(200,255,200);
+}
+#gameList{
+  top:0em;
+  position: absolute;
+}
+#gameList -> li{
+    text-align: left;
+}
+
+#dateTime{
+  width:100%;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 150%;
+}
+
+#date{
+  margin: 0;
+  position: absolute;
+  width: auto;
+}
+#time{
+  margin:0;
+  position: absolute;
+  right:1em;
+  width:auto;
+}
