@@ -1,24 +1,20 @@
 const socket = io('/messages',{transports: ['websocket']});
 let weather;
 
+let id = (window.location.href).split("id=")[1]
+socket.emit("newClient",id);
 
-
-
-
-function updateScreen(){
-  console.log("update screen")
-  let building = localStorage.getItem("building")
-
-  let currentLocationEle = document.getElementById("currentLocation")
-  currentLocationEle.innerHTML = building;
-
-}
-updateScreen()
-
+socket.on("ping",function(id){
+  if(typeof id === "undefined"){return};
+})
 socket.on('weather', function(weatherData) {
+  console.log(weatherData)
   document.getElementById("weatherData").innerHTML = weatherData.name +  " " + weatherData.main.temp + "&#8451" + " " + weatherData.weather[0].description
 });
-socket.on("updateLocation",updateScreen());
+socket.on("updateLocation",function(building){
+  let currentLocationEle = document.getElementById("currentLocation")
+  currentLocationEle.innerHTML = building;
+});
 
 
 
