@@ -4,6 +4,7 @@ let weather;
 let id = (window.location.href).split("id=")[1]
 socket.emit("newClient",id);
 
+document.getElementById("pageID").innerHTML = "Screen ID: " + id;
 socket.on("ping",function(id){
   if(typeof id === "undefined"){return};
 })

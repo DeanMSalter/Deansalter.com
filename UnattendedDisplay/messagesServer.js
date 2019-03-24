@@ -20,7 +20,6 @@ exports = module.exports = function(io){
     return rows;
   }
   async function saveSettingsInDB(settings) {
-    console.log("savving")
     const myConn = await globalConnection;
     return myConn.execute(
       'INSERT INTO messagesSettings (id,city,building) VALUES (?,?,?)',
@@ -32,7 +31,12 @@ exports = module.exports = function(io){
       'UPDATE messagesSettings SET city= ?, building = ? WHERE id=?',
       [settings[1], settings[2],settings[0]]);
   }
-
+  async function deleteSettingFromDB(settings){
+    const myConn = await globalConnection;
+    return myConn.execute(
+      'DELETE FROM messagesSettings WHERE id=?',
+      [settings[0]]);
+  }
 
 
   //Using OpenWeatherMap , we request a json full of weather data using the apiKey
@@ -51,7 +55,7 @@ function setWeather(city,socketID){
         if(weather.cod == 200){
           weatherData[city] = weather
         }
-        resolve(body)
+        resolve(JSON.parse(body))
       }
 
     });
@@ -86,7 +90,6 @@ function setWeather(city,socketID){
     if(speed > 10){
         speed = defaultSpeed - cities.length*10
     }
-    console.log(speed)
   },1000*speed);
 
 
@@ -96,10 +99,12 @@ function setWeather(city,socketID){
     let city;
     let building;
 
+    updateSettingsList()
     async function updateSettingsList(){
         let database = await getAllSettingsFromDB()
+        console.log("test")
+        console.log(database)
         socket.emit("updateSettingsList",database)
-        console.log("emitting")
     }
 
     socket.on('newClient',function(id){
@@ -127,7 +132,11 @@ function setWeather(city,socketID){
 
         //If its a new city , get the weather data, else just recieve it from stored weather
         if(!weatherData[city]){
-          setWeather(city,socketID)
+          let weatherData = await setWeather(city)
+          console.log("send")
+          for(let i = 0;i<socketIDs[socketID].length;i++){
+              io.to(socketIDs[socketID][i]).emit("weather",weatherData)
+          }
         }else{
           weather = weatherData[city]
           for(let i = 0;i<socketIDs[socketID].length;i++){
@@ -143,10 +152,9 @@ function setWeather(city,socketID){
     socket.on('saveSettings',function(data){
 
       (async function(){
-        console.log("saving")
         let entry = await getSettingsFromDB(data.id)
         let weatherData = await setWeather(data.city)
-        let weather = JSON.parse(weatherData)
+        let weather = weatherData
 
         if(weather.cod != 200){
           io.to(socket.id).emit("notValid")
@@ -154,36 +162,37 @@ function setWeather(city,socketID){
         }else{
             io.to(socket.id).emit("valid")
         }
-        console.log(entry)
         if(typeof entry === "undefined" || entry.length == 0){
-          console.log("save1")
           await saveSettingsInDB([data.id,data.city,data.building])
           updateSettingsList()
         }else{
-          console.log("updat2e")
           await updateSettingsInDB([data.id,data.city,data.building])
           updateSettingsList()
         }
 
-        console.log()
         if(typeof socketIDs[data.id] === "undefined" || socketIDs[data.id].length == 0){
           return
         }else{
           for(let i = 0;i<socketIDs[data.id].length;i++){
               io.to(socketIDs[data.id][i]).emit("weather",weather)
+              io.to(socketIDs[data.id][i]).emit("updateLocation",data.building)
           }
         }
 
       })();
 
     });
-    socket.on("getSettingsUpdate",function(){
-      updateSettingsList()
-    });
+
     socket.on("purgeSettings",async function(){
       const myConn = await globalConnection;
-      return [rows] = await myConn.execute(
+      let [rows] = await myConn.execute(
         'TRUNCATE messagesSettings');
+      return updateSettingsList()
+    })
+    socket.on("deleteSetting",function(data){
+      deleteSettingFromDB([data.id,data.city,data.building])
+      updateSettingsList()
+      
     })
 
 

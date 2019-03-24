@@ -6,23 +6,47 @@
     <title></title>
   </head>
   <body>
-    <form onsubmit="return Submission();">
-      ScreenID: <input type="text" id="screenID"><br>
-      City: <input type="text" id="city"><br>
-      Building: <input type="text" id="building"><br>
-      <input type="submit" value="Submit">
-    </form>
+    <table id="submissionTable">
+        <tr>
+          <td>ScreenID:</td>
+          <td> <input type="text" id="screenID"></td>
+        </tr>
+        <tr>
+          <td>City:</td>
+          <td> <input type="text" id="city"></td>
+        </tr>
+        <tr>
+          <td>Building:</td>
+          <td> <input type="text" id="building"></td>
+        </tr>
+        <tr>
+          <td>Game Info:</td>
+          <td> <input type="checkbox" id="gameInfo" checked></td>
+        </tr>
+        <tr>
+          <td>Building Info:</td>
+          <td> <input type="checkbox" id="BuildingInfo" checked></td>
+        </tr>
+        <tr>
+          <td>Main Info:</td>
+          <td> <input type="checkbox" id="mainInfo" checked></td>
+        </tr>
+      </table>
 
-    <br>
-    <br>
-    <form onsubmit="return Purge();">
-      <input type="submit" value="Purge">
-    </form>
+    <table id="databaseTable">
+      <thead>
+          <td>ID</td>
+          <td>City</td>
+          <td>Building</td>
+          <!-- <td>Game Info</td>
+          <td>Building Info</td>
+          <td>Main Info</td> -->
+          <td colspan="3"> Actions</td>
+      </thead>
+      <tbody id="databaseTableBody">
+      <tbody>
+    </table>
 
-
-    <ul id="databaseList">
-
-    </ul>
   </body>
     <script src="/socket.io/socket.io.js"></script>
   <script src="messagesClientSettings.js" ></script>

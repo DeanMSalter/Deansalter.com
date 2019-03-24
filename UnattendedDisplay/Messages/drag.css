@@ -1,13 +1,5 @@
 html{
-  background-color: rgb(220,220,220);
-}
-*{
-  margin:0
-  padding:0
-  box-sizing:border-box;
-}
-body{
-  overflow: hidden;
+  background-color: rgb(240,240,240);
 }
 #mainContent{
   width:75%;
@@ -18,7 +10,7 @@ body{
   margin: 0;
   border-bottom: solid;
   border-top: solid;
-  background-color: rgb(255,200,200);
+  background-color: rgb(250,240,240);
 }
 #currentMessage{
   position: relative;
@@ -42,9 +34,9 @@ body{
   height:25%;
   left:0%;
   position: absolute;
-  top: 75%;
+  top: 74%;
   border-top:solid;
-  background-color: rgb(200,200,255);
+  background-color: rgb(240,240,250);
 }
 #currentLocation,#weatherData,#buildingData{
   position: relative;
@@ -54,17 +46,17 @@ body{
   margin:0;
 }
 #gameData{
-  top: 5%;
+  top: 9%;
   left:75%;
   position: absolute;
   margin: 0;
   font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
   font-size: 150%;
-  width:25%;
-  height:95%;
+  width:24.7%;
+  height:90%;
   border-top:solid;
   border-left:solid;
-  background-color: rgb(200,255,200);
+  background-color: rgb(240,250,240);
 }
 #gameList{
   top:0em;
@@ -90,9 +82,4 @@ body{
   position: absolute;
   right:1em;
   width:auto;
-}
-#pageID{
-  left:92%;
-  top:95%;
-  position:absolute;
 }

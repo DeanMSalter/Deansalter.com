@@ -92,8 +92,6 @@ app.use('*/Messages/settings',express.static('MessagesSettings'));
 //   redirectHTTPS(request,response)
 // });
 
-
-
 //########## exterior server file set up
 
 //assigns a variable as the file containing the server settings for that specific page
