@@ -1,13 +1,47 @@
 const socket = io('/messages',{transports: ['websocket']});
 let weather;
 
+let div = document.getElementById("mainContent")
+let deletedMessages = []
+ setInterval(function(){
+   // while(div.offsetHeight < div.scrollHeight){
+   //   let list = document.getElementById("messages")
+   //   let messages = document.getElementById("messages").getElementsByTagName("li");
+   //   let last = messages[messages.length - 1];
+   //   deletedMessages.push(last)
+   //   last.parentNode.removeChild(last);
+   // }
+
+   let list = document.getElementById("messages")
+   let messages = document.getElementById("messages").getElementsByTagName("li");
+   let last = messages[messages.length - 1];
+   deletedMessages.push(last)
+   last.parentNode.removeChild(last);
+
+    let entry = document.createElement("li")
+    entry.appendChild(document.createTextNode(deletedMessages[0].innerHTML))
+
+    list.firstChild.id=""
+    entry.id = "currentMessage"
+    deletedMessages.shift()
+
+   list.insertBefore(entry,list.firstChild)
+ },1000*3);
+
+// if (div.offsetHeight < div.scrollHeight ||
+//     div.offsetWidth < div.scrollWidth) {
+//       console.log("overflow")
+//     // your element have overflow
+// } else {
+//     // your element doesn't have overflow
+// }
+
+
+
 let id = (window.location.href).split("id=")[1]
 socket.emit("newClient",id);
 
-document.getElementById("pageID").innerHTML = "Screen ID: " + id;
-socket.on("ping",function(id){
-  if(typeof id === "undefined"){return};
-})
+
 socket.on('weather', function(weatherData) {
   console.log(weatherData)
   document.getElementById("weatherData").innerHTML = weatherData.name +  " " + weatherData.main.temp + "&#8451" + " " + weatherData.weather[0].description
@@ -112,7 +146,7 @@ socket.on("updateSections",function(data){
   }else if(main || location || game){
     dateTime.style.height = "10%"
     dateTime.style.fontSize = "150%";
-    dateTime.style.top = "0%";
+    dateTime.style.top = "1%";
   }
 });
 

@@ -3,6 +3,8 @@ html{
 }
 
 #dateTime{
+  position: absolute;
+  top:1%;
   width:100%;
   font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
   font-size: 150%;
@@ -20,6 +22,7 @@ html{
   width:auto;
 }
 #submissionTable{
+  top: 10%;
   position: absolute;
   border-collapse: collapse;
   border:solid;
@@ -34,6 +37,7 @@ html{
 
 #databaseTable{
   right:1%;
+  top: 10%;
   position: absolute;
   border-collapse: collapse;
   border:solid;
@@ -44,4 +48,13 @@ html{
   border:solid;
   border-width: thin;
   padding:5px;
+}
+#gameSub{
+  background-color: rgb(200,255,200);
+}
+#buildingIDSub{
+  background-color: rgb(200,200,255);
+}
+#mainSub{
+  background-color: rgb(255,200,200);
 }

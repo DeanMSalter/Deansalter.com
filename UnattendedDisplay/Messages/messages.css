@@ -20,23 +20,6 @@ body{
   border-top: solid;
   background-color: rgb(255,200,200);
 }
-#currentMessage{
-  position: relative;
-  text-align:left;
-  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
-  font-size: 300%;
-  top:0em;
-  margin:0;
-}
-.oldMessage{
-  position: relative;
-  text-align:left;
-  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
-  font-size: 150%;
-  margin:0;
-}
-
-
 #locationData{
   width: 75%;
   height:25%;
@@ -96,4 +79,22 @@ body{
   left:92%;
   top:95%;
   position:absolute;
+}
+#messages{
+  position: absolute;
+  list-style: none;
+  left:0%;
+  padding: 0;
+}
+#messages li{
+  position: relative;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 150%;
+  margin:0;
+  text-align: left;
+}
+
+#currentMessage{
+  font-size: 300% !important;
+  text-align: center !important;
 }

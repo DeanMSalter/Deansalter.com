@@ -1,4 +1,15 @@
 const socket = io('/messages',{transports: ['websocket']});
+let timeBar = document.getElementById("time")
+let dateBar = document.getElementById("date")
+setInterval(function(){
+  let current = new Date();
+  let time = current.getHours() + ":" + current.getMinutes() + ":" + current.getSeconds();
+  let date = current.getDate() + "/"+(current.getMonth()+1)+ "/" + current.getFullYear()
+  timeBar.innerHTML = time;
+  dateBar.innerHTML = date;
+
+},1000*1);
+
 
 socket.on("updateSettingsList",function(data){
   populateDatabaseList(data)
@@ -19,7 +30,7 @@ socket.on("valid",function(){
 
   cell1.innerHTML = "Submit"
   cell1.onclick = Submission
-  cell1.style.backgroundColor = "rgb(200,200,255)"
+  cell1.style.backgroundColor = "rgb(100,255,100)"
 })();
 
 function configDatabaseTable(){
@@ -57,6 +68,7 @@ function populateDatabaseList(data){
       cell1.innerHTML = data[i].id;
       cell2.innerHTML = data[i].city;
       cell3.innerHTML = data[i].building;
+
       cell4.innerHTML = convertToBoolean(data[i].gameInfo);
       cell5.innerHTML = convertToBoolean(data[i].buildingInfo);
       cell6.innerHTML = convertToBoolean(data[i].mainInfo);
