@@ -10,26 +10,27 @@ exports = module.exports = function(io){
   async function getAllSettingsFromDB(){
     const myConn = await globalConnection;
     const [rows] = await myConn.execute(
-      'SELECT id, city,building FROM messagesSettings');
+      'SELECT * FROM messagesSettings');
     return rows;
   }
   async function getSettingsFromDB(id) {
     const myConn = await globalConnection;
     const [rows] = await myConn.execute(
-      'SELECT id, city,building FROM messagesSettings WHERE id=(?)',[id]);
+      'SELECT * FROM messagesSettings WHERE id=(?)',[id]);
     return rows;
   }
   async function saveSettingsInDB(settings) {
     const myConn = await globalConnection;
     return myConn.execute(
-      'INSERT INTO messagesSettings (id,city,building) VALUES (?,?,?)',
-      [settings[0],settings[1],settings[2]]);
+      'INSERT INTO messagesSettings (id,city,building,gameInfo,buildingInfo,mainInfo) VALUES (?,?,?,?,?,?)',
+      [settings[0],settings[1],settings[2],settings[3],settings[4],settings[5]]);
   }
   async function updateSettingsInDB(settings){
     const myConn = await globalConnection;
+    console.log(settings)
     return myConn.execute(
-      'UPDATE messagesSettings SET city= ?, building = ? WHERE id=?',
-      [settings[1], settings[2],settings[0]]);
+      'UPDATE messagesSettings SET city= ?, building = ? , gameInfo = ? , buildingInfo = ? , mainInfo = ? WHERE id=?',
+      [settings[1], settings[2],settings[3],settings[4],settings[5],settings[0]]);
   }
   async function deleteSettingFromDB(settings){
     const myConn = await globalConnection;
@@ -129,7 +130,9 @@ function setWeather(city,socketID){
         }
         city = databaseResults[0].city
         building = databaseResults[0].building
-
+        let gameInfo = databaseResults[0].gameInfo
+        let buildingInfo = databaseResults[0].buildingInfo
+        let mainInfo = databaseResults[0].mainInfo
         //If its a new city , get the weather data, else just recieve it from stored weather
         if(!weatherData[city]){
           let weatherData = await setWeather(city)
@@ -143,8 +146,14 @@ function setWeather(city,socketID){
               io.to(socketIDs[socketID][i]).emit("weather",weather)
           }
         }
+        let sections = {
+          gameInfo:gameInfo,
+          buildingInfo:buildingInfo,
+          mainInfo:mainInfo
+        }
         for(let i = 0;i<socketIDs[socketID].length;i++){
             io.to(socketIDs[socketID][i]).emit("updateLocation",building)
+            io.to(socketIDs[socketID][i]).emit("updateSections",sections)
         }
       })();
     });
@@ -163,19 +172,26 @@ function setWeather(city,socketID){
             io.to(socket.id).emit("valid")
         }
         if(typeof entry === "undefined" || entry.length == 0){
-          await saveSettingsInDB([data.id,data.city,data.building])
+          console.log([data.id,data.city,data.building,data.gameInfo,data.buildingInfo,data.mainInfo])
+          await saveSettingsInDB([data.id,data.city,data.building,data.gameInfo,data.buildingInfo,data.mainInfo])
           updateSettingsList()
         }else{
-          await updateSettingsInDB([data.id,data.city,data.building])
+          await updateSettingsInDB([data.id,data.city,data.building,data.gameInfo,data.buildingInfo,data.mainInfo])
           updateSettingsList()
         }
 
         if(typeof socketIDs[data.id] === "undefined" || socketIDs[data.id].length == 0){
           return
         }else{
+          let sections = {
+            gameInfo:data.gameInfo,
+            buildingInfo:data.buildingInfo,
+            mainInfo:data.mainInfo
+          }
           for(let i = 0;i<socketIDs[data.id].length;i++){
               io.to(socketIDs[data.id][i]).emit("weather",weather)
               io.to(socketIDs[data.id][i]).emit("updateLocation",data.building)
+              io.to(socketIDs[data.id][i]).emit("updateSections",sections)
           }
         }
 
@@ -190,9 +206,9 @@ function setWeather(city,socketID){
       return updateSettingsList()
     })
     socket.on("deleteSetting",function(data){
-      deleteSettingFromDB([data.id,data.city,data.building])
+      deleteSettingFromDB([data.id,data.city,data.building,data.gameInfo,data.buildingInfo,data.mainInfo])
       updateSettingsList()
-      
+
     })
 
 

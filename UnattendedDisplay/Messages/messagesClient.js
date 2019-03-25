@@ -16,6 +16,105 @@ socket.on("updateLocation",function(building){
   let currentLocationEle = document.getElementById("currentLocation")
   currentLocationEle.innerHTML = building;
 });
+socket.on("updateSections",function(data){
+  let mainInfo = document.getElementById("mainContent")
+  let locationData = document.getElementById("locationData")
+  let gameData = document.getElementById("gameData")
+  let dateTime = document.getElementById("dateTime")
+  let main;
+  let location;
+  let game;
+
+  if(data.mainInfo  == 0){
+    main = false
+  }else{
+    main = true;
+  }
+  if(data.buildingInfo  == 0){
+    location = false
+  }else{
+    location = true;
+  }
+
+  if(data.gameInfo  == 0){
+    game = false
+  }else{
+    game = true;
+  }
+
+  if(!main){
+    mainInfo.style.visibility = "hidden"
+  }else{
+    mainInfo.style.visibility = "visible"
+  }
+  if(!location){
+    locationData.style.visibility = "hidden"
+  }else{
+    locationData.style.visibility = "visible"
+  }
+  if(!game){
+    gameData.style.visibility = "hidden"
+  }else{
+    gameData.style.visibility = "visible"
+  }
+
+  if(main && !location && !game){
+    mainInfo.style.height = "100%"
+    mainInfo.style.width = "100%"
+  }else if(main && !game  && location){
+    mainInfo.style.height = "75%"
+    mainInfo.style.width = "100%"
+  }else if(main && game && !location){
+    mainInfo.style.width = "75%"
+    mainInfo.style.height = "100%"
+  }else if(main && game && location){
+    mainInfo.style.height = "75%"
+    mainInfo.style.width = "75%"
+  }
+
+  if(!main && !location && game){
+    gameData.style.width = "100%"
+    gameData.style.left = "0%"
+  }else if(!main && game  && location){
+    gameData.style.width = "25%"
+    gameData.style.left = "75%"
+  }else if(main && game && !location){
+    gameData.style.width = "25%"
+    gameData.style.left = "75%"
+  }else if(main && game && location){
+    gameData.style.width = "25%"
+    gameData.style.left = "75%"
+  }
+
+  if(!main && location && !game){
+    locationData.style.height = "100%"
+    locationData.style.width = "100%"
+    locationData.style.top = "5%"
+  }else if(!main && game  && location){
+    locationData.style.height = "100%"
+    locationData.style.width = "75%"
+    locationData.style.top = "5%"
+  }else if(main && !game && location){
+    locationData.style.height = "25%"
+    locationData.style.width = "100%"
+    locationData.style.top = "75%"
+  }else if(main && game && location){
+    locationData.style.height = "25%"
+    locationData.style.width = "75%"
+    locationData.style.top = "75%"
+  }
+
+
+  if(!main && !location && !game){
+    dateTime.style.height = "100%"
+    dateTime.style.fontSize = "500%";
+    dateTime.style.top = "40%";
+  }else if(main || location || game){
+    dateTime.style.height = "10%"
+    dateTime.style.fontSize = "150%";
+    dateTime.style.top = "0%";
+  }
+});
 
 
 

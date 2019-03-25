@@ -50,27 +50,35 @@ function populateDatabaseList(data){
       let cell5 = row.insertCell(4);
       let cell6 = row.insertCell(5);
 
+      let cell7 = row.insertCell(6);
+      let cell8 = row.insertCell(7);
+      let cell9 = row.insertCell(8);
+
       cell1.innerHTML = data[i].id;
       cell2.innerHTML = data[i].city;
       cell3.innerHTML = data[i].building;
+      cell4.innerHTML = convertToBoolean(data[i].gameInfo);
+      cell5.innerHTML = convertToBoolean(data[i].buildingInfo);
+      cell6.innerHTML = convertToBoolean(data[i].mainInfo);
 
-      cell4.innerHTML = "Edit"
-      cell4.style.backgroundColor = "rgb(200,255,200)"
-      cell4.onclick = function (){
+
+      cell7.innerHTML = "Edit"
+      cell7.style.backgroundColor = "rgb(200,255,200)"
+      cell7.onclick = function (){
         document.getElementById("screenID").value = data[i].id
         document.getElementById("city").value = data[i].city
         document.getElementById("building").value = data[i].building
       };
 
-      cell5.innerHTML = "Delete"
-      cell5.style.backgroundColor = "rgb(255,200,200)"
-      cell5.onclick = function (){
+      cell8.innerHTML = "Delete"
+      cell8.style.backgroundColor = "rgb(255,200,200)"
+      cell8.onclick = function (){
          socket.emit("deleteSetting",data[i])
       };
 
-      cell6.innerHTML = "View"
-      cell6.style.backgroundColor = "rgb(230,230,200)"
-      cell6.onclick = function (){
+      cell9.innerHTML = "View"
+      cell9.style.backgroundColor = "rgb(230,230,200)"
+      cell9.onclick = function (){
         console.log()
          window.open((window.location.href).split("settings/")[0]+"?id=" + data[i].id);
       };
@@ -140,6 +148,24 @@ function validateID(screenID){
   return true;
 }
 
+function convertToTinyInt(value){
+  console.log(value)
+  if(value){
+    console.log("1")
+    return 1;
+  }else {
+    return 0;
+  }
+}
+function convertToBoolean(value){
+  console.log(value)
+  if(value == 1){
+    return true;
+  }else if(value == 0){
+    return false;
+  }
+}
+
 function Submission(){
   let screenID = document.getElementById("screenID").value;
   if(!validateID(screenID)){
@@ -148,11 +174,22 @@ function Submission(){
 
   let city = document.getElementById("city").value;
   let building = document.getElementById("building").value;
+  let gameInfo = document.getElementById("gameInfo").checked;
+  let buildingInfo = document.getElementById("buildingInfo").checked;
+  let mainInfo = document.getElementById("mainInfo").checked;
+
+  gameInfo = convertToTinyInt(gameInfo);
+  buildingInfo = convertToTinyInt(buildingInfo);
+  mainInfo = convertToTinyInt(mainInfo);
 
   let settings = {
     id:screenID,
     city:city,
     building:building,
+    gameInfo:gameInfo,
+    buildingInfo:buildingInfo,
+    mainInfo:mainInfo
   }
+  console.log(settings)
   socket.emit("saveSettings",settings)
 }
