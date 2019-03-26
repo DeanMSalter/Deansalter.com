@@ -80,7 +80,7 @@ app.get('/tagDisplayDesktop', function(request, response) {
 });
 app.use('*/Messages',express.static('Messages'));
 app.use('*/Messages/settings',express.static('MessagesSettings'));
-
+app.use('*/Messages/submission',express.static('MessagesSubmission'));
 // app.get('/Messages', function(request, response) {
 //   app.use(express.static('Messages'))
 //   response.sendFile(path.join(__dirname, 'Messages/index.html'));

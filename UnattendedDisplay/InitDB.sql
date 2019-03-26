@@ -9,5 +9,9 @@ create table UnattendedDisplay.messagesSettings (
   gameInfo BOOLEAN not null,
   buildingInfo BOOLEAN not null,
   mainInfo BOOLEAN not null
-	
-)
+);
+create table UnattendedDisplay.messages (
+  uniqueID int auto_increment primary key,
+  id int not null,
+  message varchar(281) not null
+);

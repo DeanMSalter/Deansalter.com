@@ -1,32 +1,24 @@
-const socket = io('/messages',{transports: ['websocket']});
+let socket = io('/messages',{transports: ['websocket']});
 let weather;
-
-let div = document.getElementById("mainContent")
-let deletedMessages = []
- setInterval(function(){
-   // while(div.offsetHeight < div.scrollHeight){
-   //   let list = document.getElementById("messages")
-   //   let messages = document.getElementById("messages").getElementsByTagName("li");
-   //   let last = messages[messages.length - 1];
-   //   deletedMessages.push(last)
-   //   last.parentNode.removeChild(last);
-   // }
-
-   let list = document.getElementById("messages")
-   let messages = document.getElementById("messages").getElementsByTagName("li");
-   let last = messages[messages.length - 1];
-   deletedMessages.push(last)
-   last.parentNode.removeChild(last);
-
-    let entry = document.createElement("li")
-    entry.appendChild(document.createTextNode(deletedMessages[0].innerHTML))
-
-    list.firstChild.id=""
-    entry.id = "currentMessage"
-    deletedMessages.shift()
-
-   list.insertBefore(entry,list.firstChild)
- },1000*3);
+let connected;
+let id = (window.location.href).split("id=")[1]
+socket.on('connect_error', function() {
+    connected = false;
+    document.getElementById("connection").innerHTML ="Disconnected from Server"
+    let reconnectLoop = setInterval(function(){
+      if(connected){
+        clearInterval(reconnectLoop);
+        return;
+      }else{
+        socket = io('/messages',{transports: ['websocket']});
+      }
+    },1000*1);
+});
+socket.on("connect",function(){
+  console.log("connected")
+  connected = true;
+  document.getElementById("connection").innerHTML =""
+})
 
 // if (div.offsetHeight < div.scrollHeight ||
 //     div.offsetWidth < div.scrollWidth) {
@@ -38,8 +30,55 @@ let deletedMessages = []
 
 
 
-let id = (window.location.href).split("id=")[1]
 socket.emit("newClient",id);
+
+
+socket.on("updateMessagesList",function(data){
+    console.log("yay new message stuff")
+    let list = document.getElementById("messages")
+    let items = list.getElementsByTagName('li');//Get all list items in the list
+    while(items.length > 0){
+      items[0].remove()
+    }
+    if(typeof data == "undefined"){
+      return;
+    }
+    for(let o = 0;o<=data.length-1;o++){
+      let entry = document.createElement("li")
+      entry.appendChild(document.createTextNode(data[o].message))
+      list.insertBefore(entry,list.firstChild)
+    }
+
+})
+let div = document.getElementById("mainContent")
+let deletedMessages = []
+setInterval(function(){
+  // while(div.offsetHeight < div.scrollHeight){
+  //   let list = document.getElementById("messages")
+  //   let messages = document.getElementById("messages").getElementsByTagName("li");
+  //   let last = messages[messages.length - 1];
+  //   deletedMessages.push(last)
+  //   last.parentNode.removeChild(last);
+  // }
+
+  let list = document.getElementById("messages")
+  let messages = document.getElementById("messages").getElementsByTagName("li");
+  let last = messages[messages.length - 1];
+
+
+  last.parentNode.removeChild(last);
+  deletedMessages.push(last)
+   let entry = document.createElement("li")
+
+   entry.appendChild(document.createTextNode(deletedMessages[0].innerHTML))
+
+   list.firstChild.id=""
+   entry.id = "currentMessage"
+   deletedMessages.shift()
+
+  list.insertBefore(entry,list.firstChild)
+},1000*3);
+
 
 
 socket.on('weather', function(weatherData) {

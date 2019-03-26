@@ -19,6 +19,7 @@ exports = module.exports = function(io){
       'SELECT * FROM messagesSettings WHERE id=(?)',[id]);
     return rows;
   }
+
   async function saveSettingsInDB(settings) {
     const myConn = await globalConnection;
     return myConn.execute(
@@ -27,53 +28,125 @@ exports = module.exports = function(io){
   }
   async function updateSettingsInDB(settings){
     const myConn = await globalConnection;
-    console.log(settings)
     return myConn.execute(
       'UPDATE messagesSettings SET city= ?, building = ? , gameInfo = ? , buildingInfo = ? , mainInfo = ? WHERE id=?',
       [settings[1], settings[2],settings[3],settings[4],settings[5],settings[0]]);
   }
+
   async function deleteSettingFromDB(settings){
     const myConn = await globalConnection;
     return myConn.execute(
       'DELETE FROM messagesSettings WHERE id=?',
       [settings[0]]);
   }
+  async function deleteSettingsFromDB(){
+    const myConn = await globalConnection;
+    let [rows] = await myConn.execute(
+      'TRUNCATE messagesSettings');
+  }
+
+  async function getAllMessagesFromDB() {
+    const myConn = await globalConnection;
+    const [rows] = await myConn.execute(
+      'SELECT * FROM messages');
+    return rows;
+  }
+  async function getMessagesFromDB(id) {
+    const myConn = await globalConnection;
+    const [rows] = await myConn.execute(
+      'SELECT * FROM messages WHERE id=(?)',[id]);
+    return rows;
+  }
+  async function getSpecificMessageFromDB(settings) {
+    const myConn = await globalConnection;
+    const [rows] = await myConn.execute(
+      'SELECT * FROM messages WHERE uniqueID=?',[settings[0]]);
+    return rows;
+  }
+  async function updateMessageInDB(settings){
+    const myConn = await globalConnection;
+    return myConn.execute(
+      'UPDATE messages SET id = ? ,message= ? WHERE uniqueID=?',
+      [settings[1], settings[2],settings[0]]);
+  }
+  async function saveMessageInDB(settings) {
+    const myConn = await globalConnection;
+    return myConn.execute(
+      'INSERT INTO messages (id,message) VALUES (?,?)',
+      [settings[0],settings[1]]);
+  }
+
+  async function deleteMessageFromDB(settings){
+    const myConn = await globalConnection;
+    return myConn.execute(
+      'DELETE FROM messages WHERE uniqueID=?',
+      [settings]);
+  }
+  async function deleteAllMessagesFromDB(){
+    const myConn = await globalConnection;
+    let [rows] = await myConn.execute(
+      'TRUNCATE messages');
+  }
 
 
-  //Using OpenWeatherMap , we request a json full of weather data using the apiKey
-  //Once the request is complete we send that weather data to the client.
-function setWeather(city,socketID){
-  return new Promise(function (resolve,reject){
-    let apiKey = "51eb3a9ddb0aa9ed4185ff72ffaf4c53"
-    let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
-    request(url, function (err, response, body) {
-      console.log("request")
-      if(err){
-        console.log('error:', error);
-        reject(err)
-      }else{
-        let weather = JSON.parse(body);
-        if(weather.cod == 200){
-          weatherData[city] = weather
+
+  function setWeather(city,id){
+    return new Promise(function (resolve,reject){
+      let apiKey = "51eb3a9ddb0aa9ed4185ff72ffaf4c53"
+      let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
+      request(url, function (err, response, body) {
+        console.log("request")
+        if(err){
+          console.log('error:', error);
+          reject(err)
+        }else{
+          let weather = JSON.parse(body);
+          if(weather.cod == 200){
+            weatherData[city] = weather
+          }
+          resolve(JSON.parse(body))
         }
-        resolve(JSON.parse(body))
-      }
 
-    });
-  })
-}
+      });
+    })
+  }
+  function validCity(weather,id){
+    if(weather.cod != 200){
+      io.to(id).emit("notValid")
+      return false;
+    }else{
+      io.to(id).emit("valid")
+      return true;
+    }
+  }
+  function isEmpty(object){
+    if (typeof object === "undefined" || object.length == 0){
+      return true;
+    }else{
+      return false;
+    }
+  }
+  function updateClients(data,weather="NA",messages="NA"){
+    let sections = {
+      gameInfo:data.gameInfo,
+      buildingInfo:data.buildingInfo,
+      mainInfo:data.mainInfo
+    }
 
+    for(let i = 0;i<socketIDs[data.id].length;i++){
+        io.to(socketIDs[data.id][i]).emit("updateSections",sections)
+        io.to(socketIDs[data.id][i]).emit("updateLocation",data.building)
+        if(weather!="NA"){
+          io.to(socketIDs[data.id][i]).emit("weather",weather)
+        }
+        if(messages!="NA"){
+            io.to(socketIDs[data.id][i]).emit("updateMessagesList",messages)
+        }
 
+    }
+  }
 
-  //every 10 seconds , a city recieves updatted weather information.
-  //Then the next city in the array is updated 10 seconds later and so on
-
-  //The API only updates weather information every 10 minutes and restricts calls to 60 per minute
-  //This ensures we dont go over the max amount of requests and means we can have up to 60 unique cities
-  // updatted atleast once every 10 minutes
-
-  //its relative to the amount of citties as to prevent unnecesary api calls
-
+  (function updateWeather(){
   let cityCounter = 0
   let defaultSpeed = 600;
   let speed = 600;
@@ -92,125 +165,130 @@ function setWeather(city,socketID){
         speed = defaultSpeed - cities.length*10
     }
   },1000*speed);
+})();
+  async function updateMessages(id){
+      let messages;
+      if(id==null || id=="undefined"){
+        io.emit("updateMessagesList");
+      }else{
+        if(isEmpty(socketIDs[id])){return}
+        messages = await getMessagesFromDB(id)
+        for(let i = 0;i<socketIDs[id].length;i++){
+          io.to(socketIDs[id][i]).emit("updateMessagesList",messages)
+        }
+      }
+
+      console.log(id)
 
 
+  }
 
   io.on('connection', function(socket) {
-    let socketID;
-    let city;
-    let building;
-
     updateSettingsList()
-    async function updateSettingsList(){
-        let database = await getAllSettingsFromDB()
-        console.log("test")
-        console.log(database)
-        socket.emit("updateSettingsList",database)
-    }
+    updateMessagesList()
 
-    socket.on('newClient',function(id){
+    async function updateSettingsList(){
+        let settings = await getAllSettingsFromDB()
+        io.emit("updateSettingsList",settings)
+    };
+    async function updateMessagesList(){
+        let messages = await getAllMessagesFromDB()
+        socket.emit("updateMessagesList",messages)
+    };
+
+    socket.on('newClient', async function(id){
       if(socketIDs[id] == null){
         socketIDs[id] = []
         socketIDs[id].push(socket.id)
       }else{
         socketIDs[id].push(socket.id)
       }
-      socketID=id;
 
-      //Self calling annonymous function ,  that waits for the database to return data
-      (async function(){
-        let weather;
-        let databaseResults = await getSettingsFromDB(id)
-        if(typeof databaseResults === "undefined" || databaseResults.length == 0){
-          console.log("undefined database results")
-          for(let i = 0;i<socketIDs[socketID].length;i++){
-                io.to(socketIDs[socketID][i]).emit("updateLocation",("No Settings saved for " + socketID))
-          }
-          return;
-        }
-        city = databaseResults[0].city
-        building = databaseResults[0].building
-        let gameInfo = databaseResults[0].gameInfo
-        let buildingInfo = databaseResults[0].buildingInfo
-        let mainInfo = databaseResults[0].mainInfo
-        //If its a new city , get the weather data, else just recieve it from stored weather
-        if(!weatherData[city]){
-          let weatherData = await setWeather(city)
-          console.log("send")
-          for(let i = 0;i<socketIDs[socketID].length;i++){
-              io.to(socketIDs[socketID][i]).emit("weather",weatherData)
-          }
-        }else{
-          weather = weatherData[city]
-          for(let i = 0;i<socketIDs[socketID].length;i++){
-              io.to(socketIDs[socketID][i]).emit("weather",weather)
-          }
-        }
-        let sections = {
-          gameInfo:gameInfo,
-          buildingInfo:buildingInfo,
-          mainInfo:mainInfo
-        }
-        for(let i = 0;i<socketIDs[socketID].length;i++){
-            io.to(socketIDs[socketID][i]).emit("updateLocation",building)
-            io.to(socketIDs[socketID][i]).emit("updateSections",sections)
-        }
-      })();
+      let databaseResults = await getSettingsFromDB(id)
+      if(isEmpty(databaseResults)){
+        console.log("undefined database results")
+        return;
+      }
+
+      let city = databaseResults[0].city
+      let weather;
+
+      //If its a new city , get the weather data, else just recieve it from stored weather
+      if(!weatherData[city]){
+        weather = await setWeather(city)
+      }else{
+        weather = weatherData[city]
+      }
+      let messages = await getMessagesFromDB(id)
+      updateClients(databaseResults[0],weather,"NA")
+      console.log(socketIDs)
     });
 
-    socket.on('saveSettings',function(data){
+    socket.on('saveSettings', async function(data){
+        let savedSetting = await getSettingsFromDB(data.id)
+        let weather = await setWeather(data.city)
+        let settings = [data.id,data.city,data.building,data.gameInfo,data.buildingInfo,data.mainInfo]
 
-      (async function(){
-        let entry = await getSettingsFromDB(data.id)
-        let weatherData = await setWeather(data.city)
-        let weather = weatherData
-
-        if(weather.cod != 200){
-          io.to(socket.id).emit("notValid")
+        //If its not a valid city then stop.
+        if(!validCity(weather,socket.id)){
           return;
-        }else{
-            io.to(socket.id).emit("valid")
         }
-        if(typeof entry === "undefined" || entry.length == 0){
-          console.log([data.id,data.city,data.building,data.gameInfo,data.buildingInfo,data.mainInfo])
-          await saveSettingsInDB([data.id,data.city,data.building,data.gameInfo,data.buildingInfo,data.mainInfo])
+
+        //If the id has no settings stored then save a new one, else update the saved one.
+        if(isEmpty(savedSetting)){
+          await saveSettingsInDB(settings)
           updateSettingsList()
         }else{
-          await updateSettingsInDB([data.id,data.city,data.building,data.gameInfo,data.buildingInfo,data.mainInfo])
+          await updateSettingsInDB(settings)
           updateSettingsList()
         }
 
-        if(typeof socketIDs[data.id] === "undefined" || socketIDs[data.id].length == 0){
+        //If no clients are using this ID , then dont do anything , else update them
+        if(isEmpty(socketIDs[data.id])){
           return
         }else{
-          let sections = {
-            gameInfo:data.gameInfo,
-            buildingInfo:data.buildingInfo,
-            mainInfo:data.mainInfo
-          }
-          for(let i = 0;i<socketIDs[data.id].length;i++){
-              io.to(socketIDs[data.id][i]).emit("weather",weather)
-              io.to(socketIDs[data.id][i]).emit("updateLocation",data.building)
-              io.to(socketIDs[data.id][i]).emit("updateSections",sections)
-          }
-        }
-
-      })();
-
+          updateClients(data,weather)
+        };
     });
-
     socket.on("purgeSettings",async function(){
-      const myConn = await globalConnection;
-      let [rows] = await myConn.execute(
-        'TRUNCATE messagesSettings');
-      return updateSettingsList()
-    })
-    socket.on("deleteSetting",function(data){
-      deleteSettingFromDB([data.id,data.city,data.building,data.gameInfo,data.buildingInfo,data.mainInfo])
+      await deleteSettingsFromDB()
       updateSettingsList()
-
+    })
+    socket.on("deleteSetting",async function(data){
+      await deleteSettingFromDB([data.id,data.city,data.building,data.gameInfo,data.buildingInfo,data.mainInfo])
+      updateSettingsList()
     })
 
+    socket.on("saveMessage",async function(data){
+      if(!isEmpty(data.uniqueID)){
+        console.log(data.uniqueID)
+        let savedMessage = await getSpecificMessageFromDB(data.uniqueID)
+        console.log("desired")
+        console.log(savedMessage)
+        if(!isEmpty(savedMessage)){
+          console.log("found")
+          await updateMessageInDB([data.uniqueID,data.id,data.message])
+        }else{
+          await saveMessageInDB([data.id,data.message])
+        }
+      }else{
+        await saveMessageInDB([data.id,data.message])
+      }
+
+
+      updateMessagesList()
+      updateMessages(data.id)
+    })
+    socket.on("purgeMessages",async function(data){
+      await deleteAllMessagesFromDB()
+      updateMessagesList()
+      updateMessages()
+    })
+    socket.on("deleteMessage",async function(data){
+      await deleteMessageFromDB(data.uniqueID)
+      updateMessagesList()
+      updateMessages(data.id)
+    })
 
   });
 

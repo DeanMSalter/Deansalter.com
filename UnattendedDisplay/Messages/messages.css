@@ -75,11 +75,13 @@ body{
   right:1em;
   width:auto;
 }
-#pageID{
-  left:92%;
-  top:95%;
-  position:absolute;
+#connection{
+  position: absolute;
+  right:40%;
+  top:1%;
+  margin: 0;
 }
+
 #messages{
   position: absolute;
   list-style: none;
