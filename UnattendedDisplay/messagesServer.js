@@ -89,7 +89,24 @@ exports = module.exports = function(io){
       'TRUNCATE messages');
   }
 
-
+  async function saveBuildingInDB(settings) {
+    const myConn = await globalConnection;
+    return myConn.execute(
+      'INSERT INTO buildings (building) VALUES (?)',
+      [settings]);
+  }
+  async function getSpecificBuildingFromDB(settings) {
+    const myConn = await globalConnection;
+    const [rows] = await myConn.execute(
+      'SELECT * FROM buildings WHERE building=?',[settings]);
+    return rows;
+  }
+  async function getAllBuildingsFromDB(){
+    const myConn = await globalConnection;
+    const [rows] = await myConn.execute(
+      'SELECT * FROM buildings');
+    return rows;
+  }
 
   function setWeather(city,id){
     return new Promise(function (resolve,reject){
@@ -187,7 +204,7 @@ exports = module.exports = function(io){
   io.on('connection', function(socket) {
     updateSettingsList()
     updateMessagesList()
-
+    updateBuildingList()
     async function updateSettingsList(){
         let settings = await getAllSettingsFromDB()
         io.emit("updateSettingsList",settings)
@@ -199,7 +216,11 @@ exports = module.exports = function(io){
         socket.emit("updateAllMessagesList",messages)
 
     };
-
+    async function updateBuildingList(){
+      let buildings = await getAllBuildingsFromDB()
+      socket.emit("updateBuildingList",buildings)
+      console.log(socketIDs)
+    }
     socket.on('newClient', async function(id){
       if(socketIDs[id] == null){
         socketIDs[id] = []
@@ -226,7 +247,7 @@ exports = module.exports = function(io){
       let messages = await getMessagesFromDB(id)
       updateClients(databaseResults[0],weather,messages)
 
-      console.log(socketIDs)
+
     });
 
     socket.on('saveSettings', async function(data){
@@ -302,6 +323,17 @@ exports = module.exports = function(io){
       await deleteMessageFromDB(data.uniqueID)
       updateMessagesList()
       updateMessages(data.id)
+    })
+    socket.on("saveBuilding",async function(data){
+      let savedBuilding = await getSpecificBuildingFromDB(data)
+      if(!isEmpty(savedBuilding)){
+        console.log("already saved")
+        socket.emit("duplicateBuilding",true)
+      }else{
+        saveBuildingInDB(data)
+          socket.emit("duplicateBuilding",false)
+      }
+
     })
 
   });
