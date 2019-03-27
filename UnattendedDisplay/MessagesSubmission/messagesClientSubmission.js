@@ -15,11 +15,17 @@ socket.on("updateSettingsList",function(data){
   populateDatabaseList(data)
 });
 
-socket.on("updateMessagesList",function(data){
+socket.on("updateAllMessagesList",function(data){
   console.log("we got new messages")
   populateMessageList(data)
 });
-
+socket.on("ScreenSaved",function(data){
+  if(!data){
+      toggleSubmissionError("screenID","Not a valid Screen. Please create a screen on the settings page!")
+  }else{
+      toggleSubmissionError("screenID","")
+  }
+});
 (function configSubmission(){
   let table = document.getElementById("submissionTable")
   let row = table.insertRow(table.rows.length);
@@ -221,6 +227,7 @@ function Submission(){
   if(!validateID(screenID)){
     return;
   }
+  socket.emit("checkScreen",screenID)
   let message = document.getElementById("messageArea").value;
   let uniqueID = document.getElementById("databaseID")
   let databaseID = (uniqueID.innerHTML).split("= ")[1]

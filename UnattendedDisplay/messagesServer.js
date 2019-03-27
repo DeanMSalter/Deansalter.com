@@ -39,7 +39,7 @@ exports = module.exports = function(io){
       'DELETE FROM messagesSettings WHERE id=?',
       [settings[0]]);
   }
-  async function deleteSettingsFromDB(){
+  async function deleteAllSettingsFromDB(){
     const myConn = await globalConnection;
     let [rows] = await myConn.execute(
       'TRUNCATE messagesSettings');
@@ -57,6 +57,7 @@ exports = module.exports = function(io){
       'SELECT * FROM messages WHERE id=(?)',[id]);
     return rows;
   }
+
   async function getSpecificMessageFromDB(settings) {
     const myConn = await globalConnection;
     const [rows] = await myConn.execute(
@@ -193,7 +194,10 @@ exports = module.exports = function(io){
     };
     async function updateMessagesList(){
         let messages = await getAllMessagesFromDB()
-        socket.emit("updateMessagesList",messages)
+
+        console.log("updating messages")
+        socket.emit("updateAllMessagesList",messages)
+
     };
 
     socket.on('newClient', async function(id){
@@ -220,7 +224,8 @@ exports = module.exports = function(io){
         weather = weatherData[city]
       }
       let messages = await getMessagesFromDB(id)
-      updateClients(databaseResults[0],weather,"NA")
+      updateClients(databaseResults[0],weather,messages)
+
       console.log(socketIDs)
     });
 
@@ -251,7 +256,7 @@ exports = module.exports = function(io){
         };
     });
     socket.on("purgeSettings",async function(){
-      await deleteSettingsFromDB()
+      await deleteAllSettingsFromDB()
       updateSettingsList()
     })
     socket.on("deleteSetting",async function(data){
@@ -260,6 +265,15 @@ exports = module.exports = function(io){
     })
 
     socket.on("saveMessage",async function(data){
+
+      let savedScreen = await getSettingsFromDB(data.id)
+      if(isEmpty(savedScreen)){
+        socket.emit("ScreenSaved",false)
+        return
+      }else{
+        socket.emit("ScreenSaved",true)
+      }
+
       if(!isEmpty(data.uniqueID)){
         console.log(data.uniqueID)
         let savedMessage = await getSpecificMessageFromDB(data.uniqueID)

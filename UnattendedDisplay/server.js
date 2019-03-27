@@ -114,4 +114,4 @@ let tagDefenseMobileServer = require('./tagDefenseMobileServer.js')(tagDefense)
 tagDefense.emit(tagDefenseMobileServer)
 
 let messagesServer = require('./messagesServer.js')(messages)
-tagDefense.emit(messagesServer)
+messages.emit(messagesServer)
