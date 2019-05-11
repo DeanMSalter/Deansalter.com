@@ -1,0 +1,41 @@
+
+#notifications{
+  position: absolute;
+  top:8vh;
+  left:12vw;
+  width:40vw;
+  height:90vh;
+  border: solid;
+}
+#notifications p{
+  padding-bottom: 5vh;
+  margin-left: 3%;
+  margin-right:3%;
+  margin-top:3%;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 200%;
+}
+
+#score{
+  position: absolute;
+  top:1vh;
+  left:25vw;
+  height:9vh;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 200%;
+}
+#ship{
+  position: absolute;
+  left: 55vw;
+  top:10vh;
+  width:45vw;
+  height:80vh;
+}
+#level{
+  position: absolute;
+  top:1vh;
+  left:68vw;
+  height:9vh;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 200%;
+}

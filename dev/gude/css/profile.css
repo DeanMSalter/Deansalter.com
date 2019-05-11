@@ -1,0 +1,39 @@
+#ChangePic{
+  position: absolute;
+  top: 10vh;
+  left:15vw;
+  width:50vw;
+  height:15vh;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 200%;
+}
+#DeletePic{
+  position: absolute;
+  top: 30vh;
+  left:15vw;
+  width:50vw;
+  height:15vh;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 200%;
+}
+#profilePic{
+  position: absolute;
+  top: 3vh;
+  left:68vw;
+  width:30vw;
+  height:50vh;
+}
+#settings{
+  position: absolute;
+  top: 58vh;
+  left:15vw;
+
+}
+#settings input{
+  margin-bottom: 3vh;
+  width:80vw;
+  height:10vh;
+  text-align: center;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 400%;
+}

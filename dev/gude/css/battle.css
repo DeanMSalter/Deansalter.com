@@ -1,0 +1,29 @@
+#battles{
+  position: absolute;
+  top:5vh;
+  left:30vw;
+  width:50vw;
+}
+#battles td{
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 200%;
+}
+#user{
+    font-size: 150%;
+    font-weight:bolder;
+    color: gold;
+}
+#title{
+  position: relative;
+  left:10vw;
+}
+#tutorial{
+  border:solid;
+  padding:1%;
+  position: absolute;
+  top:70vh;
+  left:10vw;
+  width:30vw;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 120%;
+}

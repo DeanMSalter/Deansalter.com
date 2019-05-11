@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <link rel="stylesheet" href="settings.css">
+    <meta name="viewport" content="width=device-width,
+    initial-scale=1, maximum-scale=1, user-scalable=0"/>
+    <meta charset="utf-8">
+    <title>Settings</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico"/>
+  </head>
+  <body>
+    <div id = "dateTime">
+      <p id = "time">
+      <p id = "date">
+    </div>
+
+    <table id="creationTable">
+      <tr>
+        <td ><img id="infoIcon" title="Enter the name of a new building you wish to add" src="infoIcon.svg">Building Name: </td>
+        <td title="Enter the name of a new building you wish to add"> <input type="text" id="buildingName"> <p id="buildingUniqueID"></td>
+      </tr>
+    </table>
+    <table id="submissionTable">
+        <tr>
+          <td><img id="infoIcon" title="Insert a screen ID to create a screen or edit a current one" src="infoIcon.svg">ScreenID:</td>
+          <td title="Insert a screen ID to create a screen or edit a current one"> <input type="text" id="screenID" > </td>
+        </tr>
+        <tr>
+          <td><img id="infoIcon" title="Enter the nearest city to get accurate weather information" src="infoIcon.svg">City:</td>
+          <td title="Enter the nearest city to get accurate weather information"> <input type="text" id="city" > </td>
+        </tr>
+        <tr>
+          <td><img id="infoIcon" title="Enter the building ID of the building your in, from the list to the right" src="infoIcon.svg">Building ID:</td>
+          <td title="Enter the building ID of the building your in, from the list to the right" > <input type="text" id="building" ></td>
+        </tr>
+        <tr>
+          <td id="buildingIDSub"><img id="infoIcon"  title="Click to toggle the building information panel" src="infoIcon.svg">Building Info:</td>
+          <td id="buildingIDSub" title="Click to toggle the building information panel"> <input type="checkbox" id="buildingInfo"  checked></td>
+        </tr>
+        <tr>
+          <td id="mainSub"><img id="infoIcon" title="Toggle the main messages panel" src="infoIcon.svg">Main Info:</td>
+          <td id="mainSub" title="Click to toggle the main messages panel"> <input type="checkbox" id="mainInfo"  checked></td>
+        </tr>
+    </table>
+    <table id="buildingsTable">
+      <thead>
+        <td>Building ID</td>
+        <td>Building</td>
+      </thead>
+      <tbody id="buildingsTableBody"></tbody>
+    </table>
+    <table id="databaseTable">
+      <thead>
+        <td>ScreenID</td>
+        <td>City</td>
+        <td>Building</td>
+        <td>Building Info</td>
+        <td>Main Info</td>
+        <td colspan="3"> Actions</td>
+      </thead>
+      <tbody id="databaseTableBody"></tbody>
+    </table>
+  </body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="messagesClientSettings.js"></script>
+</html>

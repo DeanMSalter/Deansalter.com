@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <link rel="stylesheet" href="css/general.css">
+    <link rel="stylesheet" href="css/components.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,
+        initial-scale=1, maximum-scale=1, user-scalable=0"/>
+    <title>Gude High fidelity prototype</title>
+  </head>
+  <body>
+    <nav>
+      <a href="index.html"><img id="HomeIcon" alt="An icon of a house" class="icons" src="images/home.svg"></a>
+      <a href="profile.html"><img id="ProfileIcon"  alt="An icon of profile picture" class="icons" src="images/profileIcon.svg"></a>
+      <a href="leaderboard.html"><img id="LeaderboarcIcon"  alt="An icon of a leaderboard"  class="icons" src="images/leaderboard.svg"></a>
+      <a href="map.html"><img id="MapIcon"  alt="An icon of a map" class="icons" src="images/map.svg"></a>
+      <a href="visited.html"><img id="VisitedIcon"  alt="An icon of a list of visited locations" class="icons" src="images/visited.svg"></a>
+      <a href="components.html"><img id="HammerIcon"  alt="An icon of a hammer" class="icons" src="images/hammer.svg"></a>
+      <a href="battle.html"><img id="BattleIcon"  alt="An icon of a swords" class="icons" src="images/battle.svg"></a>
+    </nav>
+
+    <table id="selection">
+      <tr>
+        <td>Sails</td>
+        <td><select>
+            <option value="oneSail">One Sail</option>
+            <option value="twoSail">Two Sail</option>
+            <option value="sailRowing">Sails and rowing</option>
+            <option value="steam">Steam</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>Hull</td>
+        <td><select>
+            <option value="wooden">Wooden</option>
+            <option value="thickWood">Thick Wood</option>
+            <option value="ironClad">Iron Clad</option>
+            <option value="steel">Steel</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>Cannons</td>
+        <td><select>
+            <option value="handheld">Handheld</option>
+            <option value="frontFacing">Front Facing</option>
+            <option value="6Side">6 Side Cannons</option>
+            <option value="18Side">18 side Cannons</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>Ram</td>
+        <td><select>
+            <option value="wood">Wood</option>
+            <option value="spikedWood">Spiked Wood</option>
+            <option value="iron">Iron</option>
+            <option value="steel">Steel</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td>Crew</td>
+        <td><select>
+            <option value="firstMate">First Mate</option>
+            <option value="6Prisoners">6 Prisoners</option>
+            <option value="freshCrew">Fresh Crew</option>
+            <option value="fullCrew">Fully Trained Crew</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+
+
+    <table id="upgrades">
+      <tr>
+        <td> <img class = "upgrades" id="sailIcon" alt="An icon of a sail" src="images/sail.svg">
+        <td> <img class = "upgrades"  id="sailIcon" alt="An icon of a sail" src="images/sail.svg">
+        <td> <img class = "upgrades" id="sailIcon" alt="An icon of a sail" src="images/sail.svg">
+        <td> <img class = "upgrades" id="sailIcon" alt="An icon of a sail" src="images/sail.svg">
+        <td> <img class = "upgrades" id="sailIcon" alt="An icon of a sail" src="images/sail.svg">
+      </tr>
+      <tr>
+        <td><img class = "upgrades" id="hullIcon" alt="An icon of a hull" src="images/hull.svg">
+        <td><img class = "upgrades" id="hullIcon" alt="An icon of a hull" src="images/hull.svg">
+        <td><img class = "upgrades" id="hullIcon" alt="An icon of a hull" src="images/hull.svg">
+        <td><img class = "upgrades" id="hullIcon" alt="An icon of a hull" src="images/hull.svg">
+        <td><img class = "upgrades" id="hullIcon" alt="An icon of a hull" src="images/hull.svg">
+      </tr>
+      <tr>
+        <td><img class = "upgrades" id="cannonIcon" alt="An icon of a cannon" src="images/cannon.svg">
+        <td><img class = "upgrades" id="cannonIcon" alt="An icon of a cannon" src="images/cannon.svg">
+        <td><img class = "upgrades" id="cannonIcon" alt="An icon of a cannon" src="images/cannon.svg">
+        <td><img class = "upgrades" id="cannonIcon" alt="An icon of a cannon" src="images/cannon.svg">
+        <td><img class = "upgrades" id="cannonIcon" alt="An icon of a cannon" src="images/cannon.svg">
+      </tr>
+      <tr>
+        <td><img class = "upgrades" id="ramIcon" alt="An icon of a ram" src="images/ram.svg">
+        <td><img class = "upgrades" id="ramIcon" alt="An icon of a ram" src="images/ram.svg">
+        <td><img class = "upgrades" id="ramIcon" alt="An icon of a ram" src="images/ram.svg">
+        <td><img class = "upgrades" id="ramIcon" alt="An icon of a ram" src="images/ram.svg">
+        <td><img class = "upgrades" id="ramIcon" alt="An icon of a ram" src="images/ram.svg">
+      </tr>
+      <tr>
+        <td><img class = "upgrades" id="crewIcon" alt="An icon of a crew" src="images/crew.svg">
+        <td><img class = "upgrades" id="crewIcon" alt="An icon of a crew" src="images/crew.svg">
+        <td><img class = "upgrades" id="crewIcon" alt="An icon of a crew" src="images/crew.svg">
+        <td><img class = "upgrades" id="crewIcon" alt="An icon of a crew" src="images/crew.svg">
+        <td><img class = "upgrades" id="crewIcon" alt="An icon of a crew" src="images/crew.svg">
+      </tr>
+    </table>
+    <img id="ship" src="images/ship.svg">
+    <p id="tutorial">
+      This is the componenets/upgrade Screen.
+      Here you can upgrade your ship and unlock new componenets.
+      Simply click on the next component using the buttons at the bottom and then select the component you want to equip from the drop downs.
+      You must answer questions correctly at caches to gain upgrade points.
+      Click to dismiss.
+    </p>
+  </body>
+  <script src="js/script.js" ></script>
+  <script src="js/components.js" ></script>
+</html>

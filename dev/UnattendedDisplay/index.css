@@ -1,0 +1,61 @@
+html{
+  background-color: rgb(220,220,220);
+}
+*{
+  margin:0
+  padding:0
+  box-sizing:border-box;
+}
+body{
+  overflow: hidden;
+}
+a:visited{
+   color:black;
+}
+a:hover {
+  color: rgb(0,0,255);
+}
+a:active {
+  color: rgb(0,255,0);
+}
+#display{
+  width:48%;
+  height:48%;
+  border:solid;
+  position: absolute;
+}
+#display p{
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 300%;
+  position: absolute;
+  left:25%;
+  top:20%;
+}
+#setUp{
+  width:49%;
+  height:48%;
+  border:solid;
+  position: absolute;
+  left:50%;
+}
+#setUp p{
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 300%;
+  position: absolute;
+  top:7%;
+  text-align:center;
+}
+#submission{
+  width:98.4%;
+  height:46%;
+  border:solid;
+  position: absolute;
+  top:52%;
+}
+#submission p{
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 300%;
+  position: absolute;
+  left:35%;
+  top:20%;
+}

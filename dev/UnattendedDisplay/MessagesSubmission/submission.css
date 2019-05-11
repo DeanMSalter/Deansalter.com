@@ -1,0 +1,146 @@
+html{
+  background-color: rgb(220,220,220);
+}
+*{
+  margin: 0 !important;
+  padding: 0 !important;
+}
+#dateTime{
+  position: absolute;
+  top:1%;
+  width:100%;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 150%;
+}
+
+#date{
+  position: absolute;
+}
+#time{
+  position: absolute;
+  right:1em;
+}
+#submissionTable{
+  top: 10%;
+  position: absolute;
+  border-collapse: collapse;
+  border:solid;
+  border-width: thin;
+  width:22%;
+}
+#submissionTable td{
+  border:solid;
+  border-width: thin;
+  padding:5px !important;
+}
+
+#buildingIDSub{
+  background-color: rgb(200,200,255);
+}
+#mainSub{
+  background-color: rgb(255,200,200);
+}
+
+#messagesTable{
+  top: 60%;
+  position: absolute;
+  border-collapse: collapse;
+  border:solid;
+  border-width: thin;
+  box-sizing:border-box;
+  table-layout:fixed;
+  width:40%;
+}
+#messagesTable td{
+  border:solid;
+  border-width: thin;
+  padding:5px !important;
+  word-wrap: break-word
+}
+#uniqueID{
+  width:2%;
+}
+#messageID{
+  width:2%;
+}
+#messageContent{
+  width:6%;
+}
+#messageActions{
+  width:5%;
+}
+#buildingSubmissionTable{
+  top: 10%;
+  left:40%;
+  position: absolute;
+  border-collapse: collapse;
+  border:solid;
+  border-width: thin;
+  width:22%
+}
+#buildingSubmissionTable td{
+  border:solid;
+  border-width: thin;
+  padding:5px !important;
+}
+#buildingMessagesTable{
+  left:41%;
+  top: 60%;
+  position: absolute;
+  border-collapse: collapse;
+  border:solid;
+  border-width: thin;
+  box-sizing:border-box;
+  table-layout:fixed;
+  width:49%;
+}
+#buildingMessagesTable td{
+  border:solid;
+  border-width: thin;
+  padding:5px !important;
+  word-wrap: break-word
+}
+#buildinguniqueID{
+  width:3%;
+}
+#buildingID{
+  width:3%;
+}
+#buildingName{
+  width:4%;
+}
+#buildingmessageContent{
+  width:10%;
+}
+#buildingmessageActions{
+  width:4%;
+}
+#buildingsTable{
+  top: 60%;
+  left:90.5%;
+  position: absolute;
+  border-collapse: collapse;
+  border:solid;
+  border-width: thin;
+  box-sizing:border-box;
+}
+#buildingsTable td{
+  border:solid;
+  border-width: thin;
+  padding:5px !important;
+}
+#databaseID{
+  position: absolute;
+  left: 70%;
+  top:-3%;
+}
+#databaseBuildingID{
+  position: absolute;
+  left: 70%;
+  top:-3%;
+}
+#infoIcon{
+  position:relative;
+  left:1%;
+  width:30%;
+}
