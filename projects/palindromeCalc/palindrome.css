@@ -1,0 +1,74 @@
+* {
+  padding: 0;
+  margin: 0;
+  font-family: "Trebuchet MS", Times, serif;
+}
+/* body{
+  height:100vh;
+  width:100vw;
+} */
+:host {
+  display: block;
+}
+#palindrome-container{
+  display: grid;
+  grid-gap: 1%;
+  padding: 1%;
+  background-color: #2196F3;
+  grid-template-columns: 40% 59%;
+  grid-template-areas:
+    "header  summary     "
+    "inputBox  summary   "
+    "submitButton  summary   "
+    "results  summary   "
+    "reversed summary    ";
+  height: 97%;
+  /* height:inherit;
+  width: inherit; */
+  }
+
+
+#submitButton {
+  grid-area: submitButton;
+  width: 50%;
+  height: 4em;
+  margin: 0 auto;
+  font-size: 2vw;
+}
+
+#inputBox {
+  grid-area: inputBox;
+  height: 2em;
+  font-size: 2.5vw;
+}
+
+#titleText {
+  grid-area: header;
+  margin: 0 auto;
+  margin-top: 5%;
+  font-size: 3vw;
+}
+
+#grid-results {
+  grid-area: results;
+  display: grid;
+  font-size: 2.5vw;
+}
+
+#resultText {
+  grid-area: results;
+  font-size: 2.5vw;
+}
+
+#reversedText {
+  grid-area: reversed;
+  font-size: 2.5vw;
+}
+
+#summaryText {
+  margin-top: 1em;
+  grid-area: summary;
+  white-space: pre-line;
+  text-align: center;
+  font-size: 1em;
+}

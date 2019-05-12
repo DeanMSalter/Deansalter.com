@@ -1,0 +1,10 @@
+/* #palindrome-container{
+  width: 50% !important;
+  height:50% !important;;
+  border: solid;
+} */
+#palindrome{
+  width: 30% !important;
+  height:30% !important;
+  border: solid;
+}
