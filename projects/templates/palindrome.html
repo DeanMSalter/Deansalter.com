@@ -1,5 +1,5 @@
 
-<template id="palindrome">
+<template id="palindromeTemplateSrc">
 
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,7 +15,7 @@
       <h3 id="summaryText">
         Welcome to my palindrome calculator.
         This is just a simple application to test if a given string is a palindrome.
-        It was created so I could familarise myself with using grid layouts and web components </h3>
+        It was created so I could familarise myself with using grid layouts ,templates and importing </h3>
       <button id="submitButton">Submit</button>
       <input id="inputBox"></input>
       <h2 id="resultText"></h2>
@@ -174,8 +174,8 @@
 
 <script>
   const getImport = document.querySelector('#palindromeTemplate');
-  const getContent = getImport.import.querySelector('#palindrome')
+  const getContent = getImport.import.querySelector('#palindromeTemplateSrc')
   document.body.appendChild(document.importNode(getContent, true));
   const cloned = getContent.content.cloneNode(true);
-  document.getElementById("palindromeContainer").appendChild(cloned);
+  document.getElementById("palindrome").appendChild(cloned);
 </script>
