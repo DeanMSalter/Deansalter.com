@@ -3,72 +3,69 @@
   margin: 0;
   font-family: "Trebuchet MS", Times, serif;
 }
-/* body{
-  height:100vh;
-  width:100vw;
-} */
+
 :host {
   display: block;
 }
+
 #palindrome-container{
   display: grid;
   grid-gap: 1%;
   padding: 1%;
   background-color: #2196F3;
   grid-template-columns: 40% 59%;
-  grid-template-areas:
-    "header  summary     "
-    "inputBox  summary   "
-    "submitButton  summary   "
-    "results  summary   "
-    "reversed summary    ";
-  height: 97%;
-  /* height:inherit;
-  width: inherit; */
+  grid-template-rows: 60% 40%;
+  height: 97.1%;
   }
 
 
 #submitButton {
-  grid-area: submitButton;
-  width: 50%;
-  height: 4em;
-  margin: 0 auto;
-  font-size: 2vw;
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 2;
+  grid-row-end: 2;
+  margin: auto;
+  margin-top: 40%;
 }
 
 #inputBox {
-  grid-area: inputBox;
-  height: 2em;
-  font-size: 2.5vw;
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 2;
+  grid-row-end: 2;
 }
-
 #titleText {
-  grid-area: header;
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 1;
+  grid-row-end: 1;
   margin: 0 auto;
   margin-top: 5%;
-  font-size: 3vw;
-}
-
-#grid-results {
-  grid-area: results;
-  display: grid;
-  font-size: 2.5vw;
 }
 
 #resultText {
-  grid-area: results;
-  font-size: 2.5vw;
+  grid-column-start: 2;
+  grid-column-end: 2;
+  grid-row-start: 2;
+  grid-row-end: 2;
+  padding:1%;
+}
+#reversedText {
+  grid-column-start: 2;
+  grid-column-end: 2;
+  grid-row-start: 2;
+  grid-row-end: 2;
+  margin-top: 25%;
+  padding:1%;
 }
 
-#reversedText {
-  grid-area: reversed;
-  font-size: 2.5vw;
-}
 
 #summaryText {
   margin-top: 1em;
-  grid-area: summary;
+  grid-column-start: 2;
+  grid-column-end: 2;
+  grid-row-start: 1;
+  grid-row-end: 2;
   white-space: pre-line;
   text-align: center;
-  font-size: 1em;
 }

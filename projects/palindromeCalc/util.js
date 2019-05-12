@@ -10,3 +10,7 @@ export function element(parent,eleName,attrs){ // eslint-disable-line
   parent.appendChild(e)
   return e
 }
+export function resizeText(parent, element, scale) {
+  element.style.fontSize = ((parent.offsetWidth+parent.offsetHeight)/2)*scale
+  return element
+}

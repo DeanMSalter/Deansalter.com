@@ -1,6 +1,6 @@
 'use strict' // eslint-disable-line
 import {
-  element
+  element, resizeText
 } from './util.js'; // eslint-disable-line
 
 export class PalindromeCalc extends HTMLElement { // eslint-disable-line
@@ -43,6 +43,39 @@ export class PalindromeCalc extends HTMLElement { // eslint-disable-line
     title.textContent = "Palindrome calculator"
     submitButton.textContent = "Submit"
     summary.textContent= "Welcome to my palindrome calculator.\nThis is just a simple application to test if a given string is a palindrome.\nIt was created so I could familarise myself with using grid layouts and web components "
+
+
+    window.onload = function() {
+      resizeText(container, summary, 0.04)
+      resizeText(container, title, 0.06)
+      resizeText(container, reversedOutput, 0.04)
+      resizeText(container, result, 0.04)
+
+      inputBox.style.height = container.offsetHeight*0.1
+      inputBox.style.width = container.offsetWidth*0.4
+
+      submitButton.style.height = container.offsetHeight*0.1
+      submitButton.style.width = container.offsetWidth*0.2
+      resizeText(container, submitButton, 0.04)
+
+      resizeText(container, inputBox, 0.04)
+    }
+    window.onresize = function() {
+      console.log(container.offsetWidth)
+      resizeText(container, summary, 0.04)
+      resizeText(container, title, 0.06)
+      resizeText(container, reversedOutput, 0.04)
+      resizeText(container, result, 0.04)
+
+      inputBox.style.height = container.offsetHeight*0.1
+      inputBox.style.width = container.offsetWidth*0.4
+
+      submitButton.style.height = container.offsetHeight*0.1
+      submitButton.style.width = container.offsetWidth*0.2
+      resizeText(container, submitButton, 0.04)
+
+      resizeText(container, inputBox, 0.04)
+    }
     let input = ''
     submitButton.addEventListener('click', function() {
       input = inputBox.value
