@@ -5,21 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="viewport" content="height=device-height, initial-scale=1">
   <title> Deans testing website </title>
-
-  <script type="module" src="./palindromeCalc/palindrome.js"></script>
+  <link rel="import" id= "palindromeTemplate" href="./templates/palindrome.html">
   <link rel="stylesheet" href="./projects.css">
 </head>
 
 <body>
   <h3 id="header1">Java Script testing</h3>
-
   <nav>
     <a href="./palindromeCalc"> Palindrom Calculator </a>
     <a href="./ballGame"> Ball </a>
     <a href="./enemies"> Enemies </a>
   </nav>
+  <div id="palindromeContainer"></div>
 
-  <palindrome-calc id="palindrome"></palindrome-calc>
   <div id="Links">
     <h2>Useful Links</h2>
     <a href="https://cloud.scaleway.com/#/"> Scaleway</a>
