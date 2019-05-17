@@ -1,14 +1,5 @@
 
 <template id="palindromeTemplateSrc">
-
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="viewport" content="height=device-height, initial-scale=1">
-    <meta charset="utf-8">
-    <title></title>
-
-  </head>
-
   <body>
     <div id="palindrome-container">
       <h1 id="titleText">Palindrome Calculator</h1>
@@ -16,16 +7,21 @@
         Welcome to my palindrome calculator.
         This is just a simple application to test if a given string is a palindrome.
         It was created so I could familarise myself with using grid layouts ,templates and importing </h3>
-      <button id="submitButton">Submit</button>
-      <input id="inputBox"></input>
-      <h2 id="resultText"></h2>
-      <h2 id="reversedText"></h2>
+      <div id="inputWrapper">
+        <button id="submitButton">Submit</button>
+        <input id="inputBox"></input>
+      </div>
+      <div id="resultsWrapper">
+        <h2 id="resultText"></h2>
+        <h2 id="reversedText"></h2>
+      </div>
     </div>
     <style>
       * {
         padding: 0;
         margin: 0;
         font-family: "Trebuchet MS", Times, serif;
+        box-sizing:border-box;
       }
 
       :host {
@@ -39,24 +35,39 @@
         background-color: #2196F3;
         grid-template-columns: 40% 59%;
         grid-template-rows: 60% 40%;
-        height: 97.1%;
+        height: 100%;
       }
-
-
+      #inputWrapper{
+        grid-column-start: 1;
+        grid-column-end: 1;
+        grid-row-start: 2;
+        grid-row-end: 2;
+        display:grid;
+        grid-template-columns: 100%;
+        grid-template-rows: 60% 40%;
+      }
+      #resultsWrapper{
+        grid-column-start: 2;
+        grid-column-end: 2;
+        grid-row-start: 2;
+        grid-row-end: 2;
+        display:grid;
+        grid-template-columns: 100%;
+        grid-template-rows: 50% 50%;
+      }
       #submitButton {
         grid-column-start: 1;
         grid-column-end: 1;
         grid-row-start: 2;
         grid-row-end: 2;
         margin: auto;
-        margin-top: 40%;
       }
 
       #inputBox {
         grid-column-start: 1;
         grid-column-end: 1;
-        grid-row-start: 2;
-        grid-row-end: 2;
+        grid-row-start: 1;
+        grid-row-end: 1;
       }
 
       #titleText {
@@ -65,40 +76,34 @@
         grid-row-start: 1;
         grid-row-end: 1;
         margin: 0 auto;
-        margin-top: 5%;
       }
 
       #resultText {
-        grid-column-start: 2;
-        grid-column-end: 2;
-        grid-row-start: 2;
-        grid-row-end: 2;
-        padding: 1%;
+        grid-column-start: 1;
+        grid-column-end: 1;
+        grid-row-start: 1;
+        grid-row-end: 1;
       }
 
       #reversedText {
-        grid-column-start: 2;
-        grid-column-end: 2;
+        grid-column-start: 1;
+        grid-column-end: 1;
         grid-row-start: 2;
         grid-row-end: 2;
-        margin-top: 25%;
-        padding: 1%;
       }
 
 
       #summaryText {
-        margin-top: 1em;
         grid-column-start: 2;
         grid-column-end: 2;
         grid-row-start: 1;
         grid-row-end: 2;
-        white-space: pre-line;
         text-align: center;
       }
     </style>
     <script>
       'use strict'
-          let container = document.getElementById("palindrome-container")
+      let container = document.getElementById("palindrome-container")
       let title = document.getElementById("titleText")
       let summary = document.getElementById("summaryText")
       let submitButton = document.getElementById("submitButton")
@@ -106,23 +111,11 @@
       let result = document.getElementById("resultText")
       let reversedOutput = document.getElementById("reversedText")
 
-      window.onload = function() {
-        resizeText(container, summary, 0.04)
-        resizeText(container, title, 0.06)
-        resizeText(container, reversedOutput, 0.04)
-        resizeText(container, result, 0.04)
 
-        inputBox.style.height = container.offsetHeight * 0.1
-        inputBox.style.width = container.offsetWidth * 0.4
-
-        submitButton.style.height = container.offsetHeight * 0.1
-        submitButton.style.width = container.offsetWidth * 0.2
-        resizeText(container, submitButton, 0.04)
-
-        resizeText(container, inputBox, 0.04)
-      }
       window.onresize = function() {
-        console.log(container.offsetWidth)
+        let wrapper = document.getElementById("palindrome")
+    //    container.style.height = wrapper.offsetHeight
+        wrapper.style.height = wrapper.offsetHeight
         resizeText(container, summary, 0.04)
         resizeText(container, title, 0.06)
         resizeText(container, reversedOutput, 0.04)
@@ -178,4 +171,24 @@
   document.body.appendChild(document.importNode(getContent, true));
   const cloned = getContent.content.cloneNode(true);
   document.getElementById("palindrome").appendChild(cloned);
+
+  let wrapper = document.getElementById("palindrome")
+  container.style.height = wrapper.offsetHeight
+  wrapper.style.height = wrapper.offsetHeight
+  console.log(wrapper.style.height)
+  console.log(container.offsetHeight)
+  console.log(wrapper.offsetHeight)
+  resizeText(container, summary, 0.04)
+  resizeText(container, title, 0.06)
+  resizeText(container, reversedOutput, 0.04)
+  resizeText(container, result, 0.04)
+
+  inputBox.style.height = container.offsetHeight * 0.1
+  inputBox.style.width = container.offsetWidth * 0.4
+
+  submitButton.style.height = container.offsetHeight * 0.1
+  submitButton.style.width = container.offsetWidth * 0.2
+  resizeText(container, submitButton, 0.04)
+
+  resizeText(container, inputBox, 0.04)
 </script>

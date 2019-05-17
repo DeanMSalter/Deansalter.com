@@ -1,16 +1,13 @@
+*{
+  padding: 0;
+  margin: 0;
+}
 html{
   background-color: #35454E;
   font-family: "Work Sans", Arial, sans-serif;
 }
 
-#header1{
-  color:white;
-  text-align: center;
-  font-weight: 300;
-  font-family: "Work Sans", Arial, sans-serif;
-  font-size: 3em;
-  text-transform: uppercase;
-}
+
 nav{
   text-align: center;
 }
@@ -22,24 +19,22 @@ nav a{
   color: rgba(255, 255, 255, 0.5);
   padding-right: 1%;
 }
+#header1{
+  color:white;
+  text-align: center;
+  font-weight: 300;
+  font-family: "Work Sans", Arial, sans-serif;
+  font-size: 3em;
+  text-transform: uppercase;
+}
 #palindrome{
   border: solid;
   grid-column-start: 1;
   grid-column-end: 1;
-  grid-row-start: 1;
-  grid-row-end: 1;
 }
 #projects-container{
-  margin: 0.5%;
   display: grid;
-  grid-template-columns: 33% 33% 33%;
-  grid-template-rows: 33% 33% 33%;
+  grid-template-columns: 100%;
+  grid-template-rows: 100%;
   height:90%;
-}
-#fourWallSquash{
-  border:solid;
-  grid-column-start: 2;
-  grid-column-end: 2;
-  grid-row-start: 1;
-  grid-row-end: 1;
 }
