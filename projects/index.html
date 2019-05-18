@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="viewport" content="height=device-height, initial-scale=1">
   <title> Deans testing website </title>
-  <link rel="import" id="palindromeTemplate" href="./templates/palindrome.html">
-  <link rel="import" id="fourWallSquashTemplate" href="./templates/fourWallSquash.html">
   <link rel="stylesheet" href="./projects.css">
 </head>
 
@@ -15,12 +13,38 @@
     <nav>
       <a href="./palindromeCalc">Palindrome Calculator</a>
       <a href="./fourWallSquash">4 Wall Squash </a>
+      <a href="https://deansalter.com:8080/">Messaging display system </a>
+      <a href="./imgManipulator">Image Manipulator </a>
     </nav>
     <div id="projects-container">
-      <div id="palindrome"></div>
-      <div id="fourWallSquash"></div>
-    </div>
+      <object data="./palindromeCalc/index.html" id="palindromeEmbed" >
+        <embed src="./palindromeCalc/index.html" scale="tofit"> </embed>
+        Error: Embedded data could not be displayed.
+      </object>
+      <object data="./fourWallSquash/index.html" id="fourWallSquashEmbed" >
+        <embed src="./fourWallSquash/index.html" scale="tofit"> </embed>
+        Error: Embedded data could not be displayed.
+      </object>
 
+      <a href="https://deansalter.com:8080/" target="_blank" id="messagesSystemEmbed">
+        Messaging display system
+      </a>
+
+      <!-- <object data="./imgManipulator/index.html" id="imgManipulatorEmbed" >
+        <embed src="./imgManipulator/index.html" scale="tofit"> </embed>
+        Error: Embedded data could not be displayed.
+      </object> -->
+
+      </div>
+    </div>
+    <script>
+      window.onresize = function(){
+        let averageSize = (document.getElementById("messagesSystemEmbed").offsetHeight+document.getElementById("messagesSystemEmbed").offsetWidth)/2
+        document.getElementById("messagesSystemEmbed").style.fontSize = averageSize*0.04
+
+      }
+
+    </script>
 </body>
 
 </html>

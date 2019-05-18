@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <link rel="stylesheet" href="settings.css">
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <div id ="dateTime">
+      <p id = "time">
+      <p id="date">
+    </div>
+    <table id="creationTable">
+        <tr>
+          <td >Building Name:</td>
+          <td title="Enter the name of a new building you wish to add"> <input type="text" id="buildingName"> <img id="infoIcon" src="infoIcon.svg"></td>
+        </tr>
+    </table>
+    <table id="submissionTable">
+        <tr>
+          <td >ScreenID:</td>
+          <td title="Insert a screen ID to create a screen or edit a current one"> <input type="text" id="screenID" > <img id="infoIcon" src="infoIcon.svg"></td>
+        </tr>
+        <tr>
+          <td >City:</td>
+          <td title="Enter the nearest city to get accurate weather information"> <input type="text" id="city" > <img id="infoIcon" src="infoIcon.svg"></td>
+        </tr>
+        <tr>
+          <td >Building ID:</td>
+          <td title="Enter the building ID of the building your in, from the list to the right" > <input type="text" id="building" ><img id="infoIcon" src="infoIcon.svg"></td>
+        </tr>
+        <tr>
+          <td id="buildingIDSub">Building Info:</td>
+          <td id="buildingIDSub" title="Click to toggle the building information panel"> <input type="checkbox" id="buildingInfo"  checked><img id="infoIcon" src="infoIcon.svg"></td>
+        </tr>
+        <tr>
+          <td id="mainSub">Main Info:</td>
+          <td id="mainSub" title="Click to toggle the main messages panel"> <input type="checkbox" id="mainInfo"  checked><img id="infoIcon" src="infoIcon.svg"></td>
+        </tr>
+      </table>
+      <table id="buildingsTable">
+        <thead>
+            <td>Building ID</td>
+            <td>Building</td>
+        </thead>
+        <tbody id="buildingsTableBody">
+        <tbody>
+      </table>
+    <table id="databaseTable">
+      <thead>
+          <td>ScreenID</td>
+          <td>City</td>
+          <td>Building</td>
+          <td>Building Info</td>
+          <td>Main Info</td>
+          <td colspan="3"> Actions</td>
+      </thead>
+      <tbody id="databaseTableBody">
+      <tbody>
+    </table>
+
+  </body>
+    <script src="/socket.io/socket.io.js"></script>
+  <script src="messagesClientSettings.js" ></script>
+  <script type="application/javascript" src="https://ipinfo.io/?format=jsonp&callback=getIP"></script>
+
+
+</html>

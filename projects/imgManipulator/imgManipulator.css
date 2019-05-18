@@ -1,0 +1,9 @@
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+html{
+  background-color: #35454E;
+  font-family: "Work Sans", Arial, sans-serif;
+}

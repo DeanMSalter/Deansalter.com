@@ -28,7 +28,6 @@ nav a{
   text-transform: uppercase;
 }
 #palindrome{
-  border: solid;
   grid-column-start: 1;
   grid-column-end: 1;
 }

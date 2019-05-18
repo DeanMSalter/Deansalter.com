@@ -27,7 +27,6 @@ nav a{
   text-transform: uppercase;
 }
 #fourWallSquash{
-  outline: solid;
   grid-column-start: 1;
   grid-column-end: 1;
   grid-row-start: 1;

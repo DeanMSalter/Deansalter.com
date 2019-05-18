@@ -1,0 +1,89 @@
+<template id="imgManipulatorTemplateSrc">
+
+  <body>
+    <div id="imgManipulator-container" tabindex="0">
+
+    </div>
+    <style>
+      #imgMelter-container{
+        width:100%;
+        height:100%;
+      }
+      #newCanvas{
+        height:100%;
+        width:100%;
+      }
+    </style>
+
+
+
+    <script>
+      'use strict'
+      let base_image = new Image();
+      let pixelsInColumn;
+      base_image.src = 'testImage2.png';
+      base_image.onload = function(){
+        let canvas = document.createElement('canvas');;
+        let ctx = canvas.getContext("2d");
+        canvas.width =  base_image.width;
+        canvas.height = base_image.height;
+
+        canvas.id = "newCanvas";
+        document.getElementById("imgManipulator-container").appendChild(canvas)
+
+        ctx.drawImage(base_image,0,0);
+
+        colourBox(ctx,0,0,base_image.width,base_image.height,-0,0,0,60)
+      //  colourBox(ctx,100,100,100,100)
+
+      }
+
+      function colourBox(ctx,xPos, yPos,width,height,r,g,b,a){
+
+        let imgData = ctx.getImageData(xPos, yPos, width, height);
+        let currentRow=0;
+
+        let updateRowInterval = setInterval(updateRow, 1);
+        let pixelsInRow = width*4;
+
+        function updateRow() {
+          for (let o = currentRow * pixelsInRow; o < (currentRow * pixelsInRow) + pixelsInRow; o += 4) {
+            if(!Object.is(r, -0)){
+              imgData.data[o] = r;
+            }
+            if(!Object.is(g, -0)){
+              imgData.data[o+1] = g;
+            }
+            if(!Object.is(b, -0)){
+              imgData.data[o+2] = b;
+            }
+            if(!Object.is(a, -0)){
+              imgData.data[o+3] = a;
+            }
+            ctx.putImageData(imgData, xPos, yPos);
+          }
+          if (currentRow+1 < height) {
+            currentRow++
+          }else{
+            clearInterval(updateRowInterval)
+          }
+        }
+      }
+
+    </script>
+  </body>
+</template>
+
+ <script>
+  const getFourWallSquashImport = document.querySelector('#imgManipulatorTemplate');
+  const getFourWallSquashContent = getFourWallSquashImport.import.querySelector('#imgManipulatorTemplateSrc')
+  document.body.appendChild(document.importNode(getFourWallSquashContent, true));
+  const clonedFourWallSquash = getFourWallSquashContent.content.cloneNode(true);
+  document.getElementById("imgManipulator").appendChild(clonedFourWallSquash);
+  // for(let i=0;i<width;i++){ //Rows
+  //   for(o=i*(width*4);o<i*(width*4)+(width*4);o+=4){//pixels in current row
+  //         imgData.data[o] = 255
+  //   }
+  //   ctx.putImageData(imgData, xPos, yPos);
+  // }
+</script>

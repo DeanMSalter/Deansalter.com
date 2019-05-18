@@ -1,0 +1,87 @@
+html{
+  background-color: rgb(220,220,220);
+}
+
+#dateTime{
+  position: absolute;
+  top:1%;
+  width:100%;
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  font-size: 150%;
+}
+
+#date{
+  margin: 0;
+  position: absolute;
+  width: auto;
+}
+#time{
+  margin:0;
+  position: absolute;
+  right:1em;
+  width:auto;
+}
+
+
+#submissionTable{
+  top: 10%;
+  position: absolute;
+  border-collapse: collapse;
+  border:solid;
+  border-width: thin;
+  width:22%;
+}
+#submissionTable td{
+  border:solid;
+  border-width: thin;
+  padding:5px;
+}
+
+
+#databaseTable{
+  right:1%;
+  top: 10%;
+  position: absolute;
+  border-collapse: collapse;
+  border:solid;
+  border-width: thin;
+  box-sizing:border-box;
+}
+#databaseTable td{
+  border:solid;
+  border-width: thin;
+  padding:5px;
+}
+
+#buildingsTable{
+  left:26%;
+  top: 10%;
+  position: absolute;
+  border-collapse: collapse;
+  border:solid;
+  border-width: thin;
+  box-sizing:border-box;
+}
+#buildingsTable td{
+  border:solid;
+  border-width: thin;
+  padding:5px;
+}
+#creationTable{
+  top: 53%;
+  position: absolute;
+  border-collapse: collapse;
+  border:solid;
+  border-width: thin;
+  width:22%;
+}
+#creationTable td{
+  border:solid;
+  border-width: thin;
+  padding:5px;
+}
+#infoIcon{
+  position: relative;
+  left:5%;
+  width:10%;
+}
