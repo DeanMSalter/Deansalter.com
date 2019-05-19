@@ -3,15 +3,37 @@
   <body>
     <div id="imgManipulator-container" tabindex="0">
 
+      <button id="toggleGrid">Toggle Grid </button>
     </div>
     <style>
-      #imgMelter-container{
+      #imgManipulator-container{
+        display:grid;
+        grid-template-columns:80% 20%;
+        grid-template-rows:1fr;
         width:100%;
         height:100%;
       }
+      #toggleGrid{
+        grid-column-start: 2;
+        grid-column-end: 2;
+        grid-row-start:1;
+        grid-row-end:1;
+        height:10%;
+        width:40%;
+      }
       #newCanvas{
+        grid-column-start: 1;
+        grid-column-end: 1;
+        grid-row-start:1;
+        grid-row-end:1;
         height:100%;
         width:100%;
+      }
+      #marker{
+        border:solid;
+        position:absolute;
+        width:5px;
+        height:5px
       }
     </style>
 
@@ -21,25 +43,161 @@
       'use strict'
       let base_image = new Image();
       let pixelsInColumn;
-      base_image.src = 'testImage2.png';
+      let ctx;
+      let canvas;
+      let clicked = false;
+      let points = [];
+      let newImageData;
+      let gridOn = false
+
+      function nearestMultiple(x,target){
+        let found = false
+        let subtract = x
+        let subtractSteps = 0
+        let addition = x
+        let additionSteps = 0
+        let returnValue;
+        while(!found){
+          while(subtract % target != 0){
+            subtract -= 1
+            subtractSteps ++
+          }
+          while(addition % target != 0){
+            addition ++
+            additionSteps ++
+          }
+          if(additionSteps>subtractSteps){
+            returnValue = subtract-1
+            found = true
+          }else{
+            returnValue = addition-1
+            found = true
+          }
+        }
+        return returnValue
+      }
+      function drawGrid(){
+        for(let o = 0;o<canvas.width;o+=8){
+          ctx.beginPath();
+          ctx.moveTo(o, 0);
+          ctx.lineTo(o, canvas.height);
+          ctx.stroke();
+        }
+        for(let i=0;i<canvas.height;i+=8){
+          ctx.moveTo(0, i);
+          ctx.lineTo(canvas.width, i);
+          ctx.stroke();
+        }
+      }
+      function toggleGrid(toggle){
+        if(toggle){
+          ctx.putImageData(newImageData, 0, 0);
+        }else{
+          newImageData = ctx.getImageData(0,0,canvas.width,canvas.height)
+          drawGrid()
+        }
+      }
+      document.getElementById("toggleGrid").addEventListener("click",function(){
+        if(gridOn){
+          toggleGrid(true)
+          gridOn = false;
+        }else{
+          toggleGrid(false)
+          gridOn = true;
+        }
+      })
+
+      base_image.src = 'testImage.png';
       base_image.onload = function(){
-        let canvas = document.createElement('canvas');;
-        let ctx = canvas.getContext("2d");
+
+        canvas = document.createElement('canvas');;
+        ctx = canvas.getContext("2d");
+
         canvas.width =  base_image.width;
         canvas.height = base_image.height;
-
+        canvas.style.zIndex = "1";
         canvas.id = "newCanvas";
-        document.getElementById("imgManipulator-container").appendChild(canvas)
-
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "red";
         ctx.drawImage(base_image,0,0);
+        newImageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
 
-        colourBox(ctx,0,0,base_image.width,base_image.height,-0,0,0,60)
-      //  colourBox(ctx,100,100,100,100)
+        let clickPosX;
+        let clickPosY;
+        let xPos;
+        let yPos;
+        let xClick;
+        let yClick;
+        canvas.addEventListener('click',function(e){
+          let xScale = canvas.clientWidth/canvas.width
+          let yScale = canvas.clientHeight/canvas.height
+          xClick = parseInt((e.clientX)/xScale)
+          yClick = parseInt((e.clientY)/yScale)
+          xClick = parseInt(nearestMultiple(xClick,8)*xScale)
+          yClick = parseInt(nearestMultiple(yClick,8)*yScale)
+          let clickMarker = document.createElement("div")
+          clickMarker.id = "marker"
+          clickMarker.style.left = xClick
+          clickMarker.style.top =  yClick
+          clickMarker.style.zIndex = "100";
+          document.getElementById("imgManipulator-container").appendChild(clickMarker)
 
+
+
+
+          if(!clicked){
+            clicked = true;
+            clickPosX = parseInt((xClick)/xScale)
+            clickPosY = parseInt(( yClick)/yScale)
+            xPos = clickPosY
+            yPos = clickPosY
+          }else{
+            let clickPosX2 = parseInt((xClick)/xScale)
+            let clickPosY2 = parseInt(( yClick)/yScale)
+            let clickWidth = Math.abs(clickPosX2-clickPosX)
+            let clickHeight = Math.abs(clickPosY2-clickPosY)
+
+            if(clickPosX2 < clickPosX){
+              xPos = clickPosX2
+            }else{
+              xPos = clickPosX
+            }
+            if(clickPosY2 < clickPosY){
+              yPos = clickPosY2
+            }else{
+                yPos = clickPosY
+            }
+            while(document.getElementById("marker")){
+              let element = document.getElementById("marker");
+              element.parentNode.removeChild(element);
+            }
+
+
+            toggleGrid
+            clickWidth = nearestMultiple(clickWidth,8)+1
+            if(clickWidth < 1){
+              clickWidth += 1
+            }
+            if(clickHeight < 1){
+              clickHeight += 1
+            }
+
+            //ctx.putImageData(newImageData, 0, 0);
+            //toggleGrid(false)
+            invertBox(xPos+1,yPos+1,clickWidth,clickHeight,true,false,false,false)
+          //  toggleGrid(true)
+
+            //newImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+            clicked = false;
+         }
+        });
+
+        document.getElementById("imgManipulator-container").appendChild(canvas)
       }
 
-      function colourBox(ctx,xPos, yPos,width,height,r,g,b,a){
 
+      function colourBox(xPos, yPos,width,height,r,g,b,a){
         let imgData = ctx.getImageData(xPos, yPos, width, height);
         let currentRow=0;
 
@@ -48,20 +206,21 @@
 
         function updateRow() {
           for (let o = currentRow * pixelsInRow; o < (currentRow * pixelsInRow) + pixelsInRow; o += 4) {
-            if(!Object.is(r, -0)){
+            if(r){
               imgData.data[o] = r;
             }
-            if(!Object.is(g, -0)){
+            if(g){
               imgData.data[o+1] = g;
             }
-            if(!Object.is(b, -0)){
+            if(b){
               imgData.data[o+2] = b;
             }
-            if(!Object.is(a, -0)){
+            if(a){
               imgData.data[o+3] = a;
             }
-            ctx.putImageData(imgData, xPos, yPos);
+
           }
+          ctx.putImageData(imgData, xPos, yPos);
           if (currentRow+1 < height) {
             currentRow++
           }else{
@@ -69,8 +228,51 @@
           }
         }
       }
+      function invertBox(xPos, yPos,width,height,r,g,b,a){
+        let imgData = ctx.getImageData(xPos, yPos, width, height);
+        let currentRow=0;
 
+        let updateRowInterval = setInterval(updateRow, 1);
+        let pixelsInRow = width*4;
+
+        function updateRow() {
+          for (let o = currentRow * pixelsInRow; o < (currentRow * pixelsInRow) + pixelsInRow; o += 4) {
+            if(r){
+              imgData.data[o] = 255 - imgData.data[o];
+            }
+            if(g){
+              imgData.data[o+1] = 255 - imgData.data[o+1];
+            }
+            if(b){
+              imgData.data[o+2] = 255 - imgData.data[o+2];
+            }
+            if(a){
+              imgData.data[o+3] = 255 - imgData.data[o+3];
+            }
+
+          }
+          ctx.putImageData(imgData, xPos, yPos);
+          if (currentRow+1 < height) {
+            currentRow++
+          }else{
+            clearInterval(updateRowInterval)
+          }
+        }
+      }
     </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
   </body>
 </template>
 
