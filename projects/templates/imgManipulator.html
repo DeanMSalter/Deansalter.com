@@ -29,6 +29,14 @@
         height:100%;
         width:100%;
       }
+      #gridCanvas{
+        grid-column-start: 1;
+        grid-column-end: 1;
+        grid-row-start:1;
+        grid-row-end:1;
+        height:100%;
+        width:100%;
+      }
       #marker{
         border:solid;
         position:absolute;
@@ -42,13 +50,14 @@
     <script>
       'use strict'
       let base_image = new Image();
-      let pixelsInColumn;
       let ctx;
       let canvas;
+      let gridCtx;
+      let gridCanvas;
+
       let clicked = false;
-      let points = [];
-      let newImageData;
-      let gridOn = false
+      let gridOn = true
+
 
       function nearestMultiple(x,target){
         let found = false
@@ -76,124 +85,146 @@
         }
         return returnValue
       }
+
       function drawGrid(){
-        for(let o = 0;o<canvas.width;o+=8){
-          ctx.beginPath();
-          ctx.moveTo(o, 0);
-          ctx.lineTo(o, canvas.height);
-          ctx.stroke();
+        for(let o = 0;o<gridCanvas.width;o+=8){
+          gridCtx.beginPath();
+          gridCtx.moveTo(o, 0);
+          gridCtx.lineTo(o, gridCanvas.height);
+          gridCtx.stroke();
         }
-        for(let i=0;i<canvas.height;i+=8){
-          ctx.moveTo(0, i);
-          ctx.lineTo(canvas.width, i);
-          ctx.stroke();
-        }
-      }
-      function toggleGrid(toggle){
-        if(toggle){
-          ctx.putImageData(newImageData, 0, 0);
-        }else{
-          newImageData = ctx.getImageData(0,0,canvas.width,canvas.height)
-          drawGrid()
+        for(let i=0;i<gridCanvas.height;i+=8){
+          gridCtx.beginPath();
+          gridCtx.moveTo(0, i);
+          gridCtx.lineTo(gridCanvas.width, i);
+          gridCtx.stroke();
         }
       }
-      document.getElementById("toggleGrid").addEventListener("click",function(){
+
+      function createMark(xPos,yPos){
+        let clickMarker = document.createElement("div")
+        clickMarker.id = "marker"
+        clickMarker.style.left = xPos
+        clickMarker.style.top =  yPos
+        clickMarker.style.zIndex = "100";
+        document.getElementById("imgManipulator-container").appendChild(clickMarker)
+      }
+
+      function getClick(xClick,yClick,xScale,yScale){
+        let clickPosX = parseInt((xClick)/xScale)
+        let clickPosY = parseInt(( yClick)/yScale)
+        return [clickPosX,clickPosY]
+      }
+
+      function removeMarkers(){
+        while(document.getElementById("marker")){
+          let element = document.getElementById("marker");
+          element.parentNode.removeChild(element);
+        }
+      }
+
+      function doEffect(xPos,yPos,clickWidth,clickHeight){
+        removeMarkers()
+        document.getElementById("gridCanvas").style.visibility = "hidden";
+        invertBox(xPos+1,yPos+1,clickWidth+1,clickHeight+1,true,false,false,false)
         if(gridOn){
-          toggleGrid(true)
-          gridOn = false;
-        }else{
-          toggleGrid(false)
+          document.getElementById("gridCanvas").style.visibility = "visible";
           gridOn = true;
+        }else{
+          document.getElementById("gridCanvas").style.visibility = "hidden";
+          gridOn = false;
+        }
+      }
+
+      function clickCanvas(e){
+        //Get the difference between the ratio between pixels the canvas is using and the pixels that its displaying
+        let xScale = canvas.clientWidth/canvas.width
+        let yScale = canvas.clientHeight/canvas.height
+
+        //Get the position of the click relative to this ratio
+        let xClick = parseInt((e.clientX)/xScale)
+        let yClick = parseInt((e.clientY)/yScale)
+
+        //Find the nearest grid point
+        xClick = parseInt(nearestMultiple(xClick,8)*xScale)
+        yClick = parseInt(nearestMultiple(yClick,8)*yScale)
+
+        createMark(xClick,yClick)
+
+
+        if(!clicked){
+          clicked = true;
+          let click= getClick(xClick,yClick,xScale,yScale)
+          let clickX1 = click[0]
+          let clickY1 = click[1]
+        }else{
+          let click= getClick(xClick,yClick,xScale,yScale)
+          let clickX2 = click[0]
+          let clickY2 = click[1]
+
+          let clickWidth = Math.abs(clickX2-clickX1)
+          let clickHeight = Math.abs(clickY2-clickY1)
+
+          xPos = clickX1
+          yPos = clickY1
+          if(clickX2 < clickX1){
+            xPos = clickX2
+          }
+          if(clickY2 < clickY1){
+            yPos = clickY2
+          }
+
+          clickWidth = nearestMultiple(clickWidth,8)+1
+          clickHeight = nearestMultiple(clickHeight,8)+1
+
+          doEffect(xPos,yPos,clickWidth,clickHeight)
+
+          clicked = false;
+       }
+      }
+
+
+      document.getElementById("toggleGrid").addEventListener("click",function(){
+        if(!gridOn){
+          document.getElementById("gridCanvas").style.visibility = "visible";
+          gridOn = true;
+        }else{
+          document.getElementById("gridCanvas").style.visibility = "hidden";
+          gridOn = false;
         }
       })
 
       base_image.src = 'testImage.png';
       base_image.onload = function(){
 
-        canvas = document.createElement('canvas');;
-        ctx = canvas.getContext("2d");
-
+        canvas = document.createElement('canvas');
         canvas.width =  base_image.width;
         canvas.height = base_image.height;
-        canvas.style.zIndex = "1";
         canvas.id = "newCanvas";
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = "red";
+
+        ctx = canvas.getContext("2d");
+
+        gridCanvas = document.createElement('canvas');
+        gridCanvas.width =  base_image.width;
+        gridCanvas.height = base_image.height;
+        gridCanvas.id = "gridCanvas";
+
+        gridCtx = gridCanvas.getContext("2d");
+        gridCtx.lineWidth = 1;
+        gridCtx.strokeStyle = "rgba(215, 44, 44, 0.5)";
+
+        drawGrid()
         ctx.drawImage(base_image,0,0);
-        newImageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
 
-        let clickPosX;
-        let clickPosY;
-        let xPos;
-        let yPos;
-        let xClick;
-        let yClick;
+        gridCanvas.addEventListener('click',function(e){
+          clickCanvas(e)
+        });
         canvas.addEventListener('click',function(e){
-          let xScale = canvas.clientWidth/canvas.width
-          let yScale = canvas.clientHeight/canvas.height
-          xClick = parseInt((e.clientX)/xScale)
-          yClick = parseInt((e.clientY)/yScale)
-          xClick = parseInt(nearestMultiple(xClick,8)*xScale)
-          yClick = parseInt(nearestMultiple(yClick,8)*yScale)
-          let clickMarker = document.createElement("div")
-          clickMarker.id = "marker"
-          clickMarker.style.left = xClick
-          clickMarker.style.top =  yClick
-          clickMarker.style.zIndex = "100";
-          document.getElementById("imgManipulator-container").appendChild(clickMarker)
-
-
-
-
-          if(!clicked){
-            clicked = true;
-            clickPosX = parseInt((xClick)/xScale)
-            clickPosY = parseInt(( yClick)/yScale)
-            xPos = clickPosY
-            yPos = clickPosY
-          }else{
-            let clickPosX2 = parseInt((xClick)/xScale)
-            let clickPosY2 = parseInt(( yClick)/yScale)
-            let clickWidth = Math.abs(clickPosX2-clickPosX)
-            let clickHeight = Math.abs(clickPosY2-clickPosY)
-
-            if(clickPosX2 < clickPosX){
-              xPos = clickPosX2
-            }else{
-              xPos = clickPosX
-            }
-            if(clickPosY2 < clickPosY){
-              yPos = clickPosY2
-            }else{
-                yPos = clickPosY
-            }
-            while(document.getElementById("marker")){
-              let element = document.getElementById("marker");
-              element.parentNode.removeChild(element);
-            }
-
-
-            toggleGrid
-            clickWidth = nearestMultiple(clickWidth,8)+1
-            if(clickWidth < 1){
-              clickWidth += 1
-            }
-            if(clickHeight < 1){
-              clickHeight += 1
-            }
-
-            //ctx.putImageData(newImageData, 0, 0);
-            //toggleGrid(false)
-            invertBox(xPos+1,yPos+1,clickWidth,clickHeight,true,false,false,false)
-          //  toggleGrid(true)
-
-            //newImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-            clicked = false;
-         }
+          clickCanvas(e)
         });
 
         document.getElementById("imgManipulator-container").appendChild(canvas)
+        document.getElementById("imgManipulator-container").appendChild(gridCanvas)
       }
 
 
@@ -260,19 +291,6 @@
         }
       }
     </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
   </body>
 </template>
 
