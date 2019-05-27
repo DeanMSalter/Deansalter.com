@@ -30,7 +30,7 @@ nav a{
   grid-template-columns:1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   grid-gap: 1%;
-  height:90%;
+  height:80%;
 }
 #palindromeEmbed{
   border: solid;
@@ -84,4 +84,21 @@ nav a{
   max-height: 100%;
   width:100%;
   height:100%;
+}
+#WIP{
+  z-index: 100;
+  font-family: "Work Sans", Arial, sans-serif;
+  color:white;
+  text-shadow:
+		-5px -5px 0 #000,
+		5px -5px 0 #000,
+		-5px 5px 0 #000,
+		5px 5px 0 #000;
+  pointer-events: none;
+  margin:auto;
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 2;
+  grid-row-end: 2;
+  font-size: 10em;
 }
