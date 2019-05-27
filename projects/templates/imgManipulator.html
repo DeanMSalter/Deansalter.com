@@ -11,20 +11,26 @@
         <label id="gridOpacityLabel"> Grid: 1 </label>
         <button id="uploadButton">
         <input type="file" id="uploadLink" accept="image/*" style="display:none;" />
-        <label for="uploadLink">Upload File</label>
+        <label id="uploadLabel">Upload</label>
         </button>
 
       </div>
     </div>
     <style>
+      *{
+        box-sizing:border-box;
+      }
       #imgManipulator-container{
+        box-sizing:border-box;
         display:grid;
-        grid-template-columns:80% 20%;
+        grid-template-columns:79% 19%;
         grid-template-rows:1fr;
-        width:100%;
         height:100%;
+        max-width: 100%;
+        max-height: 100%;
       }
       #sideMenu{
+        box-sizing:border-box;
         display:grid;
         grid-column-start: 2;
         grid-column-end: 2;
@@ -32,11 +38,13 @@
         grid-row-end:1;
         grid-template-columns:1fr 1fr;
         grid-template-rows:10% 4% 4% 1fr;
-        width:100%;
+        max-width: 100%;
+        max-height: 100%;
         height:100%;
         border-left:solid;
-        padding:1%;
-        grid-gap: 1%;
+        padding:3%;
+        grid-gap: 2%;
+
       }
       #title{
         grid-column-start: 1;
@@ -45,6 +53,7 @@
         grid-row-end:1;
         color:white;
         font-size:80%;
+        margin:auto;
       }
       #saveButton{
         grid-column-start: 1;
@@ -73,7 +82,6 @@
         -webkit-appearance: none;
         height:100%;
         background: #d3d3d3;
-        outline: none;
         -webkit-transition: .2s;
         transition: opacity .2s;
       }
@@ -90,14 +98,14 @@
         appearance: none;
         width: 10%;
         height: 100%;
-        background: white;
+        background: red;
         cursor: pointer;
       }
 
       #gridOpacity::-moz-range-thumb {
         width: 10%;
         height: 100%;
-        background: white;
+        background: red;
         cursor: pointer;
       }
       #newCanvas{
@@ -144,6 +152,54 @@
       let clicked = false;
       let gridOn = true
 
+      window.onload = function(){
+
+
+
+        let wrapper = document.getElementById("imgManipulator")
+    //    container.style.height = wrapper.offsetHeight
+        wrapper.style.height = wrapper.offsetHeight
+        wrapper.style.width = wrapper.offsetWidth
+
+
+        let sideMenu = document.getElementById("sideMenu")
+        //    container.style.height = wrapper.offsetHeight
+        sideMenu.style.height = sideMenu.offsetHeight
+        sideMenu.style.width = wrapper.offsetWidth*0.2
+        resizeText(sideMenu,title,0.04)
+
+
+        let download = document.getElementById("saveButton")
+        download.style.width = (sideMenu.offsetWidth)*0.5;
+        resizeText(sideMenu, download, 0.04)
+
+        let opacity = document.getElementById("gridOpacity")
+        let opacityLabel = document.getElementById("gridOpacityLabel")
+        opacity.style.width = (sideMenu.offsetWidth)*0.5;
+        resizeText(sideMenu, opacityLabel, 0.04)
+
+        let upload = document.getElementById("uploadButton")
+        let uploadLabel = document.getElementById("uploadLabel")
+        upload.style.width = (sideMenu.offsetWidth)*0.5;
+        resizeText(sideMenu, uploadLabel, 0.04)
+
+
+        // resizeText(container, title, 0.06)
+        // resizeText(container, reversedOutput, 0.04)
+        // resizeText(container, result, 0.04)
+        //
+        // inputBox.style.height = container.offsetHeight * 0.1
+        // inputBox.style.width = container.offsetWidth * 0.4
+        //
+        // submitButton.style.height = container.offsetHeight * 0.1
+        // submitButton.style.width = container.offsetWidth * 0.2
+
+      }
+
+      function resizeText(parent, element, scale) {
+        element.style.fontSize = ((parent.offsetWidth+parent.offsetHeight)/2)*scale
+        return element
+      }
       function nearestMultiple(x,target){
         let found = false
         target = parseInt(target)
