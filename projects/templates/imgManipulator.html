@@ -10,10 +10,12 @@
         <input  id= "gridOpacity" type="range" min="0" max="5" step=0.5 value="1"/>
         <label id="gridOpacityLabel"> Grid: 1 </label>
         <button id="uploadButton">
-        <input type="file" id="uploadLink" accept="image/*" style="display:none;" />
-        <label id="uploadLabel">Upload</label>
-        </button>
+          <input type="file" id="uploadLink" accept="image/*" style="display:none;" />
+          <label id="uploadLabel" for="uploadLink">Upload</label>
 
+
+        </button>
+        <button id="fillToggle" >Fill Mode</button>
       </div>
     </div>
     <style>
@@ -62,6 +64,14 @@
         grid-row-end:2;
         height:100%;
       }
+      #fillToggle{
+        grid-column-start: 2;
+        grid-column-end: 2;
+        grid-row-start:3;
+        grid-row-end:3;
+        height:100%;
+        font-size:150%;
+      }
       #saveButton a{
         color:inherit;
         text-decoration:none;
@@ -72,6 +82,9 @@
         grid-row-start:3;
         grid-row-end:3;
         width:100%;
+      }
+      #uploadLink{
+        z-index:100;
       }
       #gridOpacity{
         grid-column-start: 2;
@@ -151,6 +164,13 @@
 
       let clicked = false;
       let gridOn = true
+      let fillMode = false;
+
+      let gridSizeX;
+      let gridSizeY;
+
+      let xScale;
+      let yScale;
 
       window.onload = function(){
 
@@ -182,27 +202,15 @@
         let uploadLabel = document.getElementById("uploadLabel")
         upload.style.width = (sideMenu.offsetWidth)*0.5;
         resizeText(sideMenu, uploadLabel, 0.04)
-
-
-        // resizeText(container, title, 0.06)
-        // resizeText(container, reversedOutput, 0.04)
-        // resizeText(container, result, 0.04)
-        //
-        // inputBox.style.height = container.offsetHeight * 0.1
-        // inputBox.style.width = container.offsetWidth * 0.4
-        //
-        // submitButton.style.height = container.offsetHeight * 0.1
-        // submitButton.style.width = container.offsetWidth * 0.2
-
       }
 
       function resizeText(parent, element, scale) {
         element.style.fontSize = ((parent.offsetWidth+parent.offsetHeight)/2)*scale
         return element
       }
+
       function nearestMultiple(x,target){
         let found = false
-        target = parseInt(target)
         let subtract = x
         let subtractSteps = 0
         let addition = x
@@ -228,9 +236,26 @@
         return returnValue
       }
 
+      function identifySquare(x,y){
+        console.log(x + " " + y)
+        while(x%gridSizeX != 0){
+          x-= 1;
+        }
+        while(y%gridSizeY != 0){
+          y-= 1;
+        }
+
+        console.log(x+ " " + y)
+        return [x,y]
+        // console.log(x+ " " + y)
+        //
+        // createMark((x-1)*xScale,(y-1)*yScale)
+        //   createMark((x2-1)*xScale,(y2-1)*yScale)
+        //   removeMarkers()
+        //   invertBox(x,y,gridSizeX,gridSizeY,true,false,false,false)
+      }
       function drawGrid(lineWidth){
-        console.log(gridCanvas.width)
-        console.log(parseInt(gridCanvas.width*0.025))
+
         gridCtx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
         if(typeof lineWidth === "undefined" ){
           gridCtx.lineWidth = 1;
@@ -239,13 +264,13 @@
         }
 
         gridCtx.strokeStyle = "rgb(215, 44, 44)";
-        for(let o = 0;o<gridCanvas.width;o+=parseInt(gridCanvas.width*0.025)){
+        for(let o = 0;o<gridCanvas.width;o+=gridSizeX){
           gridCtx.beginPath();
           gridCtx.moveTo(o, 0);
           gridCtx.lineTo(o, gridCanvas.height);
           gridCtx.stroke();
         }
-        for(let i=0;i<gridCanvas.height;i+=parseInt(gridCanvas.height*0.025)){
+        for(let i=0;i<gridCanvas.height;i+=gridSizeY){
           gridCtx.beginPath();
           gridCtx.moveTo(0, i);
           gridCtx.lineTo(gridCanvas.width, i);
@@ -262,12 +287,6 @@
         document.getElementById("imgManipulator-container").appendChild(clickMarker)
       }
 
-      function getClick(xClick,yClick,xScale,yScale){
-        let clickPosX = parseInt((xClick)/xScale)
-        let clickPosY = parseInt(( yClick)/yScale)
-        return [clickPosX,clickPosY]
-      }
-
       function removeMarkers(){
         while(document.getElementById("marker")){
 
@@ -278,29 +297,39 @@
 
       function clickCanvas(e){
         //Get the difference between the ratio between pixels the canvas is using and the pixels that its displaying
-        let xScale = canvas.clientWidth/canvas.width
-        let yScale = canvas.clientHeight/canvas.height
+        xScale = canvas.clientWidth/canvas.width
+        yScale = canvas.clientHeight/canvas.height
 
         //Get the position of the click relative to this ratio
         let xClick = parseInt((e.clientX)/xScale)
         let yClick = parseInt((e.clientY)/yScale)
 
-        //Find the nearest grid point
-        xClick = parseInt(nearestMultiple(xClick,canvas.width*0.025)*xScale)
-        yClick = parseInt(nearestMultiple(yClick,canvas.height*0.025)*yScale)
+        if(fillMode){
+          let square = identifySquare(xClick,yClick)
+          let xFill = square[0]
+          let yFill = square[1]
+          console.log(xFill+ " " + yFill)
+          console.log(gridSizeX)
+          invertBox(xFill,yFill,gridSizeX,gridSizeY,true,false,false,false)
+        //  document.getElementById("fillToggle").focus()
+          return
+        };
+
+
+        //Find the nearest grid point , gets the position on the CANVAS
+        xClick = nearestMultiple(xClick,gridSizeX)*xScale
+        yClick = nearestMultiple(yClick,gridSizeY)*yScale
 
         createMark(xClick,yClick)
 
-
         if(!clicked){
           clicked = true;
-          let click= getClick(xClick,yClick,xScale,yScale)
-          clickX1 = click[0]
-          clickY1 = click[1]
+          //Convert click back to relative to the IMAGE
+          clickX1 = parseInt((xClick)/xScale)
+          clickY1 = parseInt(( yClick)/yScale)
         }else{
-          let click= getClick(xClick,yClick,xScale,yScale)
-          clickX2 = click[0]
-          clickY2 = click[1]
+          clickX2 = parseInt((xClick)/xScale)
+          clickY2 = parseInt((yClick)/yScale)
 
           let clickWidth = Math.abs(clickX2-clickX1)
           let clickHeight = Math.abs(clickY2-clickY1)
@@ -315,12 +344,14 @@
             yPos = clickY2
           }
 
-          clickWidth = nearestMultiple(clickWidth,canvas.width*0.025)+1
-          clickHeight = nearestMultiple(clickHeight,canvas.height*0.025)+1
-
+          clickWidth = nearestMultiple(clickWidth,gridSizeX)
+          clickHeight = nearestMultiple(clickHeight,gridSizeY)
           removeMarkers()
-          invertBox(xPos+1,yPos+1,clickWidth+1,clickHeight+1,true,false,false,false)
-
+          if(clickWidth >=0 && clickHeight >=0){
+            console.log(clickWidth)
+            console.log(xPos + " " )
+            invertBox(xPos+1,yPos+1,clickWidth+1,clickHeight+1,true,false,false,false)
+          }
           clicked = false;
        }
       }
@@ -392,7 +423,10 @@
             clearInterval(updateRowInterval)
           }
         }
+
+
       }
+
       function showGrid(){
         document.getElementById("gridCanvas").style.visibility = "visible";
         gridOn = true;
@@ -401,6 +435,7 @@
         document.getElementById("gridCanvas").style.visibility = "hidden";
         gridOn = false;
       }
+
       document.getElementById('uploadLink').onchange = function(){
         console.log("uploaded")
         var file    = document.getElementById('uploadLink').files[0];
@@ -429,8 +464,34 @@
 
 
       }
+
+
+
+
+      canvas.addEventListener('contextmenu', function(ev) {
+          ev.preventDefault();
+          removeMarkers()
+          clicked = false;
+          return false;
+      }, false);
+      gridCanvas.addEventListener('contextmenu', function(ev) {
+          ev.preventDefault();
+          removeMarkers()
+          clicked = false;
+          return false;
+      }, false);
       gridCanvas.addEventListener('click',function(e){
         clickCanvas(e)
+      });
+      document.getElementById("fillToggle").addEventListener('click',function(e){
+        if(fillMode){
+          fillMode = false;
+          document.getElementById("fillToggle").style.background = "rgb(221, 221, 221)";
+        }else{
+          fillMode = true;
+            document.getElementById("fillToggle").style.background = "green";
+        }
+        console.log("fill Toggle")
       });
       canvas.addEventListener('click',function(e){
         clickCanvas(e)
@@ -446,6 +507,8 @@
         gridCanvas.width =  base_image.width;
         gridCanvas.height = base_image.height;
 
+        gridSizeX = parseInt(canvas.width*0.025)
+        gridSizeY = parseInt(canvas.height*0.025)
         drawGrid()
         ctx.drawImage(base_image,0,0);
 
