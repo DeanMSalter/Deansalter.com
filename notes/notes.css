@@ -1,0 +1,25 @@
+html{
+  background-color: #35454E;
+  font-family: "Work Sans", Arial, sans-serif;
+}
+* {
+  box-sizing: border-box;
+}
+#header1{
+  color:white;
+  text-align: center;
+  font-weight: 300;
+  font-family: "Work Sans", Arial, sans-serif;
+  font-size: 3em;
+  text-transform: uppercase;
+}
+li,a{
+    color:white;
+}
+a{
+  text-decoration: none;
+}
+a:visited{
+  color:white;
+  text-decoration: none;
+}
