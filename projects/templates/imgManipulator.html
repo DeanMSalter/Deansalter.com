@@ -12,15 +12,29 @@
         <button id="uploadButton">
           <input type="file" id="uploadLink" accept="image/*" style="display:none;" />
           <label id="uploadLabel" for="uploadLink">Upload</label>
-
-
         </button>
-        <button id="fillToggle" >Fill Mode</button>
+        <button id="fillToggle" >Click Setting</button>
+        <button id="invertToggle" >Invert Mode</button>
+        <button id="colourToggle" >Colour Mode</button>
+        <form  id="RGB">
+        R <input id="red" value="255" type="text" name="red">
+        G <input id="green" value="255" type="text" name="green">
+        B <input id="blue" value="255" type="text" name="blue">
+        A <input id="alpha" value="255" type="text" name="alpha">
+      </form>
+      <form  id="RGBToggle">
+      Red <input type="checkbox" id="redToggle" name="red" value="Red" checked>
+      Green <input type="checkbox" id="greenToggle" name="green" value="Green" checked>
+      Blue <input type="checkbox" id="blueToggle" name="blue" value="Blue" checked>
+      Alpha <input type="checkbox" id="alphaToggle" name="alpha" value="Alpha">
+      </form>
       </div>
     </div>
     <style>
       *{
         box-sizing:border-box;
+        font-family: "Work Sans", Arial, sans-serif;
+        font-size:100%;
       }
       #imgManipulator-container{
         box-sizing:border-box;
@@ -39,7 +53,7 @@
         grid-row-start:1;
         grid-row-end:1;
         grid-template-columns:1fr 1fr;
-        grid-template-rows:10% 4% 4% 1fr;
+        grid-template-rows:10% 4% 4% 4% 4% 1fr;
         max-width: 100%;
         max-height: 100%;
         height:100%;
@@ -70,7 +84,6 @@
         grid-row-start:3;
         grid-row-end:3;
         height:100%;
-        font-size:150%;
       }
       #saveButton a{
         color:inherit;
@@ -143,6 +156,46 @@
         width:5px;
         height:5px
       }
+      #rgb{
+        grid-column-start: 1;
+        grid-column-end: 3;
+        grid-row-start:5;
+        grid-row-end:5;
+        color:white;
+        margin: 0 auto ;
+      }
+      #red{
+        width: 2em;
+      }
+      #green{
+        width: 2em;
+      }
+      #blue{
+        width: 2em;
+      }
+      #alpha{
+        width: 2em;
+      }
+      #invertToggle{
+        grid-column-start: 1;
+        grid-column-end: 1;
+        grid-row-start:4;
+        grid-row-end:4;
+      }
+      #colourToggle{
+        grid-column-start: 2;
+        grid-column-end: 2;
+        grid-row-start:4;
+        grid-row-end:4;
+      }
+      #RGBToggle{
+        grid-column-start: 1;
+        grid-column-end: 3;
+        grid-row-start:6;
+        grid-row-end:6;
+        color:white;
+        margin: 0 auto ;
+      }
     </style>
 
 
@@ -150,7 +203,7 @@
     <script>
       'use strict'
       let base_image = new Image();
-      base_image.src = 'testImage.png';
+      base_image.src = 'billGates.png';
       console.log(base_image)
       let ctx;
       let canvas  = document.getElementById("newCanvas");
@@ -165,12 +218,21 @@
       let clicked = false;
       let gridOn = true
       let fillMode = false;
+      let invertMode = true;
+      let colourMode = false;
+
+      let r;
+      let g;
+      let b;
+      let a;
+
 
       let gridSizeX;
       let gridSizeY;
 
       let xScale;
       let yScale;
+
 
       window.onload = function(){
 
@@ -201,7 +263,9 @@
         let upload = document.getElementById("uploadButton")
         let uploadLabel = document.getElementById("uploadLabel")
         upload.style.width = (sideMenu.offsetWidth)*0.5;
-        resizeText(sideMenu, uploadLabel, 0.04)
+        deactivateInvert()
+        activateColour()
+      //  resizeText(sideMenu, uploadLabel, 0.04)
       }
 
       function resizeText(parent, element, scale) {
@@ -310,7 +374,12 @@
           let yFill = square[1]
           console.log(xFill+ " " + yFill)
           console.log(gridSizeX)
-          invertBox(xFill,yFill,gridSizeX,gridSizeY,true,false,false,false)
+          if(invertMode){
+            invertBox(xFill,yFill,gridSizeX,gridSizeY,r,g,b,a)
+          }else if(colourMode){
+            colourBox(xFill,yFill,gridSizeX,gridSizeY,r,g,b,a)
+          }
+
         //  document.getElementById("fillToggle").focus()
           return
         };
@@ -348,9 +417,13 @@
           clickHeight = nearestMultiple(clickHeight,gridSizeY)
           removeMarkers()
           if(clickWidth >=0 && clickHeight >=0){
-            console.log(clickWidth)
-            console.log(xPos + " " )
-            invertBox(xPos+1,yPos+1,clickWidth+1,clickHeight+1,true,false,false,false)
+            if(invertMode){
+              console.log("invert")
+              invertBox(xPos+1,yPos+1,clickWidth+1,clickHeight+1,r,g,b,a)
+            }else if(colourMode){
+              console.log("colour")
+              colourBox(xPos+1,yPos+1,clickWidth+1,clickHeight+1,r,g,b,a)
+            }
           }
           clicked = false;
        }
@@ -436,6 +509,37 @@
         gridOn = false;
       }
 
+
+      function activateInvert(){
+        invertMode = true;
+        document.getElementById("RGBToggle").style.visibility = "visible"
+        document.getElementById("invertToggle").style.background = "green";
+        r= document.getElementById("redToggle").checked
+        g= document.getElementById("greenToggle").checked
+        b= document.getElementById("blueToggle").checked
+        a= document.getElementById("alphaToggle").checked
+      }
+      function deactivateInvert(){
+        invertMode = false;
+        document.getElementById("RGBToggle").style.visibility = "hidden"
+        document.getElementById("invertToggle").style.background = "rgb(221, 221, 221)";
+      }
+
+      function activateColour(){
+        colourMode = true;
+        document.getElementById("RGB").style.visibility = "visible"
+        document.getElementById("colourToggle").style.background = "green";
+        r= document.getElementById("red").value
+        g= document.getElementById("green").value
+        b= document.getElementById("blue").value
+        a= document.getElementById("alpha").value
+      }
+      function deactivateColour(){
+        colourMode = false;
+        document.getElementById("RGB").style.visibility = "hidden"
+        document.getElementById("colourToggle").style.background = "rgb(221, 221, 221)";
+      }
+
       document.getElementById('uploadLink').onchange = function(){
         console.log("uploaded")
         var file    = document.getElementById('uploadLink').files[0];
@@ -465,9 +569,6 @@
 
       }
 
-
-
-
       canvas.addEventListener('contextmenu', function(ev) {
           ev.preventDefault();
           removeMarkers()
@@ -489,10 +590,85 @@
           document.getElementById("fillToggle").style.background = "rgb(221, 221, 221)";
         }else{
           fillMode = true;
-            document.getElementById("fillToggle").style.background = "green";
+          document.getElementById("fillToggle").style.background = "green";
         }
         console.log("fill Toggle")
       });
+
+      document.getElementById("invertToggle").addEventListener('click',function(e){
+        if(invertMode){
+          deactivateInvert()
+          activateColour()
+        }else{
+          activateInvert()
+          deactivateColour()
+        }
+      });
+      document.getElementById("colourToggle").addEventListener('click',function(e){
+        if(colourMode){
+          activateInvert()
+          deactivateColour()
+        }else{
+          deactivateInvert()
+          activateColour()
+        }
+
+      });
+
+      document.getElementById("red").addEventListener('input',function(e){
+        console.log(document.getElementById("redToggle").value)
+        r= document.getElementById("red").value
+        g= document.getElementById("green").value
+        b= document.getElementById("blue").value
+        a= document.getElementById("alpha").value
+      });
+      document.getElementById("green").addEventListener('input',function(e){
+        r= document.getElementById("red").value
+        g= document.getElementById("green").value
+        b= document.getElementById("blue").value
+        a= document.getElementById("alpha").value
+      });
+      document.getElementById("blue").addEventListener('input',function(e){
+        r= document.getElementById("red").value
+        g= document.getElementById("green").value
+        b= document.getElementById("blue").value
+        a= document.getElementById("alpha").value
+      });
+      document.getElementById("alpha").addEventListener('input',function(e){
+        r= document.getElementById("red").value
+        g= document.getElementById("green").value
+        b= document.getElementById("blue").value
+        a= document.getElementById("alpha").value
+      });
+
+      document.getElementById("redToggle").addEventListener('input',function(e){
+          r= document.getElementById("redToggle").checked
+          g= document.getElementById("greenToggle").checked
+          b= document.getElementById("blueToggle").checked
+          a= document.getElementById("alphaToggle").checked
+      });
+      document.getElementById("greenToggle").addEventListener('input',function(e){
+          r= document.getElementById("redToggle").checked
+          g= document.getElementById("greenToggle").checked
+          b= document.getElementById("blueToggle").checked
+          a= document.getElementById("alphaToggle").checked
+      });
+      document.getElementById("blueToggle").addEventListener('input',function(e){
+          r= document.getElementById("redToggle").checked
+          g= document.getElementById("greenToggle").checked
+          b= document.getElementById("blueToggle").checked
+          a= document.getElementById("alphaToggle").checked
+      });
+      document.getElementById("alphaToggle").addEventListener('input',function(e){
+          r= document.getElementById("redToggle").checked
+          g= document.getElementById("greenToggle").checked
+          b= document.getElementById("blueToggle").checked
+          a= document.getElementById("alphaToggle").checked
+      });
+
+
+
+
       canvas.addEventListener('click',function(e){
         clickCanvas(e)
       });
