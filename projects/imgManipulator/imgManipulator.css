@@ -1,9 +1,170 @@
 *{
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
+  box-sizing:border-box;
+  font-family: "Work Sans", Arial, sans-serif;
+  font-size:100%;
+  padding: 0%;
+  margin:0%;
 }
 html{
-  background-color: #35454E;
+    background-color: #35454E;
+    overflow: hidden;
+}
+#header1{
+  color:white;
+  text-align: center;
+  font-weight: 300;
   font-family: "Work Sans", Arial, sans-serif;
+  font-size: 3em;
+  text-transform: uppercase;
+}
+nav{
+  text-align: center;
+}
+nav a{
+  font-family: "Work Sans", Arial, sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.5);
+  padding-right: 1%;
+}
+#current{
+  color:#ae363b;
+  font-weight: bolder;
+}
+#imgManipulator-container{
+  box-sizing:border-box;
+  display:grid;
+  grid-template-columns:80% 20%;
+  grid-template-rows:90%;
+  height:100%;
+  max-width: 100%;
+  max-height: 100%;
+  border-top:solid;
+
+}
+#sideMenu{
+  box-sizing:border-box;
+  display:grid;
+  grid-column: 2 / 2;
+  grid-row:1 / 1;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:10% 4% 4% 4% 4%;
+  height:100%;
+  width:98%;
+  max-width: 98%;
+  border-left:solid;
+  padding:1%;
+  grid-gap: 2%;
+
+}
+#title{
+  grid-column: 1 / 4  ;
+  grid-row: 1/ 1;
+  color:white;
+  font-size:150%;
+  margin:auto;
+}
+#saveButton{
+  grid-column: 1/1;
+  grid-row:2/2;
+  height:100%;
+}
+#fillToggle{
+  grid-column: 2/2;
+  grid-row:3/3;
+  height:100%;
+}
+#saveButton a{
+  color:inherit;
+  text-decoration:none;
+}
+#uploadButton{
+  grid-column: 1/1;
+  grid-row:3/3;
+  width:100%;
+}
+#uploadLink{
+  z-index:100;
+}
+#gridOpacity{
+  grid-column: 2/2;
+  grid-row:2/2;
+  width:100%;
+  -webkit-appearance: none;
+  height:100%;
+  background: #d3d3d3;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+#gridOpacityLabel{
+  pointer-events: none;
+  grid-column: 2/2;
+  grid-row:2/2;
+  margin:auto;
+}
+#gridOpacity::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10%;
+  height: 100%;
+  background: red;
+  cursor: pointer;
+}
+
+#gridOpacity::-moz-range-thumb {
+  width: 10%;
+  height: 100%;
+  background: red;
+  cursor: pointer;
+}
+#newCanvas{
+  grid-column: 1/1;
+  grid-row:1/1;
+  height:100%;
+  width:100%;
+}
+#gridCanvas{
+  grid-column: 1/1;
+  grid-row:1/1;
+  height:100%;
+  width:100%;
+}
+#marker{
+  border:solid;
+  position:absolute;
+  width:5px;
+  height:5px
+}
+#rgb{
+  grid-column: 1/3;
+  grid-row:5/5;
+  color:white;
+  margin: 0 auto ;
+}
+#red{
+  width: 2em;
+}
+#green{
+  width: 2em;
+}
+#blue{
+  width: 2em;
+}
+#alpha{
+  width: 2em;
+}
+#invertToggle{
+  grid-column: 1/1;
+  grid-row:4/4;
+}
+#colourToggle{
+  grid-column: 2/2;
+  grid-row:4/4;
+}
+#RGBToggle{
+  grid-column: 1/3;
+  grid-row:6/6;
+  color:white;
+  margin: 0 auto ;
 }

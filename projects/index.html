@@ -9,42 +9,24 @@
 </head>
 
 <body>
-  <h1 id="header1">Projects</h3>
-    <nav>
-      <a href="./palindromeCalc">Palindrome Calculator</a>
-      <a href="./fourWallSquash">4 Wall Squash </a>
-      <a href="https://deansalter.com:8080/">Messaging display system </a>
-      <a href="./imgManipulator">Image Manipulator </a>
-    </nav>
-    <div id="projects-container">
-      <object data="./palindromeCalc/index.html" id="palindromeEmbed" >
-        <embed src="./palindromeCalc/index.html" scale="tofit"> </embed>
-        Error: Embedded data could not be displayed.
-      </object>
-      <object data="./fourWallSquash/index.html" id="fourWallSquashEmbed" >
-        <embed src="./fourWallSquash/index.html" scale="tofit"> </embed>
-        Error: Embedded data could not be displayed.
-      </object>
-
-      <a href="https://deansalter.com:8080/" target="_blank" id="messagesSystemEmbed">
-        Messaging display system
-      </a>
-
-      <object data="./imgManipulator/index.html" id="imgManipulatorEmbed" >
-        <embed src="./imgManipulator/index.html" scale="tofit"> </embed>
-        Error: Embedded data could not be displayed.
-      </object>
-      <h1 id="WIP"> WIP </h1>
+    <div id="wrapper">
+      <div id="header">
+        <h1 id="title">Projects</h1>
+        <nav>
+          <a href="./" id="current"> Projects</a>
+          <a href="./palindromeCalc">Palindrome Calculator</a>
+          <a href="./fourWallSquash">4 Wall Squash </a>
+          <a href="https://deansalter.com:8080/">Messaging display system </a>
+          <a href="./imgManipulator">Image Manipulator </a>
+        </nav>
+      </div>
+      <div id="projects-container">
+        <a href="./palindromeCalc" id="project1"> Palindrome Calculator </a>
+        <a href="./fourWallSquash" id="project2"> 4 Wall Squash </a>
+        <a href="https://deansalter.com:8080/" id="project3"> Messaging Display System </a>
+        <a href="./imgManipulator" id="project4"> Image Manipulator </a>
       </div>
     </div>
-    <script>
-      window.onresize = function(){
-        let averageSize = (document.getElementById("messagesSystemEmbed").offsetHeight+document.getElementById("messagesSystemEmbed").offsetWidth)/2
-        document.getElementById("messagesSystemEmbed").style.fontSize = averageSize*0.04
-
-      }
-
-    </script>
 </body>
 
 </html>
