@@ -1,47 +1,8 @@
-<html>
+<html style="overflow:hidden">
 
 <head>
+  <link rel="import" id= "imgManipulatorTemplate" href="../templates/imgManipulator.html">
   <link rel="stylesheet" href="./imgManipulator.css">
 </head>
-<body>
-  <h1 id="header1">Image Manipulator</h3>
-    <nav>
-      <a href="../" >Projects</a>
-      <a href="./palindromeCalc">Palindrome Calculator</a>
-      <a href="./fourWallSquash">4 Wall Squash </a>
-      <a href="https://deansalter.com:8080/">Messaging display system </a>
-      <a id="current" href="./">Image Manipulator </a>
-
-    </nav>
-  <div id="imgManipulator-container">
-    <canvas id="newCanvas" ></canvas>
-    <canvas id="gridCanvas"></canvas>
-    <div id="sideMenu">
-      <h2 id = "title">Image Manipulator</h2>
-      <button id="saveButton" ><a  download="myImage.jpg" href="" onclick="download_img(this);">Download</a></button>
-      <input  id= "gridOpacity" type="range" min="0" max="5" step=0.5 value="1"/>
-      <label id="gridOpacityLabel"> Grid: 1 </label>
-      <button id="uploadButton">
-        <input type="file" id="uploadLink" accept="image/*" style="display:none;" />
-        <label id="uploadLabel" for="uploadLink">Upload</label>
-      </button>
-      <button id="fillToggle" >Click Setting</button>
-      <button id="invertToggle" >Invert Mode</button>
-      <button id="colourToggle" >Colour Mode</button>
-      <form  id="RGB">
-      R <input id="red" value="255" type="text" name="red">
-      G <input id="green" value="255" type="text" name="green">
-      B <input id="blue" value="255" type="text" name="blue">
-      A <input id="alpha" value="255" type="text" name="alpha">
-    </form>
-    <form  id="RGBToggle">
-    Red <input type="checkbox" id="redToggle" name="red" value="Red" checked>
-    Green <input type="checkbox" id="greenToggle" name="green" value="Green" checked>
-    Blue <input type="checkbox" id="blueToggle" name="blue" value="Blue" checked>
-    Alpha <input type="checkbox" id="alphaToggle" name="alpha" value="Alpha">
-    </form>
-    </div>
-  </div>
-</body>
-<script src="./imgManipulator.js"></script>
+<div id="imgManipulator"></div>
 </html>
