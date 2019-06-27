@@ -57,26 +57,26 @@ function resizeText(parent, element, scale) {
   return element
 }
 
-function nearestMultiple(x,target){
+function nearestMultiple(x, target) {
   let found = false
   let subtract = x
   let subtractSteps = 0
   let addition = x
   let additionSteps = 0
-  let returnValue;
-  while(!found){
-    while(subtract % target != 0){
+  let returnValue
+  while (!found) {
+    while (subtract % target !== 0) {
       subtract -= 1
-      subtractSteps ++
+      subtractSteps++
     }
-    while(addition % target != 0){
-      addition ++
-      additionSteps ++
+    while (addition % target !== 0) {
+      addition++
+      additionSteps++
     }
-    if(additionSteps>subtractSteps){
+    if (additionSteps>subtractSteps) {
       returnValue = subtract-1
       found = true
-    }else{
+    } else {
       returnValue = addition-1
       found = true
     }
@@ -84,23 +84,17 @@ function nearestMultiple(x,target){
   return returnValue
 }
 
-function identifySquare(x,y){
+function identifySquare(x, y) {
   console.log(x + " " + y)
-  while(x%gridSizeX != 0){
-    x-= 1;
+  while (x%gridSizeX !== 0) {
+    x-= 1
   }
-  while(y%gridSizeY != 0){
-    y-= 1;
+  while (y%gridSizeY !== 0) {
+    y-= 1
   }
 
   console.log(x+ " " + y)
   return [x,y]
-  // console.log(x+ " " + y)
-  //
-  // createMark((x-1)*xScale,(y-1)*yScale)
-  //   createMark((x2-1)*xScale,(y2-1)*yScale)
-  //   removeMarkers()
-  //   invertBox(x,y,gridSizeX,gridSizeY,true,false,false,false)
 }
 function drawGrid(lineWidth){
 
@@ -126,12 +120,15 @@ function drawGrid(lineWidth){
   }
 }
 
-function createMark(xPos,yPos){
+function createMark(xPos, yPos) {
   let clickMarker = document.createElement("div")
   clickMarker.id = "marker"
   clickMarker.style.left = xPos
-  clickMarker.style.top =  yPos
-  clickMarker.style.zIndex = "100";
+  let marginTop = document.getElementById("imgManipulator-container").offsetTop
+
+  clickMarker.style.top = yPos + parseInt(marginTop)
+
+  clickMarker.style.zIndex = "100"
   document.getElementById("imgManipulator-container").appendChild(clickMarker)
 }
 
@@ -143,14 +140,17 @@ function removeMarkers(){
   }
 }
 
-function clickCanvas(e){
+function clickCanvas(e) {
   //Get the difference between the ratio between pixels the canvas is using and the pixels that its displaying
   xScale = canvas.clientWidth/canvas.width
   yScale = canvas.clientHeight/canvas.height
+  console.log(document.getElementById("imgManipulator-container").offsetTop)
+  let marginTop = document.getElementById("imgManipulator-container").offsetTop
+  let mouseY = e.clientY-marginTop
 
   //Get the position of the click relative to this ratio
   let xClick = parseInt((e.clientX)/xScale)
-  let yClick = parseInt((e.clientY)/yScale)
+  let yClick = parseInt(((mouseY)/yScale))
 
   if(fillMode){
     let square = identifySquare(xClick,yClick)
@@ -170,17 +170,17 @@ function clickCanvas(e){
 
 
   //Find the nearest grid point , gets the position on the CANVAS
-  xClick = nearestMultiple(xClick,gridSizeX)*xScale
-  yClick = nearestMultiple(yClick,gridSizeY)*yScale
+  xClick = nearestMultiple(xClick, gridSizeX)*xScale
+  yClick = nearestMultiple(yClick, gridSizeY)*yScale
 
-  createMark(xClick,yClick)
+  createMark(xClick, yClick)
 
-  if(!clicked){
-    clicked = true;
+  if (!clicked) {
+    clicked = true
     //Convert click back to relative to the IMAGE
     clickX1 = parseInt((xClick)/xScale)
-    clickY1 = parseInt(( yClick)/yScale)
-  }else{
+    clickY1 = parseInt((yClick)/yScale)
+  } else {
     clickX2 = parseInt((xClick)/xScale)
     clickY2 = parseInt((yClick)/yScale)
 
@@ -190,10 +190,10 @@ function clickCanvas(e){
     let xPos = clickX1
     let yPos = clickY1
 
-    if(clickX2 < clickX1){
+    if (clickX2 < clickX1) {
       xPos = clickX2
     }
-    if(clickY2 < clickY1){
+    if (clickY2 < clickY1) {
       yPos = clickY2
     }
 

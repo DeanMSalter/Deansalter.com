@@ -1,8 +1,13 @@
-<html style="overflow:hidden">
+<html>
+  <link rel="stylesheet" type="text/css" href="fourWallSquash.css">
+  <body>
+    <div id="fourWallSquash-container" tabindex="0">
 
-<head>
-  <link rel="import" id= "fourWallSquashTemplate" href="../templates/fourWallSquash.html">
-  <link rel="stylesheet" href="./fourWallSquash.css">
-</head>
-<div id="fourWallSquash"></div>
+      <svg preserveAspectRatio="none" viewBox="0 0 100% 100%" id="canvasFWS">
+        <circle id="ballFWS" cx="50" cy="50" r="10" stroke="black" stroke-width="0.5%" fill="#3190F2" />
+      </svg>
+      <p id="scoreFWS">Loading</p>
+    </div>
+  </body>
+  <script src="fourWallSquash.js"></script>
 </html>
