@@ -30,6 +30,9 @@ html{
     color: rgba(255, 255, 255, 0.5);
     padding-right: 1%;
   }
+  #current{
+    color:red;
+  }
   #imgManipulator-container{
     box-sizing:border-box;
     display:grid;

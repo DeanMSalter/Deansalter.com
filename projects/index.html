@@ -10,41 +10,23 @@
 
 <body>
   <h1 id="header1">Projects</h3>
-    <nav>
-      <a href="./palindromeCalc">Palindrome Calculator</a>
-      <a href="./fourWallSquash">4 Wall Squash </a>
-      <a href="https://deansalter.com:8080/">Messaging display system </a>
-      <a href="./imgManipulator">Image Manipulator </a>
-    </nav>
     <div id="projects-container">
-      <object data="./palindromeCalc/index.html" id="palindromeEmbed" >
-        <embed src="./palindromeCalc/index.html" scale="tofit"> </embed>
-        Error: Embedded data could not be displayed.
-      </object>
-      <object data="./fourWallSquash/index.html" id="fourWallSquashEmbed" >
-        <embed src="./fourWallSquash/index.html" scale="tofit"> </embed>
-        Error: Embedded data could not be displayed.
-      </object>
-
-      <a href="https://deansalter.com:8080/" target="_blank" id="messagesSystemEmbed">
-        Messaging display system
+      <a class="projects" id="project1" href="./palindromeCalc">
+        Palindrome Calculator
       </a>
-
-      <object data="./imgManipulator/index.html" id="imgManipulatorEmbed" >
-        <embed src="./imgManipulator/index.html" scale="tofit"> </embed>
-        Error: Embedded data could not be displayed.
-      </object>
-      <h1 id="WIP"> WIP </h1>
-      </div>
+      <a class="projects" id="project2" href="./fourWallSquash">
+        Four Wall Squash
+      </a>
+      <a class="projects" id="project3" href="https://deansalter.com:8080/">
+        Messaging System
+      </a>
+      <a class="projects" id="project3" href="./imgManipulator">
+        Image Manipulator
+      </a>
+      <a class="projects" id="project3" href="./MMS">
+        Money Management System
+      </a>
     </div>
-    <script>
-      window.onresize = function(){
-        let averageSize = (document.getElementById("messagesSystemEmbed").offsetHeight+document.getElementById("messagesSystemEmbed").offsetWidth)/2
-        document.getElementById("messagesSystemEmbed").style.fontSize = averageSize*0.04
-
-      }
-
-    </script>
 </body>
 
 </html>
