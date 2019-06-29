@@ -16,16 +16,25 @@ table{
   border-collapse: collapse;
   border-spacing: 0px;
   color:#35454E;
+  width:100%;
 }
 table, th{
-  padding: 5px;
   border: 2px solid white;
+  padding:0;
+}
+th{
+  vertical-align:top;
+  font-size: 2.5vw;
 }
 td{
+  vertical-align:top;
+  box-sizing:border-box;
   position: relative;
     border: 2px solid white;
     padding:0;
     text-align: center;
+    font-size: 2.5vw;
+    padding:0;
 }
 .cellInputs{
   position: absolute;
@@ -37,5 +46,6 @@ td{
   border:none;
   text-align: center;
   background-color: #35454E;
-  word-wrap: break-word
+  word-wrap: break-word;
+  font-size: 2.5vw;
 }
