@@ -3,72 +3,40 @@ html{
   font-family: "Work Sans", Arial, sans-serif;
   overflow: hidden;
 }
-  *{
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    box-sizing:border-box;
-    font-family: "Work Sans", Arial, sans-serif;
-    font-size:100%;
-  }
-  #header1{
-  color:white;
-  text-align: center;
-  font-weight: 300;
-  font-family: "Work Sans", Arial, sans-serif;
-  font-size: 3em;
-  text-transform: uppercase;
-}
-  nav{
-    text-align: center;
-  }
-  nav a{
-    font-family: "Work Sans", Arial, sans-serif;
-    font-weight: 400;
-    text-transform: uppercase;
-    text-decoration: none;
-    color: rgba(255, 255, 255, 0.5);
-    padding-right: 1%;
-  }
-  #current{
-    color:red;
-  }
-  table{
-    border-collapse: collapse;
-    border-spacing: 0px;
-    color:white;
-  }
-  #startHead{
-    background-color: blue;
-  }
-  #endHead{
-    background-color: red;
-  }
-#startTable{
-  width:90%;
-  margin-left: 5%;
-  margin-top: 2%;
-}
-#endTable{
-  width:90%;
-  margin-left: 5%;
-  margin-top: 5%;
-}
-#friday{
-  display: none;
-}
-.fridayToggle{
-  margin-left: 45%;
-  border:solid black;
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
   box-sizing:border-box;
-  color: black;
+  font-family: "Work Sans", Arial, sans-serif;
+  font-size:100%;
+}
+#header1{
+color:white;
+text-align: center;
+font-weight: 300;
+font-family: "Work Sans", Arial, sans-serif;
+font-size: 3em;
+text-transform: uppercase;
+}
+nav{
+  text-align: center;
+}
+nav a{
+  font-family: "Work Sans", Arial, sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
   text-decoration: none;
-  display: inline-block;
-  margin-top: 5%;
-  font-size: 200%;
-  color:white;
+  color: rgba(255, 255, 255, 0.5);
+  padding-right: 1%;
+}
+#current{
+  color:red;
 }
 table{
+  border-collapse: collapse;
+  border-spacing: 0px;
+  color:white;
   border: 2px solid white;
   padding:0;
 }
@@ -80,11 +48,83 @@ td{
   vertical-align:top;
   box-sizing:border-box;
   position: relative;
-    border: 2px solid white;
-    padding:0;
-    text-align: center;
-    font-size: 2.5vw;
-    padding:0;
+  border: 2px solid white;
+  padding:0;
+  text-align: center;
+  font-size: 2.5vw;
+  padding:0;
+}
+#wrapper{
+  display: grid;
+  grid-gap: 1%;
+  padding: 1%;
+  grid-template-columns: 100%;
+  grid-template-rows: 40% 20% 40%;
+  height:90%;
+
+}
+#startHead{
+  background-color: blue;
+}
+#endHead{
+  background-color: red;
+}
+#startTable{
+  width:90%;
+  margin-left: 5%;
+  margin-top: 5%;
+}
+#endTable{
+  width:90%;
+  margin-top: 5%;
+  margin-left: 5%;
+}
+#friday{
+  display: none;
+}
+#centerWrapper{
+  display: grid;
+  grid-gap: 1%;
+  padding: 1%;
+  grid-template-columns: 30% 30% 30%;
+  grid-template-rows: 100%;
+  height:100%;
+  margin-left: 5%;
+}
+#fridayToggle{
+  margin-left: 5%;
+  border:solid black;
+  box-sizing:border-box;
+  color: black;
+  text-decoration: none;
+  text-align: center;
+  font-size: 200%;
+  color:white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#startTime{
+  margin-left: 5%;
+  border:solid black;
+  box-sizing:border-box;
+  color: black;
+  text-align:center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 300%;
+  color:black;
+}
+#endTime{
+  margin-left: 5%;
+  border:solid black;
+  box-sizing:border-box;
+  text-align:center;
+  color: black;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 300%;
+  color:black;
 }
 .cellInputs{
   position: absolute;

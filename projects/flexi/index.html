@@ -14,7 +14,7 @@
     <a href="../" id="current" > FlexiTime Calculator</a>
 
   </nav>
-  <div id="weekDays">
+  <div id="wrapper">
     <table id="startTable">
       <thead>
           <th id="startHead" colspan="3">Start Time</th>
@@ -41,24 +41,26 @@
         </tr>
       </tbody>
     </table>
-    <div class="fridayToggle">Week days</div>
+    <div id="centerWrapper">
+      <input type="time" id="startTime"></input>
+      <div id="fridayToggle">Week days</div>
+        <input type="time" id="endTime"></input>
+    </div>
+
     <table id="endTable">
     <thead>
       <th id="endHead" colspan="3">End Time</th>
     </thead>
-    <tbody>
+    <tbody id="endTableBody">
       <tr>
         <td class="a">3:45</td>
         <td class="d">4:00</td>
         <td class="g">4:15</td>
-
-
       </tr>
       <tr>
         <td class="j">4:30</td>
         <td class="b">4:45</td>
         <td class="e">5:00</td>
-
       </tr>
       <tr>
         <td class="h">5:15</td>
@@ -73,65 +75,9 @@
   </table>
   </div>
 
-  <div id="friday">
-    <table id="startTable">
-      <thead>
-          <th id="startHead" colspan="3">Start Time</th>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="a">7:00</td>
-          <td class="d">7:15</td>
-          <td class="g">7:30</td>
-        </tr>
-        <tr>
-          <td class="j">7:45</td>
-          <td class="b">8:00</td>
-          <td class="e">8:15</td>
-        </tr>
-        <tr>
-          <td class="h">8:30</td>
-          <td class="k">8:45</td>
-          <td class="c">9:00</td>
-        </tr>
-        <tr>
-          <td class="f">9:15</td>
-          <td class="i">9:30</td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="fridayToggle">Friday</div>
-    <table id="endTable">
-    <thead>
-      <th id="endHead" colspan="3">End Time</th>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="a">12:00</td>
-        <td class="d">12:15</td>
-        <td class="g">12:30</td>
 
-
-      </tr>
-      <tr>
-        <td class="j">12:45</td>
-        <td class="b">1:00</td>
-        <td class="e">1:15</td>
-
-      </tr>
-      <tr>
-        <td class="h">1:30</td>
-        <td class="k">1:45</td>
-        <td class="c">2:00</td>
-      </tr>
-      <tr>
-        <td class="f">2:15</td>
-        <td class="i">2:30</td>
-      </tr>
-    </tbody>
-  </table>
-  </div>
 </body>
+<script src="moment.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script src="flexi.js"></script>
 </html>
