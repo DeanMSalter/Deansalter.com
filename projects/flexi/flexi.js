@@ -26,7 +26,7 @@ $("#startTime").on("keyup",function(){
   let minute = time.split(':')[1]
   hour =  hour % 12 || 12;
   if(hour && minute){
-    let theFutureTime = moment().hour(hour).minute(minute).add(hourDuration,'hours').add(minuteDuration,"minutes").format("HH:mm");
+    let theFutureTime = moment().hour(hour).minute(minute).add(hourDuration,'hours').add(minuteDuration,"minutes").format("hh:mm");
     $("#endTime").val(theFutureTime)
     console.log(theFutureTime)
   }
