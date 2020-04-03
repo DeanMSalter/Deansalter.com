@@ -1,0 +1,54 @@
+html, body{
+    margin: 0 0 0 0;
+    background: white;
+    color: #fff;
+    font-family: "Work Sans", Arial, sans-serif;
+    font-weight: 400;
+}
+header{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: center;
+    background: rgba(42, 54, 59, 0.9);
+}
+span{
+    font-style: italic;
+}
+#headerArea{
+    text-align: center;
+    color: rgb(130, 130, 130);
+    font-weight: 100;
+    font-size: 16px;
+}
+#headerName{
+    text-transform: uppercase;
+    color: white;
+    font-size: 60px;
+}
+.pageContent{
+    color:black;
+    text-align: justify;
+    width: 70vw;
+    margin: auto;
+}
+.sectionTitle{
+    text-align: center;
+    text-transform: uppercase;
+    color: black;
+    font-weight: 100;
+}
+#backToTop{
+    display: none;
+    position: fixed;
+    background-image: url("../imgs/upArrow.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: transparent;
+    right: 30px;
+    bottom: 20px;
+    border: none;
+    width:3vw;
+    height:5vh;
+    z-index: 100;
+}

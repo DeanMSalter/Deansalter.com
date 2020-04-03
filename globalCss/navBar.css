@@ -1,0 +1,35 @@
+nav{
+    padding-top: 2%;
+    background: rgba(42, 54, 59, 0.9);
+}
+.navList{
+    width: fit-content;
+    margin-left: 10%;
+}
+.navList ul {
+    padding: 0;
+    margin: 0;
+}
+.navList li {
+    text-align: center;
+    width: fit-content;
+    font-size: 1.4em;
+    margin-right: 60px;
+    display: inline-block;
+}
+.navList a {
+    text-transform: uppercase;
+    text-decoration: none;
+    font-size: 16px;
+    color:rgba(255, 255, 255, 0.5);
+    display: block;
+}
+.navList a:hover {
+    transition: 0.6s color;
+    color: white;
+}
+#navActiveImg{
+    width: 16px;
+    height: 16px;
+    color: white;
+}
