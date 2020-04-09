@@ -1,25 +1,15 @@
-html{
-  background-color: #35454E;
-  font-family: "Work Sans", Arial, sans-serif;
+#noteSummary{
+    width: 50%;
+    height:10%;
+    margin-bottom: 2%;
+    border: thin solid;
+    font-size: 26px;
 }
-* {
-  box-sizing: border-box;
+#noteEntry{
+    margin-top: 5%;
+    margin-bottom: 5%;
 }
-#header1{
-  color:white;
-  text-align: center;
-  font-weight: 300;
-  font-family: "Work Sans", Arial, sans-serif;
-  font-size: 3em;
-  text-transform: uppercase;
-}
-li,a{
-    color:white;
-}
-a{
-  text-decoration: none;
-}
-a:visited{
-  color:white;
-  text-decoration: none;
+#cke_noteContentArea{
+    font-size: 32px;
+    border: thin solid;
 }

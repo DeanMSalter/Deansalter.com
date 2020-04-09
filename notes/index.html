@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Dean Salter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../globalCss/generalStyle.css">
+    <link rel="stylesheet" href="../globalCss/navBar.css">
+    <link rel="stylesheet" href="notes.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="../globalJs/backToTop.js"></script>
+    <script src="https://cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jqc-1.12.4/dt-1.10.20/b-1.6.1/sl-1.3.1/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+
+
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jqc-1.12.4/dt-1.10.20/b-1.6.1/sl-1.3.1/datatables.min.js"></script>
+<!--    <script type="text/javascript" src="Editor-1.9.2/js/dataTables.editor.js"></script>-->
+
+    <script src="notes.js"></script>
+</head>
+<div id="headerContainer"></div>
+<body>
+<input type="button" id="backToTop" onclick="backToTop();">
+<header>
+    <div id="headerArea">
+        <h1 id="headerName">Notes</h1>
+        <p>General notes/tutorials</p>
+    </div>
+</header>
+<div class="pageContent">
+    <div id="noteEntry">
+        <input type="text" name="noteSummary" placeholder="note title" id="noteSummary">
+        <textarea name="noteContentArea" id="noteContentArea"></textarea>
+        <input type="button" id="submitNote" value="Submit Note">
+    </div>
+    <div id="noteList">
+        <table class="alternativeRows" id="noteListTable">
+            <thead>
+                <tr>
+                    <th>note Id</th>
+                    <th>note Title</th>
+                    <th>note Content</th>
+                </tr>
+            </thead>
+            <tbody id="noteListTableBody">
+
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

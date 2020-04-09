@@ -19,12 +19,12 @@ span{
     text-align: center;
     color: rgb(130, 130, 130);
     font-weight: 100;
-    font-size: 16px;
+    font-size: 25px;
 }
 #headerName{
     text-transform: uppercase;
     color: white;
-    font-size: 60px;
+    font-size: 80px;
 }
 .pageContent{
     color:black;
@@ -51,4 +51,12 @@ span{
     width:3vw;
     height:5vh;
     z-index: 100;
+}
+.alternativeRows tbody tr:nth-child(odd){
+    background: rgba(205, 205, 205, 0.9);
+}
+/*  Define the background color for all the EVEN background rows  */
+.alternativeRows tbody tr:nth-child(even){
+    background: rgba(255, 255, 255, 0.9);
+
 }
