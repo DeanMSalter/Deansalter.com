@@ -1,4 +1,4 @@
-#noteSummary{
+#noteTitle{
     width: 50%;
     height:10%;
     margin-bottom: 2%;
@@ -6,7 +6,8 @@
     font-size: 26px;
 }
 #noteEntry{
-    margin-top: 5%;
+    display: none;
+    /*margin-top: 5%;*/
     margin-bottom: 5%;
 }
 #cke_noteContentArea{

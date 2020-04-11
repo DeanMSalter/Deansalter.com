@@ -7,10 +7,10 @@ if ($mysqli->connect_error) {
     die("Connection failed: " . $mysqli->connect_error);
 }
 
-$stmt = $mysqli->prepare("INSERT INTO note (noteTitle, noteContent) VALUES (?,?)");
-$stmt->bind_param('ss', $noteTitle, $noteContent);
-$noteTitle = "$_POST[noteTitle]";
-$noteContent = "$_POST[noteContent]";
+$stmt = $mysqli->prepare("UPDATE note  set noteStatus = ? where noteId = ?");
+$stmt->bind_param('ss', $noteStatus, $noteId);
+$noteStatus = "$_POST[noteStatus]";
+$noteId = "$_POST[noteId]";
 
 $stmt->execute();
 $stmt->close();

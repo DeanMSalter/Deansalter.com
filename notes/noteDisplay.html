@@ -7,53 +7,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../globalCss/generalStyle.css">
     <link rel="stylesheet" href="../globalCss/navBar.css">
-    <link rel="stylesheet" href="notes.css">
+    <link rel="stylesheet" href="noteDisplay.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="../globalJs/backToTop.js"></script>
     <script src="https://cdn.ckeditor.com/4.14.0/standard/ckeditor.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/jqc-1.12.4/dt-1.10.20/b-1.6.1/sl-1.3.1/datatables.min.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
-
-
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/jqc-1.12.4/dt-1.10.20/b-1.6.1/sl-1.3.1/datatables.min.js"></script>
-<!--    <script type="text/javascript" src="Editor-1.9.2/js/dataTables.editor.js"></script>-->
 
-    <script src="notes.js"></script>
+    <script src="noteDisplay.js"></script>
 </head>
 <div id="headerContainer"></div>
-<body>
-<input type="button" id="backToTop" onclick="backToTop();">
 <header>
     <div id="headerArea">
-        <h1 id="headerName">Notes</h1>
-        <p>General notes/tutorials</p>
+        <h1 id="noteTitleArea"></h1>
     </div>
 </header>
+<body>
+<input type="button" id="backToTop" onclick="backToTop();">
 <div class="pageContent">
-    <input type="button" id="newNoteToggle" value="New Note">
-    <div id="noteEntry">
-        <input type="text" name="noteTitle" placeholder="note title" id="noteTitle">
-        <textarea name="noteContentArea" id="noteContentArea"></textarea>
-        <input type="button" id="submitNote" value="Submit Note">
-    </div>
-    <div id="noteList">
-        <table class="alternativeRows" id="noteListTable">
-            <thead>
-                <tr>
-                    <th>note Id</th>
-                    <th>note Status</th>
-                    <th>note Title</th>
-                    <th>note Content</th>
-                    <th>note Date</th>
-                    <th></th>
+    <div id="noteContentArea">
 
-                </tr>
-            </thead>
-            <tbody id="noteListTableBody">
-
-            </tbody>
-        </table>
     </div>
 </div>
 </body>

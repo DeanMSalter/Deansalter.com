@@ -30,7 +30,7 @@ span{
     color:black;
     text-align: justify;
     width: 70vw;
-    margin: auto;
+    margin: 5% auto auto;
 }
 .sectionTitle{
     text-align: center;
@@ -58,5 +58,11 @@ span{
 /*  Define the background color for all the EVEN background rows  */
 .alternativeRows tbody tr:nth-child(even){
     background: rgba(255, 255, 255, 0.9);
-
+}
+input[type="button"]{
+    background: rgba(120, 147, 196, 0.9);
+    font-size: 1.2em;
+    border-radius: 5px;
+    font-weight: bolder;
+    border: none;
 }

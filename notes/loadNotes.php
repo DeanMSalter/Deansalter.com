@@ -7,7 +7,7 @@ if ($mysqli->connect_error) {
     die("Connection failed: " . $mysqli->connect_error);
 }
 
-$stmt = "select * from note";
+$stmt = "select * from note where noteStatus is null or noteStatus != 'NOTE_REMOVED'";
 
 $result = $mysqli->query($stmt);
 $arr = array();

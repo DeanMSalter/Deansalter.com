@@ -11,24 +11,51 @@ $(document).ready(function () {
              "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ]
         });
     });
+    function loadNotes(){
+        $.ajax({
+            url:"loadNotes.php ",
+            method:"GET",
+            success:function(response) {
+                resultsTable.clear();
+                let responseParsed = JSON.parse(response);
+                for(let row = 0; row<responseParsed.length ; row++) {
+                    let noteLink = "<a href=\'./noteDisplay.html?noteId=" + responseParsed[row][0] + "\'>" + responseParsed[row][0] + "</a>";
+                    let removeNote = "<input type=\'button\' name=\'removeNote_" +  responseParsed[row][0] + "\' value=\'Remove Note\'>";
+                    let newRow =[
+                        noteLink,responseParsed[row][1],responseParsed[row][2],responseParsed[row][3],responseParsed[row][4],removeNote
+                    ];
+                    resultsTable.row.add(newRow)
+                }
+                resultsTable.draw();
+                $( "input[name^='removeNote_']" ).on("click",function () {
+                    let selectedRow = $(this).closest("tr")
+                    let noteId = $(this).attr("name").split("_")[1]
+                    console.log(noteId)
+                    $.ajax({
+                        url:"changeNoteStatus.php ",
+                        method:"POST",
+                        data:{
+                            noteId: noteId,
+                            noteStatus: "NOTE_REMOVED",
+                        },
+                        success:function(response) {
+                            resultsTable.row(selectedRow).remove().draw();
+                        },
+                        error:function(){
+                            //TODO: better error message
+                            alert("error");
+                        }
 
-    $.ajax({
-        url:"loadNotes.php ",
-        method:"GET",
-        success:function(response) {
-            resultsTable.clear();
-            let responseParsed = JSON.parse(response);
-            for(let row = 0; row<responseParsed.length ; row++) {
-                resultsTable.row.add(responseParsed[row])
+                    });
+                })
+            },
+            error:function(){
+                //TODO: better error message
+                alert("error");
             }
-            resultsTable.draw()
-        },
-        error:function(){
-            //TODO: better error message
-            alert("error");
-        }
 
-    });
+        });
+    }
 
     CKEDITOR.replace( 'noteContentArea' );
     $("#submitNote").on("click",function () {
@@ -36,11 +63,13 @@ $(document).ready(function () {
             url:"insertNote.php ",
             method:"POST",
             data:{
-                noteSummary: $("#noteSummary").val(), // Second add quotes on the value.
+                noteTitle: $("#noteTitle").val(), // Second add quotes on the value.
                 noteContent: CKEDITOR.instances['noteContentArea'].getData(),
             },
             success:function(response) {
-                console.log("success" + response)
+                CKEDITOR.instances['noteContentArea'].setData('');
+                $("#noteTitle").val("");
+                loadNotes();
             },
             error:function(){
                 //TODO: better error message
@@ -49,6 +78,19 @@ $(document).ready(function () {
 
         });
     });
+
+    $("#newNoteToggle").on("click",function () {
+        let noteEntry = $("#noteEntry")
+
+        if(noteEntry.css("display") === "none"){
+            noteEntry.css("display","block");
+            $(this).attr("value","Hide");
+        }else{
+            $(this).attr("value","New Note");
+            noteEntry.css("display","none");
+        }
+    });
+    loadNotes()
 });
 
 
