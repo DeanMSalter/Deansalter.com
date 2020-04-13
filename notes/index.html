@@ -33,6 +33,7 @@
 <div class="pageContent">
     <input type="button" id="newNoteToggle" value="New Note">
     <div id="noteEntry">
+        <input type="hidden" id="noteId">
         <input type="text" name="noteTitle" placeholder="note title" id="noteTitle">
         <textarea name="noteContentArea" id="noteContentArea"></textarea>
         <input type="button" id="submitNote" value="Submit Note">
@@ -47,7 +48,7 @@
                     <th>note Content</th>
                     <th>note Date</th>
                     <th></th>
-
+                    <th></th>
                 </tr>
             </thead>
             <tbody id="noteListTableBody">
