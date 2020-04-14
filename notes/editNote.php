@@ -1,11 +1,6 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(-1);
-
-$mysqli = mysqli_connect("localhost","root","root","website");
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
-}
+include ('../main.php');
+$mysqli = mysqliConnect();
 
 $stmt1 = $mysqli->prepare("UPDATE note set noteContent = ? where noteId = ?");
 $stmt1->bind_param('ss', $noteContent, $noteId);

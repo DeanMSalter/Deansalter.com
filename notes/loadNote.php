@@ -1,11 +1,7 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(-1);
+include ('../main.php');
+$mysqli = mysqliConnect();
 
-$mysqli = mysqli_connect("localhost","root","root","website");
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
-}
 $noteId = "$_POST[noteId]";
 $stmt = $mysqli->prepare("select * from note where noteId = ?");
 $stmt->bind_param("s", $noteId);

@@ -3,7 +3,6 @@ nav{
     background: rgba(42, 54, 59, 0.9);
 }
 .navList{
-    width: fit-content;
     margin-left: 10%;
 }
 .navList ul {
@@ -31,4 +30,22 @@ nav{
     width: 16px;
     height: 16px;
     color: white;
+}
+#signInBtnLI{
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    right: -1vw;
+    top: 6vh;
+}
+#signInBtn{
+    display: inline-block;
+}
+#signedInProfilePic{
+    display: none;
+}
+#signOutBtn{
+    display: none;
+    margin-left: 3%;
+    background-color: white;
 }

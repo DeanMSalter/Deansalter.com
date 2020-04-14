@@ -15,15 +15,18 @@ $(document).ready(function () {
         $.ajax({
             url:"loadNotes.php ",
             method:"GET",
+
             success:function(response) {
                 resultsTable.clear();
                 let responseParsed = JSON.parse(response);
+                console.log(responseParsed[0]);
                 for(let row = 0; row<responseParsed.length ; row++) {
-                    let noteLink = "<a href=\'./noteDisplay.html?noteId=" + responseParsed[row][0] + "\'>" + responseParsed[row][0] + "</a>";
-                    let removeNote = "<input type=\'button\' name=\'removeNote_" +  responseParsed[row][0] + "\' value=\'Remove Note\'>";
-                    let editNote = "<input type=\'button\' name=\'editNote_" +  responseParsed[row][0] + "\' value=\'Edit Note\'>";
+                    console.log(responseParsed[row]);
+                    let noteLink = "<a href=\'./noteDisplay.html?noteId=" + responseParsed[row].noteId + "\'>" + responseParsed[row].noteId + "</a>";
+                    let removeNote = "<input type=\'button\' name=\'removeNote_" +  responseParsed[row].noteId + "\' value=\'Remove Note\'>";
+                    let editNote = "<input type=\'button\' name=\'editNote_" +  responseParsed[row].noteId + "\' value=\'Edit Note\'>";
                     let newRow =[
-                        noteLink,responseParsed[row][1],responseParsed[row][2],responseParsed[row][3],responseParsed[row][4],removeNote, editNote
+                        noteLink,responseParsed[row].firstName + " " + responseParsed[row].lastName, responseParsed[row].noteStatus,responseParsed[row].noteTitle,responseParsed[row].noteContent,responseParsed[row].noteDate,removeNote, editNote
                     ];
                     resultsTable.row.add(newRow)
                 }
@@ -104,14 +107,17 @@ $(document).ready(function () {
                 }
             });
         }else{
+            console.log(localStorage.getItem('idToken'));
             $.ajax({
                 url:"insertNote.php ",
                 method:"POST",
                 data:{
                     noteTitle: $("#noteTitle").val(), // Second add quotes on the value.
                     noteContent: CKEDITOR.instances['noteContentArea'].getData(),
+                    idToken: localStorage.getItem('idToken')
                 },
                 success:function(response) {
+                    console.log(response);
                     CKEDITOR.instances['noteContentArea'].setData('');
                     $("#noteTitle").val("");
                     loadNotes();
@@ -138,5 +144,3 @@ $(document).ready(function () {
     });
     loadNotes()
 });
-
-

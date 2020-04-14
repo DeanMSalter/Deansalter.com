@@ -1,0 +1,12 @@
+{
+    "require": {
+        "google/apiclient": "^2.0",
+      "ext-mysqli": "*",
+      "ext-json": "*"
+    },
+	"autoload": {
+        "classmap": [
+            "vendor/google/apiclient/src/Google"
+        ]
+	}
+}

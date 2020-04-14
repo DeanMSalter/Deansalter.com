@@ -1,17 +1,17 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(-1);
+include ('../main.php');
+$mysqli = mysqliConnect();
 
-$mysqli = mysqli_connect("localhost","root","root","website");
-if ($mysqli->connect_error) {
-    die("Connection failed: " . $mysqli->connect_error);
+$stmt = "select * from note N
+left join userNote UN on N.noteId = UN.noteId
+left join user U on UN.userId = U.userId
+where noteStatus is null or noteStatus != 'NOTE_REMOVED'";
+if (!$mysqli -> query($stmt)) {
+    echo("Error description: " . $mysqli -> error);
 }
-
-$stmt = "select * from note where noteStatus is null or noteStatus != 'NOTE_REMOVED'";
-
 $result = $mysqli->query($stmt);
 $arr = array();
-while ($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
+while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $arr[] = $row;
 }
 echo json_encode($arr);
