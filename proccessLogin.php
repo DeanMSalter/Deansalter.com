@@ -15,6 +15,7 @@ if ($payload) {
         insertUser($mysqli, $userId, $firstName, $lastName, $email);
     }
     $mysqli->close();
+    echo $userId;
 } else {
     echo "invalid token id";
 }

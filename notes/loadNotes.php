@@ -2,7 +2,7 @@
 include ('../main.php');
 $mysqli = mysqliConnect();
 
-$stmt = "select * from note N
+$stmt = "select N.*, U.* from note N
 left join userNote UN on N.noteId = UN.noteId
 left join user U on UN.userId = U.userId
 where noteStatus is null or noteStatus != 'NOTE_REMOVED'";
