@@ -34,4 +34,28 @@ function getUserFromTokenId($idToken){
     return $client->verifyIdToken($idToken);
 }
 
+function getUserIdOfNote($mysqli, $noteId){
+    $noteUserStmt = $mysqli->prepare("select userId from userNote where noteId = ?");
+    $noteUserStmt->bind_param("s", $noteId);
+    $noteUserStmt->execute();
+
+    $result = $noteUserStmt->get_result();
+    $user = $result->fetch_array(MYSQLI_ASSOC);
+    $result->close();
+    $noteUserStmt->close();
+    return $user['userId'];
+}
+
+function validUserForNote($mysqli, $noteId, $idToken){
+    $noteUserId = getUserIdOfNote($mysqli, $noteId);
+    $currentUser = getUserFromTokenId($idToken);
+
+    if ($noteUserId === $currentUser['sub']) {
+        return true;
+    }else{
+        return false;
+    }
+}
+
+
 ?>

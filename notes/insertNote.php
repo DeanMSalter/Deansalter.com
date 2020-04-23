@@ -1,20 +1,18 @@
 <?php
 include ('../main.php');
+
 $mysqli = mysqliConnect();
+$noteTitle = "$_POST[noteTitle]";
+$noteContent = "$_POST[noteContent]";
+$idToken = "$_POST[idToken]";
 
 $stmt = $mysqli->prepare("INSERT INTO note (noteTitle, noteContent) VALUES (?,?)");
 $stmt->bind_param('ss', $noteTitle, $noteContent);
-$noteTitle = "$_POST[noteTitle]";
-$noteContent = "$_POST[noteContent]";
 $stmt->execute();
 $stmt->close();
 $noteId = $mysqli->insert_id;
 $mysqli->close();
 
-//$result = $stmt->get_result();
-//$row = $result->fetch_assoc();
-//
-$idToken = "$_POST[idToken]";
 $user = getUserFromTokenId($idToken);
 $mysqli2 = mysqliConnect();
 

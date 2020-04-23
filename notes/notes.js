@@ -20,6 +20,7 @@ $(document).ready(function () {
                     noteTitle: $("#noteTitle").val(), // Second add quotes on the value.
                     noteContent: CKEDITOR.instances['noteContentArea'].getData(),
                     noteId: noteId,
+                    idToken: localStorage.getItem("idToken"),
 
                 },
                 success:function(response) {
@@ -31,7 +32,6 @@ $(document).ready(function () {
                 }
             });
         }else{
-            console.log(localStorage.getItem('idToken'));
             $.ajax({
                 url:"insertNote.php ",
                 method:"POST",
@@ -41,7 +41,6 @@ $(document).ready(function () {
                     idToken: localStorage.getItem('idToken')
                 },
                 success:function(response) {
-                    console.log(response);
                     CKEDITOR.instances['noteContentArea'].setData('');
                     $("#noteTitle").val("");
                     loadNotes();
@@ -76,13 +75,9 @@ function loadNotes(){
         success:function(response) {
             resultsTable.clear();
             let responseParsed = JSON.parse(response);
-            console.log(responseParsed);
             for(let row = 0; row<responseParsed.length ; row++) {
-                console.log(responseParsed[row]);
                 let removeNote = "";
                 let editNote = "";
-                console.log(localStorage.getItem("userId"));
-                console.log(responseParsed[row].userId);
                 if(localStorage.getItem("userId") === responseParsed[row].userId || !responseParsed[row].userId){
                     removeNote = "<input type=\'button\' name=\'removeNote_" +  responseParsed[row].noteId + "\' value=\'Remove Note\'>";
                     editNote = "<input type=\'button\' name=\'editNote_" +  responseParsed[row].noteId + "\' value=\'Edit Note\'>";
@@ -99,16 +94,21 @@ function loadNotes(){
             $( "input[name^='removeNote_']" ).on("click",function () {
                 let selectedRow = $(this).closest("tr")
                 let noteId = $(this).attr("name").split("_")[1]
-                console.log(noteId)
                 $.ajax({
                     url:"changeNoteStatus.php ",
                     method:"POST",
                     data:{
                         noteId: noteId,
+                        idToken: localStorage.getItem("idToken"),
                         noteStatus: "NOTE_REMOVED",
                     },
                     success:function(response) {
-                        resultsTable.row(selectedRow).remove().draw();
+                        response = JSON.parse(response);
+                        if(response.error){
+                            alert(response.error["msg"])
+                        }else{
+                            resultsTable.row(selectedRow).remove().draw();
+                        }
                     },
                     error:function(){
                         //TODO: better error message
@@ -124,15 +124,23 @@ function loadNotes(){
                     method:"POST",
                     data:{
                         noteId: noteId,
+                        idToken: localStorage.getItem("idToken"),
                     },
                     success:function(response) {
                         response = JSON.parse(response);
-                        CKEDITOR.instances['noteContentArea'].setData(response.noteContent);
-                        $("#noteTitle").val(response.noteTitle);
-                        $("#noteId").val(noteId);
-                        let noteEntry = $("#noteEntry")
-                        noteEntry.css("display","block");
-                        $("#newNoteToggle").attr("value","Hide");
+                        console.log(response);
+                        if(response.error){
+                            alert(response.error["msg"])
+                        }else{
+                            let note = response.note;
+                            CKEDITOR.instances['noteContentArea'].setData(note["noteContent"]);
+                            $("#noteTitle").val(note["noteTitle"]);
+                            $("#noteId").val(note["noteId"]);
+                            let noteEntry = $("#noteEntry");
+                            noteEntry.css("display","block");
+                            $("#newNoteToggle").attr("value","Hide");
+                        }
+
                     },
                     error:function(){
                         //TODO: better error message

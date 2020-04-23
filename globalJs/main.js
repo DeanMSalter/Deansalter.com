@@ -1,7 +1,6 @@
 function onSignIn(googleUser) {
     let profile = googleUser.getBasicProfile();
     localStorage.setItem('idToken', googleUser.getAuthResponse().id_token);
-    console.log(googleUser.getAuthResponse().id_token);
     // console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
     // console.log('IDToken: ' + googleUser.getAuthResponse().id_token); // Do not send to your backend! Use an ID token instead.
     //
