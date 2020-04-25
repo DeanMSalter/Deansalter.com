@@ -3,7 +3,7 @@ include ('../main.php');
 
 $noteTitle = "$_POST[noteTitle]";
 $noteContent = "$_POST[noteContent]";
-$idToken = "$_POST[idToken]";
+$idToken = isset($_POST['idToken']) ? $_POST['idToken'] : null;
 $noteId = isset($_POST['noteId']) ? $_POST['noteId'] : null;
 
 try{
@@ -39,24 +39,38 @@ try{
         $noteId = $mysqli->insert_id;
         $mysqli->close();
 
-        $user = getUserFromTokenId($idToken);
-        $mysqli2 = mysqliConnect();
 
-        if ($user) {
-            $userId = $user['sub'];
-            $firstName = $user['given_name'];
-            $lastName = $user['family_name'];
-            $email = $user['email'];
-            $validUser = findUser($mysqli2, $userId);
-            if(empty($validUser)){
-                insertUser($mysqli2, $userId, $firstName, $lastName, $email);
+        if($idToken){
+            $user = getUserFromTokenId($idToken);
+            $mysqli2 = mysqliConnect();
+
+            if ($user) {
+                $userId = $user['sub'];
+                $firstName = $user['given_name'];
+                $lastName = $user['family_name'];
+                $email = $user['email'];
+                $validUser = findUser($mysqli2, $userId);
+                if(empty($validUser)){
+                    insertUser($mysqli2, $userId, $firstName, $lastName, $email);
+                }
+
+                $insertUserNoteStmt = $mysqli2->prepare("INSERT INTO userNote (userId, noteId) VALUES (?,?)");
+                $insertUserNoteStmt->bind_param('ss', $userId, $noteId);
+                $insertUserNoteStmt->execute();
+                $insertUserNoteStmt->close();
+                $mysqli2->close();
+                echo json_encode(array(
+                    'successful' => array(
+                        'noteId' => $noteId,
+                        'noteContent' => $noteContent,
+                        'noteTitle' => $noteTitle,
+                    ),
+                ));
+            } else {
+                $mysqli2->close();
+                throw new RuntimeException('Invalid TokenId Given', 404);
             }
-
-            $insertUserNoteStmt = $mysqli2->prepare("INSERT INTO userNote (userId, noteId) VALUES (?,?)");
-            $insertUserNoteStmt->bind_param('ss', $userId, $noteId);
-            $insertUserNoteStmt->execute();
-            $insertUserNoteStmt->close();
-            $mysqli2->close();
+        }else{
             echo json_encode(array(
                 'successful' => array(
                     'noteId' => $noteId,
@@ -64,10 +78,8 @@ try{
                     'noteTitle' => $noteTitle,
                 ),
             ));
-        } else {
-            $mysqli2->close();
-            throw new RuntimeException('Invalid TokenId Given', 404);
         }
+
     }
 }catch(Exception $e){
     echo json_encode(array(

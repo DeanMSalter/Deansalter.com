@@ -50,7 +50,7 @@ function validUserForNote($mysqli, $noteId, $idToken){
     $noteUserId = getUserIdOfNote($mysqli, $noteId);
     $currentUser = getUserFromTokenId($idToken);
 
-    if ($noteUserId === $currentUser['sub']) {
+    if (!$noteUserId || $noteUserId === $currentUser['sub']) {
         return true;
     }else{
         return false;

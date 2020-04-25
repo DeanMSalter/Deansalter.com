@@ -114,7 +114,7 @@ function loadNotes(){
                     removeNote = "<input type=\'button\' name=\'removeNote_" +  responseParsed[row].noteId + "\' value=\'Remove Note\'>";
                     editNote = "<input type=\'button\' name=\'editNote_" +  responseParsed[row].noteId + "\' value=\'Edit Note\'>";
                 }
-                let noteLink = "<a href=\'./noteDisplay.html?noteId=" + responseParsed[row].noteId + "\'>" + responseParsed[row].noteId + "</a>";
+                let noteLink = "<a href=\'./noteDisplay/noteDisplay.html?noteId=" + responseParsed[row].noteId + "\'>" + responseParsed[row].noteId + "</a>";
                 let userId = "<input type=\'hidden\' name=\'userId\' value=" +  responseParsed[row].userId +"\'>";
                 let owner = (responseParsed[row].firstName ? responseParsed[row].firstName : "") + " " + (responseParsed[row].lastName ? responseParsed[row].lastName : "") + userId;
                 let newRow =[
@@ -127,7 +127,7 @@ function loadNotes(){
             editNoteListeners();
         },
     });
-}
+}0
 
 function toggleNewNote(){
     let noteEntry = $("#noteEntry");
