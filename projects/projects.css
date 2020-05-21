@@ -1,54 +1,40 @@
-html{
-  background-color: #35454E;
-  font-family: "Work Sans", Arial, sans-serif;
-}
-* {
-  box-sizing: border-box;
+body{
+    background: rgba(42, 54, 59, 0.9);
+    overflow: hidden;
 }
 #header1{
-  color:white;
-  text-align: center;
-  font-weight: 300;
-  font-family: "Work Sans", Arial, sans-serif;
-  font-size: 3em;
-  text-transform: uppercase;
-}
-nav{
-  text-align: center;
-}
-nav a{
-  font-family: "Work Sans", Arial, sans-serif;
-  font-weight: 400;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: rgba(255, 255, 255, 0.5);
-  padding-right: 1%;
+    color:white;
+    text-align: center;
+    font-weight: 300;
+    font-family: "Work Sans", Arial, sans-serif;
+    font-size: 3em;
+    text-transform: uppercase;
 }
 #projects-container{
-  margin: 0.5%;
-  display: grid;
-  grid-template-columns:1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  grid-gap: 1%;
-  height:80%;
+    margin: 5.5% 5.5% 0;
+    display: grid;
+    grid-template-columns:1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-gap: 1%;
+    height:80%;
 }
 .projects{
-  border:solid black;
-  box-sizing:border-box;
-  color: black;
-  text-decoration: none;
-  text-align: center;
-  max-width: 100%;
-  max-height: 100%;
-  width:100%;
-  height:100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color:white;
-  text-decoration: none;
-  font-size: 200%;
+    border:solid black;
+    box-sizing:border-box;
+    color:rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    text-align: center;
+    max-width: 100%;
+    max-height: 100%;
+    width:100%;
+    height:100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 200%;
 }
 .projects:hover{
-  color:red;
+    transition: 0.6s color;
+    color: white;
 }

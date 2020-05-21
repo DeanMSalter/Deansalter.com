@@ -1,4 +1,6 @@
-'use strict'
+$(function () {
+    $("#headerContainer").load("../projectsHTML/projectsNavBar.html");
+});
 let base_image = new Image();
 base_image.src = 'billGates.png';
 console.log(base_image)

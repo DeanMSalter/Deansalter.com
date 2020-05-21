@@ -15,6 +15,6 @@ while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
     $arr[] = $row;
 }
 echo json_encode($arr);
-
+//echo $_SERVER['REMOTE_ADDR'];
 $mysqli->close();
 ?>

@@ -1,3 +1,9 @@
+$(function () {
+    $.getJSON('https://ipapi.co/json/', function(data) {
+        localStorage.setItem('ip', data.ip);
+    });
+});
+
 function onSignIn(googleUser) {
     let profile = googleUser.getBasicProfile();
     localStorage.setItem('idToken', googleUser.getAuthResponse().id_token);
@@ -43,3 +49,4 @@ function signOut() {
         signedOut();
     });
 }
+

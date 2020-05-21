@@ -1,39 +1,10 @@
 html{
-  background-color: #35454E;
-  font-family: "Work Sans", Arial, sans-serif;
-  overflow: hidden;
-}
-  *{
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    box-sizing:border-box;
     font-family: "Work Sans", Arial, sans-serif;
-    font-size:100%;
-  }
-  #header1{
-  color:white;
-  text-align: center;
-  font-weight: 300;
-  font-family: "Work Sans", Arial, sans-serif;
-  font-size: 3em;
-  text-transform: uppercase;
 }
-  nav{
-    text-align: center;
-  }
-  nav a{
-    font-family: "Work Sans", Arial, sans-serif;
-    font-weight: 400;
-    text-transform: uppercase;
-    text-decoration: none;
-    color: rgba(255, 255, 255, 0.5);
-    padding-right: 1%;
-  }
-  #current{
-    color:red;
-  }
-  #imgManipulator-container{
+body{
+    background: rgba(42, 54, 59, 0.9);
+}
+#imgManipulator-container{
     box-sizing:border-box;
     display:grid;
     grid-template-columns:79% 19%;
@@ -42,8 +13,18 @@ html{
     max-width: 100%;
     max-height: 90%;
     border-top: solid;
-  }
-  #sideMenu{
+    border-color: black;
+}
+#title{
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start:1;
+    grid-row-end:1;
+    color:white;
+    font-size:80%;
+    margin:auto;
+}
+#sideMenu{
     box-sizing:border-box;
     display:grid;
     grid-column-start: 2;
@@ -56,48 +37,40 @@ html{
     max-height: 100%;
     height:100%;
     border-left:solid;
+    border-color: black;
     padding:3%;
     grid-gap: 2%;
 
-  }
-  #title{
-    grid-column-start: 1;
-    grid-column-end: 3;
-    grid-row-start:1;
-    grid-row-end:1;
-    color:white;
-    font-size:80%;
-    margin:auto;
-  }
-  #saveButton{
+}
+#saveButton{
     grid-column-start: 1;
     grid-column-end: 1;
     grid-row-start:2;
     grid-row-end:2;
     height:100%;
-  }
-  #fillToggle{
+}
+#fillToggle{
     grid-column-start: 2;
     grid-column-end: 2;
     grid-row-start:3;
     grid-row-end:3;
     height:100%;
-  }
-  #saveButton a{
+}
+#saveButton a{
     color:inherit;
     text-decoration:none;
-  }
-  #uploadButton{
+}
+#uploadButton{
     grid-column-start: 1;
     grid-column-end: 1;
     grid-row-start:3;
     grid-row-end:3;
     width:100%;
-  }
-  #uploadLink{
+}
+#uploadLink{
     z-index:100;
-  }
-  #gridOpacity{
+}
+#gridOpacity{
     grid-column-start: 2;
     grid-column-end: 2;
     grid-row-start:2;
@@ -108,89 +81,89 @@ html{
     background: #d3d3d3;
     -webkit-transition: .2s;
     transition: opacity .2s;
-  }
-  #gridOpacityLabel{
+}
+#gridOpacityLabel{
     pointer-events: none;
     grid-column-start: 2;
     grid-column-end: 2;
     grid-row-start:2;
     grid-row-end:2;
     margin:auto;
-  }
-  #gridOpacity::-webkit-slider-thumb {
+}
+#gridOpacity::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 10%;
     height: 100%;
     background: red;
     cursor: pointer;
-  }
+}
 
-  #gridOpacity::-moz-range-thumb {
+#gridOpacity::-moz-range-thumb {
     width: 10%;
     height: 100%;
     background: red;
     cursor: pointer;
-  }
-  #newCanvas{
+}
+#newCanvas{
     grid-column-start: 1;
     grid-column-end: 1;
     grid-row-start:1;
     grid-row-end:1;
     height:100%;
     width:100%;
-  }
-  #gridCanvas{
+}
+#gridCanvas{
     grid-column-start: 1;
     grid-column-end: 1;
     grid-row-start:1;
     grid-row-end:1;
     height:100%;
     width:100%;
-  }
-  #marker{
+}
+#marker{
     border:solid;
     position:absolute;
     width:5px;
     height:5px
-  }
-  #rgb{
+}
+#rgb{
     grid-column-start: 1;
     grid-column-end: 3;
     grid-row-start:5;
     grid-row-end:5;
     color:white;
     margin: 0 auto ;
-  }
-  #red{
+}
+#red{
     width: 2em;
-  }
-  #green{
+}
+#green{
     width: 2em;
-  }
-  #blue{
+}
+#blue{
     width: 2em;
-  }
-  #alpha{
+}
+#alpha{
     width: 2em;
-  }
-  #invertToggle{
+}
+#invertToggle{
     grid-column-start: 1;
     grid-column-end: 1;
     grid-row-start:4;
     grid-row-end:4;
-  }
-  #colourToggle{
+}
+#colourToggle{
     grid-column-start: 2;
     grid-column-end: 2;
     grid-row-start:4;
     grid-row-end:4;
-  }
-  #RGBToggle{
+}
+#RGBToggle{
     grid-column-start: 1;
     grid-column-end: 3;
     grid-row-start:6;
     grid-row-end:6;
     color:white;
     margin: 0 auto ;
-  }
+}

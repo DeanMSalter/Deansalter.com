@@ -2,6 +2,10 @@ $(function () {
     $("#headerContainer").load("../globalHtml/navBar.html", function () {
         $("#notesNavEntry").prepend($("#navActiveImgTemplate").html())
     });
+
+    $.getJSON('https://ipapi.co/json/', function(data) {
+        console.log(data.ip);
+    });
 });
 
 $(document).ready(function () {
