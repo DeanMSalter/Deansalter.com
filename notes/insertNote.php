@@ -5,6 +5,11 @@ $noteTitle = "$_POST[noteTitle]";
 $noteContent = "$_POST[noteContent]";
 $idToken = isset($_POST['idToken']) ? $_POST['idToken'] : null;
 $noteId = isset($_POST['noteId']) ? $_POST['noteId'] : null;
+$notePassword = isset($_POST['notePassword']) ? $_POST['notePassword'] : null;
+
+if($notePassword){
+    $notePassword = password_hash($notePassword, PASSWORD_DEFAULT);
+}
 
 try{
     $mysqli = mysqliConnect();
@@ -19,12 +24,19 @@ try{
             $editNoteTitleStmt->bind_param('ss', $noteTitle, $noteId);
             $editNoteTitleStmt->execute();
             $editNoteTitleStmt->close();
+
+            $editNotePasswordStmt = $mysqli->prepare("UPDATE note set notePassword = ? where noteId = ?");
+            $editNotePasswordStmt->bind_param('ss', $notePassword, $noteId);
+            $editNotePasswordStmt->execute();
+            $editNotePasswordStmt->close();
+
             $mysqli->close();
             echo json_encode(array(
                 'successful' => array(
                     'noteId' => $noteId,
                     'noteContent' => $noteContent,
                     'noteTitle' => $noteTitle,
+                    'notePassword' => $notePassword
                 ),
             ));
         }else{
@@ -37,6 +49,12 @@ try{
         $insertNoteStmt->execute();
         $insertNoteStmt->close();
         $noteId = $mysqli->insert_id;
+
+        $editNotePasswordStmt = $mysqli->prepare("UPDATE note set notePassword = ? where noteId = ?");
+        $editNotePasswordStmt->bind_param('ss', $notePassword, $noteId);
+        $editNotePasswordStmt->execute();
+        $editNotePasswordStmt->close();
+
         $mysqli->close();
 
 

@@ -46,8 +46,45 @@ function getUserIdOfNote($mysqli, $noteId){
     return $user['userId'];
 }
 
+function getNotePassword($mysqli, $noteId){
+    $notePasswordStmt = $mysqli->prepare("select notePassword from note where noteId = ?");
+    $notePasswordStmt->bind_param("s", $noteId);
+    $notePasswordStmt->execute();
+
+    $result = $notePasswordStmt->get_result();
+    $note = $result->fetch_array(MYSQLI_ASSOC);
+    $result->close();
+    $notePasswordStmt->close();
+    return $note['notePassword'];
+}
+
+function validPassword($mysqli, $noteId, $givenPassword){
+    $notePassword = getNotePassword($mysqli, $noteId);
+    if($notePassword === null){
+        return true;
+    }
+
+    if($givenPassword === null){
+        return false;
+    }
+
+    if(password_verify($givenPassword, $notePassword)){
+        return true;
+    }
+
+    return false;
+
+}
+
 function validUserForNote($mysqli, $noteId, $idToken){
     $noteUserId = getUserIdOfNote($mysqli, $noteId);
+    if($noteUserId === null){
+        return true;
+    }
+    if($idToken === null){
+        return false;
+    }
+
     $currentUser = getUserFromTokenId($idToken);
 
     if (!$noteUserId || $noteUserId === $currentUser['sub']) {

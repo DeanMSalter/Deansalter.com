@@ -22,6 +22,7 @@ $(document).ready(function () {
 function submitNote(){
     let noteId = $("#noteId").val();
     let noteTitle = $("#noteTitle").val();
+    let notePassword = $("#notePassword").val();
     let noteContent = CKEDITOR.instances['noteContentArea'].getData();
     let idToken = localStorage.getItem('idToken');
 
@@ -32,9 +33,11 @@ function submitNote(){
             noteTitle: noteTitle,
             noteContent: noteContent,
             idToken: idToken,
-            noteId: noteId
+            noteId: noteId,
+            notePassword: notePassword
         },
         success:function(response) {
+            console.log(response);
             response = JSON.parse(response);
             if(response.error){
                 alert(response.error["msg"])
@@ -122,7 +125,7 @@ function loadNotes(){
                 let userId = "<input type=\'hidden\' name=\'userId\' value=" +  responseParsed[row].userId +"\'>";
                 let owner = (responseParsed[row].firstName ? responseParsed[row].firstName : "") + " " + (responseParsed[row].lastName ? responseParsed[row].lastName : "") + userId;
                 let newRow =[
-                    noteLink, owner , responseParsed[row].noteStatus,responseParsed[row].noteTitle,responseParsed[row].noteContent,responseParsed[row].noteDate,removeNote, editNote
+                    noteLink, owner , responseParsed[row].noteStatus,responseParsed[row].noteTitle,responseParsed[row].noteContent,responseParsed[row].noteDate, responseParsed[row].notePassword, removeNote, editNote
                 ];
                 resultsTable.row.add(newRow)
             }

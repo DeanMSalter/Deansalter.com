@@ -5,6 +5,12 @@
     border: thin solid;
     font-size: 26px;
 }
+#notePassword{
+    height:10%;
+    margin-bottom: 2%;
+    border: thin solid;
+    font-size: 26px;
+}
 #noteEntry{
     display: none;
     margin-bottom: 5%;

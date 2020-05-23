@@ -15,12 +15,18 @@ $(document).ready(function () {
         alert("No NoteId supplied!")
     }
 
+    let givenPassword = window.prompt("Password:","");
+    loadNote(noteId, idToken, givenPassword)
+});
+
+function loadNote(noteId, idToken, givenPassword){
     $.ajax({
         url:"../loadNote.php ",
         method:"POST",
         data:{
             noteId: noteId,
             idToken: idToken,
+            givenPassword: givenPassword
         },
         success:function(response) {
             response = JSON.parse(response);
@@ -40,6 +46,6 @@ $(document).ready(function () {
             alert("error");
         }
     });
-});
+}
 
 
