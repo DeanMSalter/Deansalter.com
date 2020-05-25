@@ -27,9 +27,10 @@ function submitNote(){
     let idToken = localStorage.getItem('idToken');
 
     $.ajax({
-        url:"insertNote.php ",
+        url:"editNote.php ",
         method:"POST",
         data:{
+            functionName: "insertNote",
             noteTitle: noteTitle,
             noteContent: noteContent,
             idToken: idToken,
@@ -57,9 +58,10 @@ function removeNoteListeners(){
         let selectedRow = $(this).closest("tr")
         let noteId = $(this).attr("name").split("_")[1]
         $.ajax({
-            url:"changeNoteStatus.php ",
+            url:"editNote.php ",
             method:"POST",
             data:{
+                functionName: "changeNoteStatus",
                 noteId: noteId,
                 idToken: localStorage.getItem("idToken"),
                 noteStatus: "NOTE_REMOVED",
@@ -83,9 +85,10 @@ function editNoteListeners(){
     $( "input[name^='editNote_']" ).on("click",function () {
         let noteId = $(this).attr("name").split("_")[1];
         $.ajax({
-            url:"loadNote.php ",
+            url:"getNote.php ",
             method:"POST",
             data:{
+                functionName: "loadNote",
                 noteId: noteId,
                 idToken: localStorage.getItem("idToken"),
             },
@@ -109,8 +112,11 @@ function editNoteListeners(){
 function loadNotes(){
     let currentUserId = localStorage.getItem("userId");
     $.ajax({
-        url:"loadNotes.php ",
-        method:"GET",
+        url:"getNote.php",
+        data:{
+            functionName: "loadNotes",
+        },
+        method:"POST",
         success:function(response) {
             resultsTable.clear();
             let responseParsed = JSON.parse(response);

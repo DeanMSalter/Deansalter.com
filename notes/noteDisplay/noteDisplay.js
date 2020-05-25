@@ -2,9 +2,6 @@ $(function () {
     $("#headerContainer").load("../../globalHtml/navBar.html", function () {
         $("#notesNavEntry").prepend($("#navActiveImgTemplate").html())
     });
-
-
-
 });
 window.onload = function () {
     let params = new URLSearchParams(window.location.search);
@@ -21,9 +18,10 @@ window.onload = function () {
 
 function loadNote(noteId, idToken, givenPassword){
     $.ajax({
-        url:"../loadNote.php ",
+        url:"../getNote.php ",
         method:"POST",
         data:{
+            functionName: "loadNote",
             noteId: noteId,
             idToken: idToken,
             givenPassword: givenPassword
@@ -54,9 +52,10 @@ function loadNote(noteId, idToken, givenPassword){
 
 function loginToNote(){
     $.ajax({
-        url:"../requiresPassword.php ",
+        url:"../getNote.php ",
         method:"POST",
         data:{
+            functionName: "requiresPassword",
             noteId: noteId,
         },
         success:function(response) {
@@ -79,95 +78,5 @@ function loginToNote(){
             //TODO: better error message
             alert("error");
         }
-    });
-}
-
-//
-function dialog(dialogId, message, yesCallback, noCallback, title = "Confirm Dialog" , yesButtonTxt = "Yes", noButtonTxt = "No") {
-    $("#" + dialogId).dialog('close');
-    let dialog = document.createElement("div");
-    $(dialog).css("display","none");
-    $(dialog).css("align","center");
-    $(dialog).attr("id", dialogId);
-    $(dialog).text(message);
-    document.body.appendChild(dialog);
-
-    $(dialog).dialog({
-        modal: true,
-        title: title,
-        width: 350,
-        height: 160,
-        buttons: [
-            {
-                id: "yesButton",
-                text: yesButtonTxt,
-                click: function () {
-                    $(this).dialog('close');
-                    yesCallback();
-                }
-            },
-            {
-                id: "noButton",
-                text: noButtonTxt,
-                click: function () {
-                    $(this).dialog('close');
-                    noCallback();
-                }
-            }
-        ]
-    });
-}
-
-function dialogInput(dialogId, message, yesCallback, noCallback, title = "Confirm Dialog" , yesButtonTxt = "Submit", noButtonTxt = "Cancel"){
-    $("#" + dialogId).dialog('close');
-    let dialog = document.createElement("div");
-    $(dialog).css("display","none");
-    $(dialog).css("align","center");
-    $(dialog).attr("id", dialogId);
-
-    let dialogForm = document.createElement("form");
-    let dialogLabel = document.createElement("label");
-    let dialogInput = document.createElement("input");
-
-    $(dialogInput).attr("type", "text");
-    $(dialogInput).attr("name", dialogId + "_input");
-    $(dialogInput).attr("id", dialogId + "_input");
-
-    $(dialogLabel).attr("for",dialogId + "_input");
-    $(dialogLabel).text(message);
-
-    $(dialogForm).submit(function(e){
-        e.preventDefault();
-        $(dialog).dialog('close');
-        yesCallback();
-    });
-    $(dialogForm).append(dialogLabel);
-    $(dialogForm).append(dialogInput);
-    $(dialog).append(dialogForm);
-
-    document.body.appendChild(dialog);
-    $(dialog).dialog({
-        modal: true,
-        title: title,
-        // width: 350,
-        // height: 160,
-        buttons: [
-            {
-                id: "yesButton",
-                text: yesButtonTxt,
-                click: function () {
-                    $(this).dialog('close');
-                    yesCallback();
-                }
-            },
-            {
-                id: "noButton",
-                text: noButtonTxt,
-                click: function () {
-                    $(this).dialog('close');
-                    noCallback();
-                }
-            }
-        ]
     });
 }

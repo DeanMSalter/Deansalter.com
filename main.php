@@ -60,10 +60,9 @@ function getNotePassword($mysqli, $noteId){
 
 function validPassword($mysqli, $noteId, $givenPassword){
     $notePassword = getNotePassword($mysqli, $noteId);
-    if($notePassword === null){
+    if($notePassword === null || empty($notePassword)){
         return true;
     }
-
     if($givenPassword === null){
         return false;
     }
