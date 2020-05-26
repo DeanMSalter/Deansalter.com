@@ -1,32 +1,34 @@
 <?php
-    include ('../main.php');
+include ('../main.php');
 
-    $aResult = array();
-    if( !isset($_POST['functionName']) ) { $aResult['error'] = 'No function name!'; }
+$aResult = array();
+if( !isset($_POST['functionName']) ) { $aResult['error'] = 'No function name!'; }
 
-    if( !isset($aResult['error']) ) {
-        switch($_POST['functionName']) {
-            case 'insertNote':
-                insertNote();
-                break;
-            case 'changeNoteStatus':
-                changeNoteStatus();
-                break;
-            default:
-                $aResult['error'] = 'Not found function '.$_POST['functionname'].'!';
-                break;
-        }
-
+if( !isset($aResult['error']) ) {
+    switch($_POST['functionName']) {
+        case 'insertNote':
+            insertNote();
+            break;
+        case 'changeNoteStatus':
+            changeNoteStatus();
+            break;
+        default:
+            $aResult['error'] = 'Not found function '.$_POST['functionname'].'!';
+            break;
     }
 
-    function changeNoteStatus(){
-        $noteStatus = (string) $_POST['noteStatus'];
-        $noteId = (string) $_POST['noteId'];
-        $idToken = (string) $_POST['idToken'];
+}
 
-        try {
-            $mysqli = mysqliConnect();
-            if (validUserForNote($mysqli, $noteId, $idToken)){
+function changeNoteStatus(){
+    $noteStatus = (string) $_POST['noteStatus'];
+    $noteId = (string) $_POST['noteId'];
+    $idToken = (string) $_POST['idToken'];
+    $givenPassword = isset($_POST['givenPassword']) ? $_POST['givenPassword'] : null;
+
+    try {
+        $mysqli = mysqliConnect();
+        if (validUserForNote($mysqli, $noteId, $idToken)){
+            if(validPassword($mysqli,$noteId, $givenPassword)) {
                 $stmt = $mysqli->prepare("UPDATE note  set noteStatus = ? where noteId = ?");
                 $stmt->bind_param('ss', $noteStatus, $noteId);
                 $stmt->execute();
@@ -40,33 +42,40 @@
                 ));
             }else{
                 $mysqli->close();
-                throw new RuntimeException('Given UserId does not match the notes UserId', 401);
+                throw new RuntimeException('Given password does not match the notes password', 401);
             }
-        } catch (Exception $e) {
-            echo json_encode(array(
-                'error' => array(
-                    'msg' => $e->getMessage(),
-                    'code' => $e->getCode(),
-                ),
-            ));
+        }else{
+            $mysqli->close();
+            throw new RuntimeException('Given UserId does not match the notes UserId', 401);
         }
+    } catch (Exception $e) {
+        echo json_encode(array(
+            'error' => array(
+                'msg' => $e->getMessage(),
+                'code' => $e->getCode(),
+            ),
+        ));
     }
+}
 
-    function insertNote(){
-        $noteTitle = (string) $_POST['noteTitle'];
-        $noteContent = (string) $_POST['noteContent'];
-        $idToken = isset($_POST['idToken']) ? (string) $_POST['idToken'] : null;
-        $noteId = isset($_POST['noteId']) ? (string) $_POST['noteId'] : null;
-        $notePassword = isset($_POST['notePassword']) ? (string) $_POST['notePassword'] : null;
-        $notePassword = !empty($notePassword) ? (string) $notePassword : null;
+function insertNote(){
+    $noteTitle = (string) $_POST['noteTitle'];
+    $noteContent = (string) $_POST['noteContent'];
+    $idToken = isset($_POST['idToken']) ? (string) $_POST['idToken'] : null;
+    $noteId = isset($_POST['noteId']) ? (string) $_POST['noteId'] : null;
+    $notePassword = isset($_POST['notePassword']) ? (string) $_POST['notePassword'] : null;
+    $notePassword = !empty($notePassword) ? (string) $notePassword : null;
+    $givenPassword = isset($_POST['givenPassword']) ? $_POST['givenPassword'] : null;
 
-        if($notePassword){
-            $notePassword = (string) password_hash($notePassword, PASSWORD_DEFAULT);
-        }
-        try{
-            $mysqli = mysqliConnect();
-            if(!empty($noteId)){
-                if(validUserForNote($mysqli, $noteId, $idToken)){
+
+    if($notePassword){
+        $notePassword = (string) password_hash($notePassword, PASSWORD_DEFAULT);
+    }
+    try{
+        $mysqli = mysqliConnect();
+        if(!empty($noteId)){
+            if(validUserForNote($mysqli, $noteId, $idToken)){
+                if(validPassword($mysqli,$noteId, $givenPassword)) {
                     $editNoteContentStmt = $mysqli->prepare("UPDATE note set noteContent = ? where noteId = ?");
                     $editNoteContentStmt->bind_param('ss', $noteContent, $noteId);
                     $editNoteContentStmt->execute();
@@ -91,57 +100,49 @@
                             'notePassword' => $notePassword
                         ),
                     ));
-                }else{
+                }else {
                     $mysqli->close();
-                    throw new RuntimeException('Given UserId does not match the notes UserId', 401);
+                    throw new RuntimeException('Given password does not match the notes password', 401);
                 }
             }else{
-                $insertNoteStmt = $mysqli->prepare("INSERT INTO note (noteTitle, noteContent) VALUES (?,?)");
-                $insertNoteStmt->bind_param('ss', $noteTitle, $noteContent);
-                $insertNoteStmt->execute();
-                $insertNoteStmt->close();
-                $noteId = $mysqli->insert_id;
-
-                $editNotePasswordStmt = $mysqli->prepare("UPDATE note set notePassword = ? where noteId = ?");
-                $editNotePasswordStmt->bind_param('ss', $notePassword, $noteId);
-                $editNotePasswordStmt->execute();
-                $editNotePasswordStmt->close();
-
                 $mysqli->close();
+                throw new RuntimeException('Given UserId does not match the notes UserId', 401);
+            }
+        }
+        else{
+            $insertNoteStmt = $mysqli->prepare("INSERT INTO note (noteTitle, noteContent) VALUES (?,?)");
+            $insertNoteStmt->bind_param('ss', $noteTitle, $noteContent);
+            $insertNoteStmt->execute();
+            $insertNoteStmt->close();
+            $noteId = $mysqli->insert_id;
+
+            $editNotePasswordStmt = $mysqli->prepare("UPDATE note set notePassword = ? where noteId = ?");
+            $editNotePasswordStmt->bind_param('ss', $notePassword, $noteId);
+            $editNotePasswordStmt->execute();
+            $editNotePasswordStmt->close();
+
+            $mysqli->close();
 
 
-                if($idToken){
-                    $user = getUserFromTokenId($idToken);
-                    $mysqli2 = mysqliConnect();
+            if($idToken){
+                $user = getUserFromTokenId($idToken);
+                $mysqli2 = mysqliConnect();
 
-                    if ($user) {
-                        $userId = $user['sub'];
-                        $firstName = $user['given_name'];
-                        $lastName = $user['family_name'];
-                        $email = $user['email'];
-                        $validUser = findUser($mysqli2, $userId);
-                        if(empty($validUser)){
-                            insertUser($mysqli2, $userId, $firstName, $lastName, $email);
-                        }
-
-                        $insertUserNoteStmt = $mysqli2->prepare("INSERT INTO userNote (userId, noteId) VALUES (?,?)");
-                        $insertUserNoteStmt->bind_param('ss', $userId, $noteId);
-                        $insertUserNoteStmt->execute();
-                        $insertUserNoteStmt->close();
-                        $mysqli2->close();
-                        echo json_encode(array(
-                            'successful' => array(
-                                'noteId' => $noteId,
-                                'noteContent' => $noteContent,
-                                'noteTitle' => $noteTitle,
-                                'notePassword' => $notePassword,
-                            ),
-                        ));
-                    } else {
-                        $mysqli2->close();
-                        throw new RuntimeException('Invalid TokenId Given', 404);
+                if ($user) {
+                    $userId = $user['sub'];
+                    $firstName = $user['given_name'];
+                    $lastName = $user['family_name'];
+                    $email = $user['email'];
+                    $validUser = findUser($mysqli2, $userId);
+                    if(empty($validUser)){
+                        insertUser($mysqli2, $userId, $firstName, $lastName, $email);
                     }
-                }else{
+
+                    $insertUserNoteStmt = $mysqli2->prepare("INSERT INTO userNote (userId, noteId) VALUES (?,?)");
+                    $insertUserNoteStmt->bind_param('ss', $userId, $noteId);
+                    $insertUserNoteStmt->execute();
+                    $insertUserNoteStmt->close();
+                    $mysqli2->close();
                     echo json_encode(array(
                         'successful' => array(
                             'noteId' => $noteId,
@@ -150,16 +151,29 @@
                             'notePassword' => $notePassword,
                         ),
                     ));
+                } else {
+                    $mysqli2->close();
+                    throw new RuntimeException('Invalid TokenId Given', 404);
                 }
-
+            }else{
+                echo json_encode(array(
+                    'successful' => array(
+                        'noteId' => $noteId,
+                        'noteContent' => $noteContent,
+                        'noteTitle' => $noteTitle,
+                        'notePassword' => $notePassword,
+                    ),
+                ));
             }
-        }catch(Exception $e){
-            echo json_encode(array(
-                'error' => array(
-                    'msg' => $e->getMessage(),
-                    'code' => $e->getCode(),
-                ),
-            ));
+
         }
+    }catch(Exception $e){
+        echo json_encode(array(
+            'error' => array(
+                'msg' => $e->getMessage(),
+                'code' => $e->getCode(),
+            ),
+        ));
     }
+}
 ?>

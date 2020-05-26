@@ -55,58 +55,117 @@ function submitNote(){
 
 function removeNoteListeners(){
     $( "input[name^='removeNote_']" ).on("click",function () {
-        let selectedRow = $(this).closest("tr")
-        let noteId = $(this).attr("name").split("_")[1]
+        let selectedRow = $(this).closest("tr");
+        let noteId = $(this).attr("name").split("_")[1];
+
         $.ajax({
-            url:"editNote.php ",
+            url:"./getNote.php ",
             method:"POST",
             data:{
-                functionName: "changeNoteStatus",
+                functionName: "requiresPassword",
                 noteId: noteId,
-                idToken: localStorage.getItem("idToken"),
-                noteStatus: "NOTE_REMOVED",
             },
             success:function(response) {
+                console.log(response)
                 response = JSON.parse(response);
-                if(response.error){
-                    alert(response.error["msg"])
+                if(response.requiresPassword){
+                    dialogInput("passwordPrompt", "Password:",
+                        function(){
+                            let givenPassword = $("#passwordPrompt_input").val();
+                            if(givenPassword){
+                                removeNote(noteId, selectedRow,givenPassword);
+                            }
+                        }
+                        ,function(){}, "Password Prompt");
                 }else{
-                    resultsTable.row(selectedRow).remove().draw();
-                    if(noteId === $("#noteId").val()){
-                        clearNoteEntry();
-                    }
+                    removeNote(noteId, selectedRow);
                 }
             },
+            error:function(){
+                //TODO: better error message
+                alert("error");
+            }
         });
-    })
+    });
 }
 
+function removeNote(noteId, selectedRow, givenPassword = null){
+    $.ajax({
+        url:"editNote.php ",
+        method:"POST",
+        data:{
+            functionName: "changeNoteStatus",
+            noteId: noteId,
+            idToken: localStorage.getItem("idToken"),
+            noteStatus: "NOTE_REMOVED",
+            givenPassword: givenPassword,
+        },
+        success:function(response) {
+            response = JSON.parse(response);
+            console.log(response);
+            if(response.error){
+                alert(response.error["msg"])
+            }else{
+                resultsTable.row(selectedRow).remove().draw();
+                if(noteId === $("#noteId").val()){
+                    clearNoteEntry();
+                }
+            }
+        },
+    });
+}
 function editNoteListeners(){
     $( "input[name^='editNote_']" ).on("click",function () {
         let noteId = $(this).attr("name").split("_")[1];
-        $.ajax({
-            url:"getNote.php ",
-            method:"POST",
-            data:{
-                functionName: "loadNote",
-                noteId: noteId,
-                idToken: localStorage.getItem("idToken"),
-            },
-            success:function(response) {
-                response = JSON.parse(response);
-                if(response.error){
-                    alert(response.error["msg"])
-                }else{
-                    let note = response.note;
-                    CKEDITOR.instances['noteContentArea'].setData(note["noteContent"]);
-                    $("#noteTitle").val(note["noteTitle"]);
-                    $("#noteId").val(note["noteId"]);
-                    $("#noteEntry").css("display","block");
-                    $("#newNoteToggle").attr("value","Hide");
-                }
+        let idToken = localStorage.getItem("idToken");
+        editNoteCheck(noteId, idToken)
+    });
+}
+
+function editNoteCheck(noteId, idToken){
+    $.ajax({
+        url:"./getNote.php ",
+        method:"POST",
+        data:{
+            functionName: "requiresPassword",
+            noteId: noteId,
+        },
+        success:function(response) {
+            response = JSON.parse(response);
+            if(response.requiresPassword){
+                dialogInput("passwordPrompt", "Password:",
+                    function(){
+                        let givenPassword = $("#passwordPrompt_input").val();
+                        if(givenPassword){
+                            loadNote(noteId, idToken, givenPassword,  function(response){editNote(response, noteId, idToken)})
+                        }else{
+                            retryPassword(editNoteCheck, noteId, idToken);
+                        }
+                    }
+                    ,function(){}, "Password Prompt");
+            }else{
+                loadNote(noteId, idToken, null, function(response){editNote(response, noteId, idToken)})
             }
-        });
-    })
+        },
+        error:function(){
+            //TODO: better error message
+            alert("error");
+        }
+    });
+}
+
+function editNote(response, noteId, idToken){
+    console.log(response);
+    if(response.error){
+        retryPassword(editNoteCheck, noteId, idToken);
+    }else{
+        let note = response.note;
+        CKEDITOR.instances['noteContentArea'].setData(note["noteContent"]);
+        $("#noteTitle").val(note["noteTitle"]);
+        $("#noteId").val(note["noteId"]);
+        $("#noteEntry").css("display","block");
+        $("#newNoteToggle").attr("value","Hide");
+    }
 }
 
 function loadNotes(){

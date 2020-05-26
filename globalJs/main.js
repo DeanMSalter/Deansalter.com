@@ -57,8 +57,6 @@ function dialog(dialogId, message, yesCallback, noCallback, title = "Confirm Dia
     $(dialog).dialog({
         modal: true,
         title: title,
-        width: 350,
-        height: 160,
         buttons: [
             {
                 id: "yesButton",
@@ -100,8 +98,8 @@ function dialogInput(dialogId, message, yesCallback, noCallback, title = "Confir
 
     $(dialogForm).submit(function(e){
         e.preventDefault();
-        $(dialog).dialog('close');
         yesCallback();
+        $(dialog).dialog('destroy').remove();
     });
     $(dialogForm).append(dialogLabel);
     $(dialogForm).append(dialogInput);
@@ -118,18 +116,43 @@ function dialogInput(dialogId, message, yesCallback, noCallback, title = "Confir
                 id: "yesButton",
                 text: yesButtonTxt,
                 click: function () {
-                    $(this).dialog('close');
                     yesCallback();
+                    $(this).dialog('destroy').remove();
                 }
             },
             {
                 id: "noButton",
                 text: noButtonTxt,
                 click: function () {
-                    $(this).dialog('close');
                     noCallback();
+                    $(this).dialog('destroy').remove();
                 }
             }
         ]
     });
+}
+
+function loadNote(noteId, idToken, givenPassword, successCallback, errorCallback) {
+    $.ajax({
+        url:"../../notes/getNote.php ",
+        method:"POST",
+        data:{
+            functionName: "loadNote",
+            noteId: noteId,
+            idToken: idToken,
+            givenPassword: givenPassword
+        },
+        success:function(response) {
+            response = JSON.parse(response);
+            successCallback(response);
+        },
+        error:function(){
+            errorCallback();
+        }
+    });
+}
+
+function retryPassword(functionName, noteId, idToken){
+    dialog("passwordIncorrect", "Wrong password, do you wish to retry?", function(){ functionName(noteId,idToken)},function(){} , "Password Incorrect", "Retry", "Cancel")
+
 }

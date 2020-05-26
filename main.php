@@ -70,9 +70,7 @@ function validPassword($mysqli, $noteId, $givenPassword){
     if(password_verify($givenPassword, $notePassword)){
         return true;
     }
-
     return false;
-
 }
 
 function validUserForNote($mysqli, $noteId, $idToken){
