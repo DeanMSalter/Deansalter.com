@@ -38,7 +38,6 @@ function submitNote(){
             notePassword: notePassword
         },
         success:function(response) {
-            console.log(response);
             response = JSON.parse(response);
             if(response.error){
                 alert(response.error["msg"])
@@ -66,17 +65,9 @@ function removeNoteListeners(){
                 noteId: noteId,
             },
             success:function(response) {
-                console.log(response)
                 response = JSON.parse(response);
                 if(response.requiresPassword){
-                    dialogInput("passwordPrompt", "Password:",
-                        function(){
-                            let givenPassword = $("#passwordPrompt_input").val();
-                            if(givenPassword){
-                                removeNote(noteId, selectedRow,givenPassword);
-                            }
-                        }
-                        ,function(){}, "Password Prompt");
+                    passwordPrompt(function(givenPassword){removeNote(noteId, selectedRow, givenPassword)});
                 }else{
                     removeNote(noteId, selectedRow);
                 }
@@ -102,7 +93,6 @@ function removeNote(noteId, selectedRow, givenPassword = null){
         },
         success:function(response) {
             response = JSON.parse(response);
-            console.log(response);
             if(response.error){
                 alert(response.error["msg"])
             }else{
@@ -118,46 +108,44 @@ function editNoteListeners(){
     $( "input[name^='editNote_']" ).on("click",function () {
         let noteId = $(this).attr("name").split("_")[1];
         let idToken = localStorage.getItem("idToken");
-        editNoteCheck(noteId, idToken)
+        notePasswordPrompt(noteId, idToken);
+
     });
 }
 
-function editNoteCheck(noteId, idToken){
-    $.ajax({
-        url:"./getNote.php ",
-        method:"POST",
-        data:{
-            functionName: "requiresPassword",
-            noteId: noteId,
-        },
-        success:function(response) {
-            response = JSON.parse(response);
-            if(response.requiresPassword){
-                dialogInput("passwordPrompt", "Password:",
-                    function(){
-                        let givenPassword = $("#passwordPrompt_input").val();
-                        if(givenPassword){
-                            loadNote(noteId, idToken, givenPassword,  function(response){editNote(response, noteId, idToken)})
-                        }else{
-                            retryPassword(editNoteCheck, noteId, idToken);
-                        }
-                    }
-                    ,function(){}, "Password Prompt");
-            }else{
-                loadNote(noteId, idToken, null, function(response){editNote(response, noteId, idToken)})
-            }
-        },
-        error:function(){
-            //TODO: better error message
-            alert("error");
+function notePasswordPrompt(noteId, idToken, passwordRetry = false){
+    checkNoteRequiredPassword(noteId).then(requiresPassword => {
+        if(requiresPassword){
+            passwordPrompt(function(givenPassword){
+                loadNote(noteId, idToken, givenPassword)
+                    .then(note => {
+                        editNote(note, noteId, idToken)
+                    }).catch(error => {
+                        console.log(error);
+                    })
+            },passwordRetry);
+        }else{
+            loadNote(noteId, idToken, null)
+                .then(note => {
+                    editNote(note, noteId, idToken)
+                }).catch(error => {
+                    console.log(error);
+                });
         }
-    });
+    })
+    .catch(error => {
+        console.log(error);
+    })
 }
 
 function editNote(response, noteId, idToken){
-    console.log(response);
     if(response.error){
-        retryPassword(editNoteCheck, noteId, idToken);
+        if(response.error["code"] === 1){
+            console.log(noteId);
+            notePasswordPrompt(noteId, idToken, true)
+        }else{
+            alert(response.error["message"]);
+        }
     }else{
         let note = response.note;
         CKEDITOR.instances['noteContentArea'].setData(note["noteContent"]);
@@ -199,7 +187,7 @@ function loadNotes(){
             editNoteListeners();
         },
     });
-}0
+}
 
 function toggleNewNote(){
     let noteEntry = $("#noteEntry");

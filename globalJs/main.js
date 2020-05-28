@@ -78,8 +78,10 @@ function dialog(dialogId, message, yesCallback, noCallback, title = "Confirm Dia
     });
 }
 
-function dialogInput(dialogId, message, yesCallback, noCallback, title = "Confirm Dialog" , yesButtonTxt = "Submit", noButtonTxt = "Cancel"){
-    $("#" + dialogId).dialog('close');
+function dialogInput(dialogId, message, yesCallback, noCallback, warningMessage = "", title = "Input Dialog" , yesButtonTxt = "Submit", noButtonTxt = "Cancel"){
+    $("#" + dialogId).dialog('destroy').remove();
+    let validInput = false;
+
     let dialog = document.createElement("div");
     $(dialog).css("display","none");
     $(dialog).css("align","center");
@@ -88,43 +90,63 @@ function dialogInput(dialogId, message, yesCallback, noCallback, title = "Confir
     let dialogForm = document.createElement("form");
     let dialogLabel = document.createElement("label");
     let dialogInput = document.createElement("input");
+    let dialogWarningLabel = document.createElement("label");
 
     $(dialogInput).attr("type", "text");
     $(dialogInput).attr("name", dialogId + "_input");
     $(dialogInput).attr("id", dialogId + "_input");
 
+    $(dialogInput).keyup(function(){
+        if(!$(dialogInput).val().trim()) {
+            validInput = false;
+            $("#" + dialogId + "_yesButton").button("disable");
+        }else{
+            validInput = true;
+            $("#" + dialogId + "_yesButton").button("enable");
+        }
+    });
+
     $(dialogLabel).attr("for",dialogId + "_input");
     $(dialogLabel).text(message);
 
+    if(warningMessage){
+        $(dialogWarningLabel).attr("id", dialogId + "_wrongPasswordLabel");
+        $(dialogWarningLabel).text(warningMessage);
+    }
+
     $(dialogForm).submit(function(e){
         e.preventDefault();
-        yesCallback();
-        $(dialog).dialog('destroy').remove();
+        if(validInput){
+            yesCallback($(dialogInput).val().trim());
+            $(dialog).dialog('destroy').remove();
+        }
     });
     $(dialogForm).append(dialogLabel);
     $(dialogForm).append(dialogInput);
+    $(dialogForm).append(dialogWarningLabel);
     $(dialog).append(dialogForm);
 
     document.body.appendChild(dialog);
     $(dialog).dialog({
         modal: true,
         title: title,
-        // width: 350,
-        // height: 160,
         buttons: [
             {
-                id: "yesButton",
+                id: dialogId + "_yesButton",
                 text: yesButtonTxt,
+                disabled: true,
                 click: function () {
-                    yesCallback();
+                    yesCallback($(dialogInput).val().trim());
                     $(this).dialog('destroy').remove();
                 }
             },
             {
-                id: "noButton",
+                id: dialogId + "noButton",
                 text: noButtonTxt,
                 click: function () {
-                    noCallback();
+                    if(noCallback){
+                        noCallback($(dialogInput).val().trim());
+                    }
                     $(this).dialog('destroy').remove();
                 }
             }
@@ -132,27 +154,64 @@ function dialogInput(dialogId, message, yesCallback, noCallback, title = "Confir
     });
 }
 
-function loadNote(noteId, idToken, givenPassword, successCallback, errorCallback) {
-    $.ajax({
-        url:"../../notes/getNote.php ",
-        method:"POST",
-        data:{
-            functionName: "loadNote",
-            noteId: noteId,
-            idToken: idToken,
-            givenPassword: givenPassword
-        },
-        success:function(response) {
-            response = JSON.parse(response);
-            successCallback(response);
-        },
-        error:function(){
-            errorCallback();
-        }
+function loadNote(noteId, idToken, givenPassword) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: "../../notes/getNote.php ",
+            method: "POST",
+            data: {
+                functionName: "loadNote",
+                noteId: noteId,
+                idToken: idToken,
+                givenPassword: givenPassword
+            },
+            success: function (response) {
+                response = JSON.parse(response);
+                resolve(response);
+            },
+            error: function (response) {
+                response = JSON.parse(response);
+                reject(response);
+            }
+        });
     });
 }
 
-function retryPassword(functionName, noteId, idToken){
-    dialog("passwordIncorrect", "Wrong password, do you wish to retry?", function(){ functionName(noteId,idToken)},function(){} , "Password Incorrect", "Retry", "Cancel")
+function passwordPrompt(successCallback , passwordRetry = false){
+    if(passwordRetry){
+        dialogInput("passwordPrompt", "Password:",
+            function(givenInput){
+                successCallback(givenInput);
+            }, null, "Wrong password, please try again", "Password Prompt");
+    }else{
+        dialogInput("passwordPrompt", "Password:",
+            function(givenInput){
+                successCallback(givenInput);
+            }, null, null , "Password Prompt");
+    }
 
+}
+
+function checkNoteRequiredPassword(noteId , callback){
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url:"./getNote.php ",
+            method:"POST",
+            data:{
+                functionName: "requiresPassword",
+                noteId: noteId,
+            },
+            success:function(response) {
+                response = JSON.parse(response);
+                if(response.requiresPassword){
+                    resolve(true);
+                }else{
+                    resolve(false);
+                }
+            },
+            error:function(err){
+                reject(err);
+            }
+        });
+    })
 }

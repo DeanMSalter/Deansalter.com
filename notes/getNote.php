@@ -72,12 +72,12 @@
                     $mysqli->close();
                 }else{
                     $mysqli->close();
-                    throw new RuntimeException('Given password does not match the notes password', 401);
+                    throw new RuntimeException('Given password does not match the notes password', 1);
                 }
 
             }else{
                 $mysqli->close();
-                throw new RuntimeException('Given UserId does not match the notes UserId', 401);
+                throw new RuntimeException('Given UserId does not match the notes UserId', 2);
             }
         }catch(Exception $e){
             echo json_encode(array(
