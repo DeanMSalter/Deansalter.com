@@ -14,18 +14,20 @@ function onSignIn(googleUser) {
     $("#signInBtn").css("display","none");
     $("#signOutBtn").css("display","inline-block");
     $.ajax({
-        url:"../proccessLogin.php ",
+        url:"../../proccessLogin.php ",
         method:"POST",
         data:{
             idToken: googleUser.getAuthResponse().id_token, // Second add quotes on the value.
         },
         success:function(response) {
             localStorage.setItem('userId', response);
-            signedIn();
+            if(typeof signedIn === "function"){
+                signedIn();
+            }
         },
         error:function(){
             //TODO: better error message
-            alert("error");
+            alert("error on sign in");
         }
 
     });
@@ -177,17 +179,17 @@ function loadNote(noteId, idToken, givenPassword) {
     });
 }
 
-function passwordPrompt(successCallback , passwordRetry = false){
+function passwordPrompt(successCallback , passwordRetry = false , noCallback = null){
     if(passwordRetry){
         dialogInput("passwordPrompt", "Password:",
             function(givenInput){
                 successCallback(givenInput);
-            }, null, "Wrong password, please try again", "Password Prompt");
+            }, noCallback, "Wrong password, please try again", "Password Prompt");
     }else{
         dialogInput("passwordPrompt", "Password:",
             function(givenInput){
                 successCallback(givenInput);
-            }, null, null , "Password Prompt");
+            }, noCallback, null , "Password Prompt");
     }
 
 }

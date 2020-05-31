@@ -74,7 +74,7 @@ function removeNoteListeners(){
             },
             error:function(){
                 //TODO: better error message
-                alert("error");
+                alert("error in requires password on remove note");
             }
         });
     });
@@ -114,34 +114,35 @@ function editNoteListeners(){
 }
 
 function notePasswordPrompt(noteId, idToken, passwordRetry = false){
-    checkNoteRequiredPassword(noteId).then(requiresPassword => {
-        if(requiresPassword){
-            passwordPrompt(function(givenPassword){
-                loadNote(noteId, idToken, givenPassword)
+    checkNoteRequiredPassword(noteId)
+        .then(requiresPassword => {
+            if(requiresPassword){
+                passwordPrompt(function(givenPassword){
+                    loadNote(noteId, idToken, givenPassword)
+                        .then(note => {
+                            editNote(note, noteId, idToken)
+                        }).catch(error => {
+                            console.log(error);
+                        })
+                },passwordRetry);
+            }else{
+                loadNote(noteId, idToken, null)
                     .then(note => {
                         editNote(note, noteId, idToken)
                     }).catch(error => {
                         console.log(error);
-                    })
-            },passwordRetry);
-        }else{
-            loadNote(noteId, idToken, null)
-                .then(note => {
-                    editNote(note, noteId, idToken)
-                }).catch(error => {
-                    console.log(error);
-                });
-        }
-    })
-    .catch(error => {
-        console.log(error);
-    })
+                    });
+            }
+        })
+
+        .catch(error => {
+            console.log(error);
+        })
 }
 
 function editNote(response, noteId, idToken){
     if(response.error){
         if(response.error["code"] === 1){
-            console.log(noteId);
             notePasswordPrompt(noteId, idToken, true)
         }else{
             alert(response.error["message"]);

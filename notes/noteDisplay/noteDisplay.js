@@ -29,22 +29,27 @@ function loginToNote(){
         success:function(response) {
             response = JSON.parse(response);
             if(response.requiresPassword){
-                dialogInput("passwordPrompt", "Password:", function(){
-                    let givenPassword = $("#passwordPrompt_input").val();
-                    if(givenPassword){
-                        loadNote(noteId, idToken, givenPassword , displayNote)
-                    }
-                },
-                function(){
+                passwordPrompt(function(givenPassword){
+                    loadNote(noteId, idToken, givenPassword)
+                        .then(note => {
+                            displayNote(note);
+                        }).catch(error => {
+                        console.log(error);
+                    })
+                }, null, function(){
                     window.close();
-                }, "Password Prompt");
+                });
             }else{
-                loadNote(noteId, idToken, null, displayNote)
+                loadNote(noteId, idToken)
+                    .then(note => {
+                        displayNote(note);
+                    }).catch(error => {
+                });
             }
         },
         error:function(){
             //TODO: better error message
-            alert("error");
+            alert("error with login to note");
         }
     });
 }
