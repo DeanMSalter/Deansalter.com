@@ -42,11 +42,11 @@ function changeNoteStatus(){
                 ));
             }else{
                 $mysqli->close();
-                throw new RuntimeException('Given password does not match the notes password', 401);
+                throw new RuntimeException('Given password does not match the notes password', 1);
             }
         }else{
             $mysqli->close();
-            throw new RuntimeException('Given UserId does not match the notes UserId', 401);
+            throw new RuntimeException('Given UserId does not match the notes UserId', 2);
         }
     } catch (Exception $e) {
         echo json_encode(array(
@@ -102,24 +102,58 @@ function insertNote(){
                     ));
                 }else {
                     $mysqli->close();
-                    throw new RuntimeException('Given password does not match the notes password', 401);
+                    throw new RuntimeException('Given password does not match the notes password', 1);
                 }
             }else{
                 $mysqli->close();
-                throw new RuntimeException('Given UserId does not match the notes UserId', 401);
+                throw new RuntimeException('Given UserId does not match the notes UserId', 2);
             }
         }
         else{
+            $iv = null;
+            if(!empty($notePassword)){
+                //TODO : make this actually work.
+                // This function encrypts the data passed into it and returns the cipher data with the IV embedded within it.
+                // The initialization vector (IV) is appended to the cipher data with
+                // the use of two colons serve to delimited between the two.
+                $ClearTextData = "test tex 123t";
+                $ENCRYPTION_KEY = 'password';
+                $ENCRYPTION_ALGORITHM = 'AES-256-CBC';
+                $EncryptionKey = base64_decode($ENCRYPTION_KEY);
+                $InitializationVector  = openssl_random_pseudo_bytes(openssl_cipher_iv_length($ENCRYPTION_ALGORITHM));
+                $EncryptedText = openssl_encrypt($ClearTextData, $ENCRYPTION_ALGORITHM, $EncryptionKey, 0, $InitializationVector);
+                $CipherData = base64_encode($EncryptedText . '::' . $InitializationVector);
+                echo $CipherData;
+                echo "\n";
+
+                // This function decrypts the cipher data (with the IV embedded within) passed into it
+                // and returns the clear text (unencrypted) data.
+                // The initialization vector (IV) is appended to the cipher data by the EncryptThis function (see above).
+                // There are two colons that serve to delimited between the cipher data and the IV.
+                $EncryptionKey = base64_decode($ENCRYPTION_KEY);
+                list($Encrypted_Data, $InitializationVector ) = array_pad(explode('::', base64_decode($CipherData), 2), 2, null);
+                echo openssl_decrypt($Encrypted_Data, $ENCRYPTION_ALGORITHM, $EncryptionKey, 0, $InitializationVector);
+                return false;
+            }
+
             $insertNoteStmt = $mysqli->prepare("INSERT INTO note (noteTitle, noteContent) VALUES (?,?)");
             $insertNoteStmt->bind_param('ss', $noteTitle, $noteContent);
             $insertNoteStmt->execute();
             $insertNoteStmt->close();
             $noteId = $mysqli->insert_id;
 
-            $editNotePasswordStmt = $mysqli->prepare("UPDATE note set notePassword = ? where noteId = ?");
-            $editNotePasswordStmt->bind_param('ss', $notePassword, $noteId);
-            $editNotePasswordStmt->execute();
-            $editNotePasswordStmt->close();
+            if(!empty($notePassword)){
+                $editNotePasswordStmt = $mysqli->prepare("UPDATE note set notePassword = ? where noteId = ?");
+                $editNotePasswordStmt->bind_param('ss', $notePassword, $noteId);
+                $editNotePasswordStmt->execute();
+                $editNotePasswordStmt->close();
+
+//                $editNoteIvStmt = $mysqli->prepare("UPDATE note set noteIv = ? where noteId = ?");
+//                $editNoteIvStmt->bind_param('ss', $iv, $noteId);
+//                $editNoteIvStmt->execute();
+//                $editNoteIvStmt->close();
+            }
+
 
             $mysqli->close();
 

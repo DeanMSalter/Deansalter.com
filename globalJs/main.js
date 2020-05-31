@@ -1,36 +1,29 @@
 function onSignIn(googleUser) {
     let profile = googleUser.getBasicProfile();
     localStorage.setItem('idToken', googleUser.getAuthResponse().id_token);
-    // console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-    // console.log('IDToken: ' + googleUser.getAuthResponse().id_token); // Do not send to your backend! Use an ID token instead.
-    //
-    // console.log('Name: ' + profile.getName());
-    // console.log('Image URL: ' + profile.getImageUrl());
-    // console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
     let signedInProfilePic = $("#signedInProfilePic");
     signedInProfilePic.attr("src",profile.getImageUrl());
     signedInProfilePic.css("height",$("#signInBtn").css("height"));
     signedInProfilePic.css("display","inline-block");
     $("#signInBtn").css("display","none");
     $("#signOutBtn").css("display","inline-block");
-    $.ajax({
-        url:"../../proccessLogin.php ",
-        method:"POST",
-        data:{
-            idToken: googleUser.getAuthResponse().id_token, // Second add quotes on the value.
-        },
-        success:function(response) {
+
+    let data = {
+        idToken: googleUser.getAuthResponse().id_token,
+    };
+    ajaxRequest("../../proccessLogin.php ", "POST", data)
+        .then(function(response) {
             localStorage.setItem('userId', response);
             if(typeof signedIn === "function"){
                 signedIn();
             }
-        },
-        error:function(){
-            //TODO: better error message
-            alert("error on sign in");
-        }
-
-    });
+        })
+        .catch(function(response) {
+            response = JSON.parse(response);
+            if(response){
+                alert("error on sign in");
+            }
+        });
 }
 function signOut() {
     let signedInProfilePic = $("#signedInProfilePic");
@@ -46,6 +39,161 @@ function signOut() {
     });
 }
 
+function loadNote(noteId, idToken, givenPassword) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: "../../notes/getNote.php ",
+            method: "POST",
+            data: {
+                functionName: "loadNote",
+                noteId: noteId,
+                idToken: idToken,
+                givenPassword: givenPassword
+            },
+            success: function (response) {
+                console.log(response);
+                response = JSON.parse(response);
+                resolve(response);
+            },
+            error: function (response) {
+                response = JSON.parse(response);
+                reject(response);
+            }
+        });
+    });
+}
+
+function passwordPrompt(passwordRetry = false){
+    return new Promise((resolve, reject) => {
+        if (passwordRetry) {
+            dialogInput("passwordPrompt", "Password:",
+                function (givenInput) {
+                    resolve(givenInput);
+                },
+                function (givenInput){
+                    reject(givenInput);
+                }, "Wrong password, please try again", "Password Prompt");
+        } else {
+            dialogInput("passwordPrompt", "Password:",
+                function (givenInput) {
+                    resolve(givenInput);
+                },
+                function (givenInput){
+                    reject(givenInput);
+                }, null, "Password Prompt");
+        }
+    });
+}
+
+function checkNoteRequiredPassword(noteId){
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url:"../../notes/getNote.php ",
+            method:"POST",
+            data:{
+                functionName: "requiresPassword",
+                noteId: noteId,
+            },
+            success:function(response) {
+                response = JSON.parse(response);
+                if(response.requiresPassword){
+                    resolve(true);
+                }else{
+                    resolve(false);
+                }
+            },
+            error:function(err){
+                reject(err);
+            }
+        });
+    })
+}
+
+function loginToNote(noteId, idToken, passwordRetry = false){
+    return new Promise((resolve, reject) => {
+        checkNoteRequiredPassword(noteId)
+            .then(requiresPassword => {
+                if (requiresPassword) {
+                    passwordPrompt(passwordRetry)
+                        .then(function (givenPassword) {
+                            loadNote(noteId, idToken, givenPassword)
+                                .then(note => {
+                                    resolve(note);
+                                })
+                                .catch(error => {
+                                    reject(error)
+                                })
+                            })
+                        .catch(function(response) {
+                            reject(false)
+                        })
+                } else {
+                    loadNote(noteId, idToken)
+                        .then(note => {
+                            resolve(note)
+                            // successCallback(note);
+                        })
+                        .catch(error => {
+                            reject(error);
+                        });
+                }
+            })
+            .catch(error => {
+                reject(error);
+            });
+    });
+}
+
+function getParams(){
+    let params = new URLSearchParams(window.location.search);
+    noteId = null;
+    idToken = localStorage.getItem('idToken');
+
+    if(params.has("noteId")){
+        noteId = params.get("noteId");
+    }else{
+        alert("No NoteId supplied!")
+    }
+    return {"noteId": noteId,
+            "idToken": idToken};
+}
+
+function processNote(noteId, idToken, passwordRetry, processFunction){
+    loginToNote(noteId, idToken, passwordRetry)
+        .then(function(response){
+            processFunction(response, noteId)
+        })
+        .catch(function(error){
+            if(error){
+                alert(error);
+            }
+        });
+}
+
+//Util Functions
+
+function ajaxRequest(url , method, data){
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: url,
+            method: method,
+            data: data,
+            success: function (response) {
+                // console.log(response);
+                // console.log(url);
+                // console.log(data);
+                resolve(response);
+            },
+            error: function (response) {
+                // console.log(response);
+                // console.log(url);
+                // console.log(data);
+
+                reject(response);
+            }
+        });
+    });
+}
 
 function dialog(dialogId, message, yesCallback, noCallback, title = "Confirm Dialog" , yesButtonTxt = "Yes", noButtonTxt = "No") {
     $("#" + dialogId).dialog('close');
@@ -156,64 +304,3 @@ function dialogInput(dialogId, message, yesCallback, noCallback, warningMessage 
     });
 }
 
-function loadNote(noteId, idToken, givenPassword) {
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            url: "../../notes/getNote.php ",
-            method: "POST",
-            data: {
-                functionName: "loadNote",
-                noteId: noteId,
-                idToken: idToken,
-                givenPassword: givenPassword
-            },
-            success: function (response) {
-                response = JSON.parse(response);
-                resolve(response);
-            },
-            error: function (response) {
-                response = JSON.parse(response);
-                reject(response);
-            }
-        });
-    });
-}
-
-function passwordPrompt(successCallback , passwordRetry = false , noCallback = null){
-    if(passwordRetry){
-        dialogInput("passwordPrompt", "Password:",
-            function(givenInput){
-                successCallback(givenInput);
-            }, noCallback, "Wrong password, please try again", "Password Prompt");
-    }else{
-        dialogInput("passwordPrompt", "Password:",
-            function(givenInput){
-                successCallback(givenInput);
-            }, noCallback, null , "Password Prompt");
-    }
-
-}
-
-function checkNoteRequiredPassword(noteId , callback){
-    return new Promise((resolve, reject) => {
-        $.ajax({
-            url:"./getNote.php ",
-            method:"POST",
-            data:{
-                functionName: "requiresPassword",
-                noteId: noteId,
-            },
-            success:function(response) {
-                response = JSON.parse(response);
-                if(response.requiresPassword){
-                    resolve(true);
-                }else{
-                    resolve(false);
-                }
-            },
-            error:function(err){
-                reject(err);
-            }
-        });
-    })
-}

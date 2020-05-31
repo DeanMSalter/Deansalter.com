@@ -4,64 +4,37 @@ $(function () {
     });
 });
 window.onload = function () {
-    let params = new URLSearchParams(window.location.search);
-    noteId = null;
-    idToken = localStorage.getItem('idToken');
-
-    if(params.has("noteId")){
-        noteId = params.get("noteId");
-    }else{
-        alert("No NoteId supplied!")
-    }
-    loginToNote()
+    let params = getParams();
+    noteId = params.noteId;
+    idToken = params.idToken;
+    displayNoteOrClose();
 };
-
-
-
-function loginToNote(){
-    $.ajax({
-        url:"../getNote.php ",
-        method:"POST",
-        data:{
-            functionName: "requiresPassword",
-            noteId: noteId,
-        },
-        success:function(response) {
-            response = JSON.parse(response);
-            if(response.requiresPassword){
-                passwordPrompt(function(givenPassword){
-                    loadNote(noteId, idToken, givenPassword)
-                        .then(note => {
-                            displayNote(note);
-                        }).catch(error => {
-                        console.log(error);
-                    })
-                }, null, function(){
-                    window.close();
-                });
-            }else{
-                loadNote(noteId, idToken)
-                    .then(note => {
-                        displayNote(note);
-                    }).catch(error => {
-                });
-            }
-        },
-        error:function(){
-            //TODO: better error message
-            alert("error with login to note");
-        }
-    });
-}
 
 function displayNote(response){
     if(response.error){
-        dialog("passwordIncorrect", response.error["msg"] ,loginToNote,
-            function(){
-                window.close();
-            }, "Password Incorrect", "Retry", "Cancel", )
-    }else{
+        if(response.error["code"] === 1){
+           displayNoteOrClose(true);
+        }else{
+            alert(response.error["message"]);
+        }
+    }else if(response.note){
         $("#noteTitleArea").html(response.note["noteTitle"]);
         $("#noteContentArea").html(response.note["noteContent"])
+    }else{
+        alert(response);
     }
+}
+
+function displayNoteOrClose(passwordRetry = false){
+    loginToNote(noteId, idToken,  passwordRetry)
+        .then(function (note) {
+            displayNote(note)
+        })
+        .catch(function (error){
+            if(!error){
+                window.close();
+            }else{
+                alert(error);
+            }
+        });
 }

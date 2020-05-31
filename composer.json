@@ -2,7 +2,9 @@
     "require": {
         "google/apiclient": "^2.0",
       "ext-mysqli": "*",
-      "ext-json": "*"
+      "ext-json": "*",
+      "ext-openssl": "*",
+      "ext-sodium": "*"
     },
 	"autoload": {
         "classmap": [

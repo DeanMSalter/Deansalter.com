@@ -59,13 +59,24 @@
                     $stmt->execute();
                     $result = $stmt->get_result();
                     $row = $result->fetch_assoc();
+
+                    $noteContent = $row["noteContent"];
+                    $toExplore = $noteContent;
+                    if(!empty($givenPassword)){
+                        list($crypted_token, $enc_iv) = explode("::", $toExplore);
+                        $cipher_method = 'aes-128-ctr';
+                        $decrypted = openssl_decrypt($crypted_token, $cipher_method, $givenPassword, 0, hex2bin($enc_iv));
+                        echo $decrypted;
+                    }
+
                     echo json_encode(array(
                         'note' => array(
                             'noteId' => $row["noteId"],
-                            'noteContent' => $row["noteContent"],
+                            'noteContent' => $noteContent,
                             'noteTitle' => $row["noteTitle"],
                             'noteStatus' => $row["noteStatus"],
                             'noteDate' => $row["noteDate"],
+                            'givenPassword' => $givenPassword,
                         ),
                     ));
                     $stmt->close();
@@ -91,7 +102,7 @@
 
     function loadNotes(){
         $mysqli = mysqliConnect();
-        $stmt = "select N.*, U.* from note N
+        $stmt = "select N.noteId, N.noteStatus, N.noteTitle, N.noteContent , N.noteDate, N.notePassword, U.* from note N
                  left join userNote UN on N.noteId = UN.noteId
                  left join user U on UN.userId = U.userId
                  where noteStatus is null or noteStatus != 'NOTE_REMOVED'";
