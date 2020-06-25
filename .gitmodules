@@ -1,0 +1,3 @@
+[submodule "projects/Dare"]
+	path = projects/Dare
+	url = https://github.com/DeanMSalter/Dare.git
