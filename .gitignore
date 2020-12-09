@@ -1,2 +1,5 @@
 vendor/*
 .idea/*
+projects/passPath
+node_modules/
+.idea/
